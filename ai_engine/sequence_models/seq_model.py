@@ -45,18 +45,28 @@ class SequenceModel:
         if len(self.buffer) < 5:
             return []
 
-        if self.model_loaded and self.model is not None:
-            try:
-                # Prepare sequence tensor (e.g., shape (1, SEQUENCE_BUFFER_SIZE, 1662))
-                seq_data = np.array([item[0] for item in self.buffer])
-                seq_data = np.expand_dims(seq_data, axis=0)
-                # output = self.model.predict(seq_data)
-                # decode logic ...
-                return ["HELLO"]
-            except Exception as e:
-                logger.error(f"Failed to run sequence model inference: {e}")
+        from ai_engine.gesture_recognition.inference.predictor import gesture_predictor
+        from ai_engine.gesture_recognition.inference.post_processor import post_processor
 
-        # Heuristic Sequence Assembly
+        try:
+            # Prepare sequence of landmark vectors from buffer
+            seq_lms = [item[0] for item in self.buffer]
+            # Predict the word gesture using Layer 4 predictor
+            res = gesture_predictor.predict_word(seq_lms)
+            word = res["prediction"]
+            conf = res["confidence"]
+            
+            # Enforce validation threshold
+            if word != "WAITING_FOR_CLEAR_GESTURE" and conf >= 0.35:
+                # Add to translation list if it's not a duplicate of the last element in buffer
+                # Debounce using the post_processor deduplicator
+                raw_sequence = [item[1] for item in self.buffer]
+                raw_sequence.append(word)
+                return post_processor.deduplicate_sequence(raw_sequence)
+        except Exception as e:
+            logger.error(f"Error decoding sequence with Layer 4 model: {e}")
+
+        # Heuristic Sequence Assembly Fallback
         # We group continuous blocks of matching labels in the buffer and filter out "IDLE".
         # This acts as a rolling filter to debounce classifications.
         assembled = []

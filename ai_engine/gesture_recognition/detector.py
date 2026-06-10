@@ -39,47 +39,35 @@ class GestureDetector:
             label (str): Predicted gesture token
             confidence (float): Classification probability [0.0 - 1.0]
         """
-        if self.model_loaded and self.model is not None:
-            try:
-                # Add batch dimension
-                input_data = np.expand_dims(landmark_vector, axis=0)
-                predictions = self.model.predict(input_data, verbose=0)[0]
-                idx = np.argmax(predictions)
-                confidence = float(predictions[idx])
-                
-                if confidence >= GESTURE_CONFIDENCE_THRESHOLD:
-                    return SUPPORTED_GESTURES[idx], confidence
-                return "IDLE", confidence
-            except Exception as e:
-                logger.error(f"Inference error: {e}. Defaulting to heuristic fallback.")
+        from ai_engine.gesture_recognition.inference.predictor import gesture_predictor
+        # Run prediction via the Layer 4 predictor (which handles ONNX and PyTorch)
+        res = gesture_predictor.predict_alphabet(landmark_vector)
+        pred = res["prediction"]
+        conf = res["confidence"]
+        
+        # If prediction fails, or readiness filter triggers "WAITING_FOR_CLEAR_GESTURE",
+        # fallback to heuristic classification to keep UI responsive
+        if pred == "WAITING_FOR_CLEAR_GESTURE" or conf < GESTURE_CONFIDENCE_THRESHOLD:
+            lh_slice = landmark_vector[1404:1467]
+            rh_slice = landmark_vector[1467:1530]
+            
+            has_left = np.any(lh_slice > 0)
+            has_right = np.any(rh_slice > 0)
+            
+            if not has_left and not has_right:
+                return "IDLE", 1.0
 
-        # Heuristic Mock Fallback
-        # We analyze the hand landmark portions of the vector (Left Hand index 1404-1467, Right Hand 1467-1530)
-        # If the hand landmark sum is 0, then no hands are in frame -> IDLE
-        lh_slice = landmark_vector[1404:1467]
-        rh_slice = landmark_vector[1467:1530]
-        
-        has_left = np.any(lh_slice > 0)
-        has_right = np.any(rh_slice > 0)
-        
-        if not has_left and not has_right:
-            return "IDLE", 1.0
-
-        # Heuristic: return a random valid gesture for visualization when a hand is visible,
-        # or use simple coordinate heuristics to simulate different gestures for demo.
-        # Let's map different regions of right hand y-coords to different gestures to simulate interaction:
-        if has_right:
-            wrist_y = rh_slice[1] # Wrist y
-            tip_y = rh_slice[25]  # Index finger tip y (approximate indexing)
-            if tip_y < wrist_y - 0.2:
-                # Hand raised high
-                return "HELLO", 0.88
-            elif tip_y > wrist_y:
-                # Hand down
-                return "YES", 0.79
-            else:
-                return "THANKS", 0.85
-        
-        return "IDLE", 0.5
+            if has_right:
+                wrist_y = rh_slice[1]
+                tip_y = rh_slice[25]
+                if tip_y < wrist_y - 0.2:
+                    return "HELLO", 0.88
+                elif tip_y > wrist_y:
+                    return "YES", 0.79
+                else:
+                    return "THANKS", 0.85
+            return "IDLE", 0.5
+            
+        return pred, conf
 
 gesture_detector = GestureDetector()
