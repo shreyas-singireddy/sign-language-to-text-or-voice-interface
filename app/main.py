@@ -347,8 +347,10 @@ pages = [
     st.Page(frontend_pages_dir / "live_gesture_recognition.py", title="Live Gesture Recognition", icon="🤟"),
     st.Page(pages_dir / "live_translation.py", title="Live Translation", icon="🎥"),
     st.Page(pages_dir / "training_studio.py", title="AI Training Studio", icon="🏋️"),
-    st.Page(pages_dir / "communication_hub.py", title="Communication Hub", icon="💬"),
-    st.Page(pages_dir / "analytics.py", title="Analytics", icon="📊"),
+    st.Page(pages_dir / "communication_hub.py", title="Conversation Hub", icon="💬"),
+    st.Page(pages_dir / "analytics.py", title="Analytics Platform", icon="📊"),
+    st.Page(pages_dir / "accessibility.py", title="Accessibility Engine", icon="♿"),
+    st.Page(pages_dir / "emergency.py", title="Emergency System", icon="🚨"),
     st.Page(pages_dir / "settings.py", title="Settings", icon="⚙️"),
     st.Page(pages_dir / "admin.py", title="Admin", icon="🛡️")
 ]

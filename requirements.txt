@@ -10,6 +10,9 @@ pytest>=8.0.0
 httpx>=0.25.0
 plotly>=5.18.0
 
+# Layer 6: TTS Engine
+gTTS>=2.4.0
+
 # Deep Learning Models (Commented out to prevent Windows Long Path errors on installation)
 # To train/load neural networks, enable Windows Long Paths and uncomment below:
 # tensorflow>=2.15.0
