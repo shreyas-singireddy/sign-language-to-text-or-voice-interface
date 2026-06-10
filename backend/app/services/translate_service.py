@@ -126,16 +126,46 @@ LANGUAGE_CODES = {
     'Urdu': 'ur-PK'
 }
 
+import collections
+
+prediction_history = collections.deque(maxlen=5)
+last_stable_prediction = "UNKNOWN"
+
 async def translate_image(image_data: str, language: str) -> dict:
+    global last_stable_prediction
+    
     image = image_from_base64(image_data)
     detected = model.predict(image)
 
+    # Smoothing logic
+    if detected != "UNKNOWN" and detected != "NO_HANDS" and detected != "ERROR":
+        prediction_history.append(detected)
+    else:
+        # If no hands, clear history or keep last stable
+        prediction_history.clear()
+        
+    if len(prediction_history) == prediction_history.maxlen:
+        # Check if all recent predictions are the same
+        if len(set(prediction_history)) == 1:
+            last_stable_prediction = prediction_history[0]
+            
+    # Use stable prediction if available, else fallback to current if it's high confidence, 
+    # but for simplicity we'll just use the detected one if stable isn't ready.
+    final_prediction = last_stable_prediction if last_stable_prediction != "UNKNOWN" else detected
+    if final_prediction in ["UNKNOWN", "NO_HANDS", "ERROR"]:
+        final_prediction = detected # Just show what's happening
+
     translation_data = TRANSLATION_MAP.get(language, TRANSLATION_MAP['English'])
-    translated = translation_data.get(detected, f'{detected} ({language})')
-    result_text = f'{detected} — {translated}'
+    translated = translation_data.get(final_prediction, f'{final_prediction} ({language})')
+    
+    # Don't translate system messages
+    if final_prediction in ["UNKNOWN", "NO_HANDS", "ERROR"]:
+        result_text = final_prediction
+    else:
+        result_text = f'{final_prediction} — {translated}'
 
     return {
-        'detectedGesture': detected,
+        'detectedGesture': final_prediction,
         'translatedText': result_text,
         'confidence': float(model.confidence),
         'language': language,
