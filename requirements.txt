@@ -8,6 +8,7 @@ numpy>=1.24.0
 pandas>=2.0.0
 pytest>=8.0.0
 httpx>=0.25.0
+plotly>=5.18.0
 
 # Deep Learning Models (Commented out to prevent Windows Long Path errors on installation)
 # To train/load neural networks, enable Windows Long Paths and uncomment below:

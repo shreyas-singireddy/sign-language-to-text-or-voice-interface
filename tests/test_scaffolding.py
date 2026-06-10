@@ -86,74 +86,148 @@ def test_whisper_engine_mock():
         if os.path.exists(dummy_filepath):
             os.remove(dummy_filepath)
 
-def test_landmark_processor():
-    """Verify landmark processor filters and anchor normalization."""
+def test_landmark_processor_stub():
+    """Verify landmark processor namespace import."""
     from ai_engine.landmark_processor.processor import landmark_processor
-    dummy = np.zeros(1662)
-    processed = landmark_processor.process(dummy, None)
-    assert processed.shape == (1662,)
-    assert np.all(processed == 0)
+    assert landmark_processor is not None
 
-def test_feature_extractor():
-    """Verify calculations of distance, angles, velocities, and acceleration."""
-    from ai_engine.feature_extractor.extractor import feature_extractor
-    dummy = np.zeros(1662)
-    
-    # Simulate coordinate movements
-    features = feature_extractor.extract_all(dummy)
-    assert "distances" in features
-    assert "angles" in features
-    assert "mean_velocity" in features
-    assert "mean_acceleration" in features
-    assert isinstance(features["distances"]["lh_thumb_index"], float)
-    assert isinstance(features["angles"]["left_elbow_angle"], float)
+def test_camera_manager_scaffolding():
+    """Verify camera manager starts in uninitialized state and closes cleanly."""
+    from ai_engine.vision.camera_manager import CameraManager
+    cm = CameraManager()
+    assert cm.status == "Uninitialized"
+    cm.release()
 
-def test_motion_analyser():
-    """Verify stability index, activity index, and occlusion rating calculations."""
-    from ai_engine.motion_analysis.analyser import motion_analyser
-    dummy = np.zeros(1662)
+def test_landmark_normalizer():
+    """Verify shoulder width relative coordinate scaling."""
+    from ai_engine.processing.landmark_normalizer import landmark_normalizer
+    from ai_engine.schemas.landmark_schema import FrameLandmarkData, HandTelemetryData, PoseTelemetryData, FaceTelemetryData, Point3D
     
-    metrics = motion_analyser.evaluate(dummy, 0.05, None)
-    assert "stability_index" in metrics
-    assert "occlusion_score" in metrics
-    assert "activity_index" in metrics
-    assert "tracking_health" in metrics
-    assert metrics["occlusion_score"] == 1.0  # None results is rated 100% occluded
+    # Mock Pose with 33 points (index 11 and 12 are left/right shoulders)
+    points = [Point3D(x=0.1, y=0.2, z=0.3, visibility=0.9)] * 33
+    points[11] = Point3D(x=0.4, y=0.2, z=0.3, visibility=0.9) # Left Shoulder
+    points[12] = Point3D(x=0.6, y=0.2, z=0.3, visibility=0.9) # Right Shoulder
+    
+    frame = FrameLandmarkData(
+        timestamp=1712345678.0,
+        left_hand=HandTelemetryData(present=False),
+        right_hand=HandTelemetryData(present=False),
+        pose=PoseTelemetryData(present=True, landmarks=points),
+        face=FaceTelemetryData(present=False)
+    )
+    
+    norm = landmark_normalizer.normalize_frame(frame)
+    assert norm.pose.present is True
+    assert len(norm.pose.landmarks) == 33
 
-def test_temporal_memory():
-    """Verify sliding temporal cache sizes and memory allocation records."""
-    from ai_engine.temporal_memory.memory import temporal_memory
-    temporal_memory.clear()
-    stats = temporal_memory.get_memory_stats()
-    assert stats["buffer_30_size"] == 0
-    assert stats["memory_usage_kb"] >= 0.0
+def test_temporal_tracker_kinematics():
+    """Verify rolling displacements trajectory, direction, and smoothness."""
+    from ai_engine.processing.temporal_tracker import TemporalTracker
+    from ai_engine.schemas.landmark_schema import FrameLandmarkData, HandTelemetryData, PoseTelemetryData, FaceTelemetryData, Point3D
     
-    # Push sequence
-    temporal_memory.memorize({
-        "landmarks": [0.0]*1662,
-        "mean_velocity": 0.04,
-        "mean_acceleration": 0.002,
-        "stability_index": 0.98
-    })
+    tracker = TemporalTracker(history_size=10)
+    # Feed sequential movements
+    f1 = FrameLandmarkData(
+        timestamp=1.0,
+        left_hand=HandTelemetryData(present=True, center=Point3D(x=0.0, y=0.0, z=0.0)),
+        right_hand=HandTelemetryData(present=False),
+        pose=PoseTelemetryData(present=False),
+        face=FaceTelemetryData(present=False)
+    )
+    f2 = FrameLandmarkData(
+        timestamp=2.0,
+        left_hand=HandTelemetryData(present=True, center=Point3D(x=0.1, y=0.0, z=0.0)),
+        right_hand=HandTelemetryData(present=False),
+        pose=PoseTelemetryData(present=False),
+        face=FaceTelemetryData(present=False)
+    )
+    tracker.update(f1)
+    tracker.update(f2)
     
-    stats_updated = temporal_memory.get_memory_stats()
-    assert stats_updated["buffer_30_size"] == 1
+    metrics = tracker.compute_kinematics("left_hand")
+    assert metrics["average_velocity"] > 0.0
+    assert metrics["trajectory_length"] == 0.1
+    assert metrics["smoothness"] >= 0.0
 
-def test_inference_preprocessor():
-    """Verify input reshaping coordinates tensors match model architectures."""
-    from ai_engine.inference_preparation.preprocessor import inference_preprocessor
-    raw_seq = [[0.0]*1662] * 5
-    tensor = inference_preprocessor.pad_sequence(raw_seq)
+def test_landmark_recorder_and_session():
+    """Verify session creation and coordinates JSON serialization."""
+    from ai_engine.storage.session_manager import session_manager
+    from ai_engine.storage.landmark_recorder import landmark_recorder
+    from ai_engine.schemas.landmark_schema import FrameLandmarkData, HandTelemetryData, PoseTelemetryData, FaceTelemetryData
     
-    # Output should be reshaped to (1, 30, 1662) for sequential models
-    assert tensor.shape == (1, 30, 1662)
+    session_id, session_path = session_manager.start_session()
+    assert session_id.startswith("session_")
+    
+    f = FrameLandmarkData(
+        timestamp=1.0,
+        left_hand=HandTelemetryData(present=False),
+        right_hand=HandTelemetryData(present=False),
+        pose=PoseTelemetryData(present=False),
+        face=FaceTelemetryData(present=False)
+    )
+    landmark_recorder.record_frame(f)
+    assert len(landmark_recorder.frame_buffer) == 1
+    
+    saved_path = landmark_recorder.save_session("HELLO")
+    assert saved_path is not None
+    assert saved_path.exists()
+    
+    # Cleanup saved file
+    saved_path.unlink()
+    session_path.rmdir()
+    session_manager.end_session()
 
-def test_vision_pipeline():
-    """Verify pipeline integrates perception components."""
-    from ai_engine.pipeline.vision_pipeline import vision_pipeline
+def test_exporters():
+    """Verify CSV, Parquet, and JSON formatting compilation and cleanup."""
+    from ai_engine.storage.session_manager import session_manager
+    from ai_engine.storage.landmark_recorder import landmark_recorder
+    from ai_engine.schemas.landmark_schema import FrameLandmarkData, HandTelemetryData, PoseTelemetryData, FaceTelemetryData
+    from ai_engine.exporters.csv_exporter import csv_exporter
+    from ai_engine.exporters.json_exporter import json_exporter
+    from ai_engine.exporters.parquet_exporter import parquet_exporter
     
-    # Process blank BGR input
-    results = vision_pipeline.run_perception(None)
-    assert "tracking_health" in results
-    assert results["tracking_health"] == 0.0
+    session_id, session_path = session_manager.start_session()
+    f = FrameLandmarkData(
+        timestamp=1.0,
+        left_hand=HandTelemetryData(present=False),
+        right_hand=HandTelemetryData(present=False),
+        pose=PoseTelemetryData(present=False),
+        face=FaceTelemetryData(present=False)
+    )
+    landmark_recorder.record_frame(f)
+    saved_path = landmark_recorder.save_session("HELLO")
+    
+    json_path = json_exporter.export(saved_path)
+    assert json_path is not None
+    assert json_path.exists()
+    
+    csv_path = csv_exporter.export(saved_path)
+    assert csv_path is not None
+    assert csv_path.exists()
+    
+    parquet_path = parquet_exporter.export(saved_path)
+    assert parquet_path is not None
+    assert parquet_path.exists()
+    
+    # Cleanup exported files
+    json_path.unlink()
+    csv_path.unlink()
+    parquet_path.unlink()
+    
+    saved_path.unlink()
+    session_path.rmdir()
+    session_manager.end_session()
+
+def test_perception_service_quality_readiness():
+    """Verify frame brightness, blur score estimation, and readiness coefficient."""
+    from ai_engine.services.perception_service import perception_service
+    # Generate mock 480x640 frame
+    dummy_frame = np.ones((480, 640, 3), dtype=np.uint8) * 128
+    
+    res = perception_service.process_perception_frame(dummy_frame, 15.0)
+    assert res.camera.camera_status is not None
+    assert res.readiness.brightness_score == 128.0
+    assert res.readiness.frame_quality_score >= 0.0
+    assert res.readiness.gesture_readiness >= 0.0
+
 

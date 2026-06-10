@@ -338,11 +338,12 @@ if not st.session_state["authenticated"]:
 # ----------------- REGULAR DASHBOARD OPERATION -----------------
 # Page navigation setup
 pages_dir = Path(__file__).resolve().parent / "pages"
+frontend_pages_dir = Path(__file__).resolve().parent.parent / "frontend" / "pages"
 
 # Define multipage navigation structure
 pages = [
     st.Page(pages_dir / "home.py", title="Home Landing", icon="🏠"),
-    st.Page(pages_dir / "live_vision_engine.py", title="Live Vision Engine", icon="👁️"),
+    st.Page(frontend_pages_dir / "live_vision_engine.py", title="Live Vision Engine", icon="👁️"),
     st.Page(pages_dir / "live_translation.py", title="Live Translation", icon="🎥"),
     st.Page(pages_dir / "training_studio.py", title="AI Training Studio", icon="🏋️"),
     st.Page(pages_dir / "communication_hub.py", title="Communication Hub", icon="💬"),
