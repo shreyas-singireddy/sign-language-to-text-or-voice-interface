@@ -13,8 +13,7 @@ class UserOut(BaseModel):
     role: str
     createdAt: datetime
 
-    class Config:
-        allow_population_by_field_name = True
+    model_config = {'populate_by_name': True}
 
 class TokenResponse(BaseModel):
     access_token: str
@@ -33,5 +32,4 @@ class TranslationRecord(BaseModel):
     confidence: float
     timestamp: datetime
 
-    class Config:
-        allow_population_by_field_name = True
+    model_config = {'populate_by_name': True}
