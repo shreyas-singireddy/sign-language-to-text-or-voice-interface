@@ -17,6 +17,11 @@ except Exception as e:
 
 class HandDetector:
     def __init__(self):
+        self.hands = None
+        if not hasattr(mp, "solutions"):
+            logger.error("MediaPipe Solutions API is unavailable; hand detection is disabled.")
+            return
+
         self.mp_hands = mp.solutions.hands
         self.hands = self.mp_hands.Hands(
             min_detection_confidence=sys_config.detectors.min_detection_confidence,
@@ -27,6 +32,9 @@ class HandDetector:
         """
         Parses RGB frame matrix and returns (left_hand, right_hand) telemetry records.
         """
+        if self.hands is None:
+            return HandTelemetryData(present=False), HandTelemetryData(present=False)
+
         results = self.hands.process(frame_rgb)
         
         # Initialize default mock instances
@@ -87,4 +95,5 @@ class HandDetector:
 
     def close(self):
         """Release MediaPipe model."""
-        self.hands.close()
+        if self.hands is not None:
+            self.hands.close()

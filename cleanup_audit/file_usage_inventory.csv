@@ -1,0 +1,360 @@
+File,Status,Reason,References
+.gitignore,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+PROJECT_HEALTH_REPORT.md,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,run_full_audit.py (path reference)
+README.md,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+SPEKITE.md,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+accessibility/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+accessibility/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+accessibility/__pycache__/keyboard_nav.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+accessibility/__pycache__/screen_reader_hints.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+accessibility/__pycache__/theme_manager.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+accessibility/keyboard_nav.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,accessibility/__init__.py (python import); app/pages/accessibility.py (python import); tests/test_systems.py (python import)
+accessibility/screen_reader_hints.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/accessibility.py (python import)
+accessibility/theme_manager.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,accessibility/__init__.py (python import); app/pages/accessibility.py (python import); tests/test_systems.py (python import)
+ai_engine/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/computer_vision/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/computer_vision/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/computer_vision/__pycache__/camera.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/computer_vision/__pycache__/holistic.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/computer_vision/camera.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/live_translation.py (python import); app/pages/training_studio.py (python import)
+ai_engine/computer_vision/holistic.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/inference/pipeline.py (python import); ai_engine/pipeline/vision_pipeline.py (python import)
+ai_engine/dataset_manager/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/dataset_manager/recorder.py,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+ai_engine/datasets/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/datasets/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/datasets/__pycache__/dataset_manager.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/datasets/data/dataset_index.json,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/datasets/dataset_manager.py (basename reference); ai_engine/gesture_recognition/dataset/dataset_manager.py (basename reference)
+ai_engine/datasets/data/offline_history.json,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/admin.py (asset/model name reference); app/services/database_service.py (basename reference)
+ai_engine/datasets/dataset_manager.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/services/ai_service.py (python import)
+ai_engine/exporters/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/exporters/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/exporters/__pycache__/csv_exporter.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/exporters/__pycache__/json_exporter.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/exporters/__pycache__/parquet_exporter.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/exporters/csv_exporter.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/exporters/parquet_exporter.py (python import); ai_engine/gesture_recognition/dataset/dataset_manager.py (python import); frontend/pages/live_vision_engine.py (python import); tests/test_scaffolding.py (python import)
+ai_engine/exporters/json_exporter.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/dataset/dataset_manager.py (python import); frontend/pages/live_vision_engine.py (python import); tests/test_scaffolding.py (python import)
+ai_engine/exporters/parquet_exporter.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/dataset/dataset_manager.py (python import); frontend/pages/live_vision_engine.py (python import); tests/test_scaffolding.py (python import)
+ai_engine/feature_extractor/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/feature_extractor/extractor.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/pipeline/vision_pipeline.py (python import)
+ai_engine/gesture_recognition/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/gesture_recognition/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/__pycache__/detector.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/dataset/__pycache__/dataset_manager.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/dataset/__pycache__/gesture_recorder.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/dataset/__pycache__/sample_validator.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/dataset/dataset_manager.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/dataset/gesture_recorder.py (python import); ai_engine/gesture_recognition/services/gesture_service.py (python import); ai_engine/gesture_recognition/training/trainer.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/dataset/gesture_recorder.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/services/gesture_service.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/dataset/sample_validator.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/dataset/dataset_manager.py (python import); ai_engine/gesture_recognition/dataset/gesture_recorder.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/detector.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/inference/pipeline.py (python import)
+ai_engine/gesture_recognition/features/__pycache__/landmark_features.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/features/landmark_features.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/inference/predictor.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/features/motion_features.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/features/temporal_features.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/inference/__pycache__/confidence_engine.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/inference/__pycache__/post_processor.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/inference/__pycache__/predictor.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/inference/confidence_engine.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/inference/predictor.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/inference/post_processor.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/inference/predictor.py (python import); ai_engine/sequence_models/seq_model.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/inference/predictor.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/detector.py (python import); ai_engine/gesture_recognition/services/gesture_service.py (python import); ai_engine/sequence_models/seq_model.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/models/__pycache__/alphabet_model.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/models/__pycache__/word_model.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/models/alphabet_model.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/inference/predictor.py (python import); ai_engine/gesture_recognition/training/trainer.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/models/sentence_model.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/models/word_model.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/inference/predictor.py (python import); ai_engine/gesture_recognition/training/trainer.py (python import); run_full_audit.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/schemas/prediction_schema.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/services/__pycache__/gesture_service.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/services/gesture_service.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,frontend/pages/live_gesture_recognition.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/storage/__pycache__/checkpoint_manager.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/storage/__pycache__/model_registry.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/storage/checkpoint_manager.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/training/trainer.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/storage/model_registry.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/inference/predictor.py (python import); ai_engine/gesture_recognition/services/gesture_service.py (python import); ai_engine/gesture_recognition/training/trainer.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/training/__pycache__/evaluator.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/training/__pycache__/hyperparameter_tuner.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/training/__pycache__/trainer.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/gesture_recognition/training/evaluator.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/training/trainer.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/training/hyperparameter_tuner.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/services/gesture_service.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/gesture_recognition/training/trainer.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/services/gesture_service.py (python import); ai_engine/gesture_recognition/training/hyperparameter_tuner.py (python import); tests/test_gesture_recognition.py (python import)
+ai_engine/inference/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/inference/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/inference/__pycache__/pipeline.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/inference/pipeline.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/services/ai_service.py (python import)
+ai_engine/inference_preparation/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/inference_preparation/preprocessor.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/pipeline/vision_pipeline.py (python import)
+ai_engine/landmark_extraction/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/landmark_extraction/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/landmark_extraction/__pycache__/extractor.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/landmark_extraction/extractor.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/inference/pipeline.py (python import); ai_engine/pipeline/vision_pipeline.py (python import); tests/test_scaffolding.py (python import)
+ai_engine/landmark_processor/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/landmark_processor/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/landmark_processor/__pycache__/processor.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/landmark_processor/processor.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/pipeline/vision_pipeline.py (python import); ai_engine/services/perception_service.py (python import); run_full_audit.py (python import); tests/test_scaffolding.py (python import)
+ai_engine/motion_analysis/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/motion_analysis/analyser.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/pipeline/vision_pipeline.py (python import)
+ai_engine/pipeline/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/pipeline/vision_pipeline.py,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+ai_engine/processing/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/processing/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/processing/__pycache__/landmark_normalizer.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/processing/__pycache__/temporal_tracker.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/processing/landmark_normalizer.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/services/perception_service.py (python import); tests/test_scaffolding.py (python import)
+ai_engine/processing/temporal_tracker.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/services/perception_service.py (python import); tests/test_scaffolding.py (python import)
+ai_engine/replay/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/replay/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/replay/__pycache__/session_replay.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/replay/session_replay.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,frontend/pages/live_vision_engine.py (python import)
+ai_engine/schemas/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/schemas/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/schemas/__pycache__/landmark_schema.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/schemas/__pycache__/telemetry_schema.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/schemas/landmark_schema.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/processing/landmark_normalizer.py (python import); ai_engine/processing/temporal_tracker.py (python import); ai_engine/replay/session_replay.py (python import); ai_engine/schemas/telemetry_schema.py (python import)
+ai_engine/schemas/telemetry_schema.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/services/perception_service.py (python import); ai_engine/telemetry/motion_metrics.py (python import); ai_engine/telemetry/occlusion_metrics.py (python import); ai_engine/telemetry/performance_metrics.py (python import)
+ai_engine/sequence_models/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/sequence_models/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/sequence_models/__pycache__/seq_model.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/sequence_models/seq_model.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/inference/pipeline.py (python import)
+ai_engine/services/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/services/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/services/__pycache__/perception_service.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/services/perception_service.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,frontend/pages/live_gesture_recognition.py (python import); frontend/pages/live_vision_engine.py (python import); run_full_audit.py (python import); tests/test_scaffolding.py (python import)
+ai_engine/storage/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/storage/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/storage/__pycache__/landmark_recorder.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/storage/__pycache__/session_manager.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/storage/landmark_recorder.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,frontend/pages/live_vision_engine.py (python import); tests/test_scaffolding.py (python import); tests/test_scaffolding.py (python import)
+ai_engine/storage/session_manager.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/storage/landmark_recorder.py (python import); frontend/pages/live_vision_engine.py (python import); tests/test_scaffolding.py (python import); tests/test_scaffolding.py (python import)
+ai_engine/telemetry/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/telemetry/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/telemetry/__pycache__/motion_metrics.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/telemetry/__pycache__/occlusion_metrics.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/telemetry/__pycache__/performance_metrics.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/telemetry/__pycache__/stability_metrics.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/telemetry/__pycache__/visibility_metrics.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/telemetry/motion_metrics.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/services/perception_service.py (python import)
+ai_engine/telemetry/occlusion_metrics.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/services/perception_service.py (python import)
+ai_engine/telemetry/performance_metrics.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/services/perception_service.py (python import)
+ai_engine/telemetry/stability_metrics.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/services/perception_service.py (python import)
+ai_engine/telemetry/visibility_metrics.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/services/perception_service.py (python import)
+ai_engine/temporal_memory/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/temporal_memory/memory.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/pipeline/vision_pipeline.py (python import)
+ai_engine/translation_engine/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/translation_engine/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/translation_engine/__pycache__/translator.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/translation_engine/translator.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/inference/pipeline.py (python import)
+ai_engine/utils/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/utils/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/utils/__pycache__/config.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/utils/__pycache__/logger.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/utils/config.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/exporters/csv_exporter.py (python import); ai_engine/exporters/json_exporter.py (python import); ai_engine/exporters/parquet_exporter.py (python import); ai_engine/processing/temporal_tracker.py (python import)
+ai_engine/utils/logger.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/exporters/csv_exporter.py (python import); ai_engine/exporters/json_exporter.py (python import); ai_engine/exporters/parquet_exporter.py (python import); ai_engine/gesture_recognition/models/alphabet_model.py (python import)
+ai_engine/vision/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+ai_engine/vision/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/vision/__pycache__/camera_manager.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/vision/__pycache__/face_detector.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/vision/__pycache__/hand_detector.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/vision/__pycache__/pose_detector.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+ai_engine/vision/camera_manager.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/services/perception_service.py (python import); tests/test_scaffolding.py (python import)
+ai_engine/vision/face_detector.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/services/perception_service.py (python import)
+ai_engine/vision/hand_detector.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/services/perception_service.py (python import)
+ai_engine/vision/pose_detector.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/services/perception_service.py (python import)
+ai_engine_audit.md,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,run_full_audit.py (path reference)
+analytics/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+analytics/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+analytics/__pycache__/heatmap_builder.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+analytics/__pycache__/metrics_collector.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+analytics/__pycache__/report_generator.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+analytics/heatmap_builder.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,analytics/report_generator.py (python import)
+analytics/metrics_collector.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,analytics/__init__.py (python import); analytics/report_generator.py (python import); app/pages/analytics.py (python import); tests/test_systems.py (python import)
+analytics/report_generator.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,analytics/__init__.py (python import); app/pages/analytics.py (python import)
+api_audit.md,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,run_full_audit.py (path reference)
+app/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+app/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/__pycache__/main.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/main.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,backend/app/tests/conftest.py (python import); run_full_audit.py (python import)
+app/pages/__pycache__/accessibility.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/pages/__pycache__/admin.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/pages/__pycache__/analytics.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/pages/__pycache__/communication_hub.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/pages/__pycache__/emergency.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/pages/__pycache__/home.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/pages/__pycache__/live_translation.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/pages/__pycache__/settings.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/pages/__pycache__/training_studio.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/pages/accessibility.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/main.py (basename reference); streamlit_audit.md (path reference)
+app/pages/admin.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,streamlit_audit.md (path reference)
+app/pages/analytics.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/main.py (basename reference); streamlit_audit.md (path reference)
+app/pages/communication_hub.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/main.py (basename reference); streamlit_audit.md (path reference)
+app/pages/emergency.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/main.py (basename reference); streamlit_audit.md (path reference)
+app/pages/home.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,streamlit_audit.md (path reference)
+app/pages/live_translation.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/main.py (basename reference); app/pages/home.py (basename reference); streamlit_audit.md (path reference)
+app/pages/settings.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/main.py (basename reference); app/pages/home.py (basename reference); streamlit_audit.md (path reference)
+app/pages/training_studio.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/main.py (basename reference); streamlit_audit.md (path reference)
+app/services/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+app/services/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/services/__pycache__/ai_service.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/services/__pycache__/audio_service.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/services/__pycache__/database_service.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+app/services/ai_service.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/live_translation.py (python import); app/pages/settings.py (python import); app/pages/training_studio.py (python import); run_full_audit.py (python import)
+app/services/audio_service.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/live_translation.py (python import); tests/test_scaffolding.py (python import)
+app/services/database_service.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/admin.py (python import); app/pages/admin.py (python import); app/pages/analytics.py (python import); app/pages/communication_hub.py (python import)
+assets/models/registry/registry_metadata.json,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/gesture_recognition/storage/model_registry.py (basename reference)
+backend/.env,REQUIRED,Protected entry/config/test/page or referenced by repository code.,README.md (path reference); config/config.py (path reference)
+backend/.env.example,REQUIRED,Protected entry/config/test/page or referenced by repository code.,run_full_audit.py (basename reference)
+backend/Dockerfile,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+backend/app/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/__pycache__/main.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/api/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+backend/app/api/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/api/__pycache__/admin.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/api/__pycache__/auth.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/api/__pycache__/live.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/api/__pycache__/translate.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/api/__pycache__/utils.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/api/deps.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/api/v1/__init__.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/api/v1/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/api/v1/__pycache__/auth.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/api/v1/__pycache__/router.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/api/v1/auth.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/api/v1/router.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/core/__init__.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/core/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/core/__pycache__/config.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/core/__pycache__/database.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/core/__pycache__/security.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/core/config.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/core/database.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/core/security.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/data/__pycache__/live_feed.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/db/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/db/__pycache__/client.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/db/__pycache__/schemas.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/db/schemas.py,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+backend/app/main.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/schemas/__init__.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/schemas/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/schemas/__pycache__/auth.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/schemas/auth.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/services/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+backend/app/services/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/services/__pycache__/translate_service.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/tests/__init__.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/tests/conftest.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/tests/test_health.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/app/utils/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/utils/__pycache__/image_decoder.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/app/utils/__pycache__/mediapipe_model.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/requirements.txt,REQUIRED,Protected entry/config/test/page or referenced by repository code.,README.md (basename reference); backend/Dockerfile (basename reference); dependency_report.md (basename reference); run_full_audit.py (basename reference)
+backend/tests/test_pipeline.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+backend/ws/__pycache__/telemetry_socket.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+backend/ws/telemetry_socket.py,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+communication/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+communication/hub.py,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+config/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+config/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+config/__pycache__/config.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+config/__pycache__/logger.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+config/config.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,ai_engine/computer_vision/camera.py (python import); ai_engine/computer_vision/holistic.py (python import); ai_engine/datasets/dataset_manager.py (python import); ai_engine/gesture_recognition/dataset/dataset_manager.py (python import)
+config/logger.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,accessibility/keyboard_nav.py (python import); accessibility/screen_reader_hints.py (python import); accessibility/theme_manager.py (python import); ai_engine/computer_vision/camera.py (python import)
+conversation/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+conversation/dialogue_manager.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/communication_hub.py (python import); conversation/__init__.py (python import); tests/test_systems.py (python import)
+conversation/emotion_tone.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,conversation/session.py (python import); tests/test_systems.py (python import)
+conversation/message_thread.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,conversation/session.py (python import)
+conversation/schemas.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/communication_hub.py (python import); conversation/dialogue_manager.py (python import); conversation/emotion_tone.py (python import); conversation/message_thread.py (python import)
+conversation/session.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,conversation/__init__.py (python import); conversation/dialogue_manager.py (python import); tests/test_systems.py (python import); tests/test_systems.py (python import)
+cv_stability_report.md,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,run_full_audit.py (path reference)
+database/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+database/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+database/__pycache__/mongodb.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+database/mongodb.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/main.py (python import); app/pages/admin.py (python import); app/pages/home.py (python import); app/services/database_service.py (python import)
+database_audit.md,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,run_full_audit.py (path reference)
+dataset_health_report.md,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,run_full_audit.py (path reference)
+dependency_report.md,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,run_full_audit.py (path reference)
+docker-compose.yml,REQUIRED,Protected entry/config/test/page or referenced by repository code.,README.md (path reference)
+emergency/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+emergency/alert_dispatcher.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/emergency.py (python import); emergency/__init__.py (python import); emergency/panic_protocol.py (python import); emergency/panic_protocol.py (python import)
+emergency/emergency_phrases.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/emergency.py (python import); emergency/sos_detector.py (python import); tests/test_systems.py (python import); tests/test_systems.py (python import)
+emergency/panic_protocol.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/emergency.py (python import); emergency/__init__.py (python import)
+emergency/sos_detector.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/emergency.py (python import); app/pages/emergency.py (python import); emergency/__init__.py (python import); emergency/alert_dispatcher.py (python import)
+frontend/.vite/deps/_metadata.json,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,ai_engine/gesture_recognition/storage/model_registry.py (basename reference); tests/test_systems.py (asset/model name reference)
+frontend/.vite/deps/package.json,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+frontend/Dockerfile,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+frontend/index.html,REQUIRED,Protected entry/config/test/page or referenced by repository code.,frontend/tailwind.config.js (basename reference)
+frontend/package-lock.json,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+frontend/package.json,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+frontend/pages/__pycache__/live_gesture_recognition.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+frontend/pages/__pycache__/live_vision_engine.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+frontend/pages/live_gesture_recognition.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/main.py (basename reference); streamlit_audit.md (path reference)
+frontend/pages/live_vision_engine.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/main.py (basename reference); streamlit_audit.md (path reference)
+frontend/postcss.config.js,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+frontend/src/App.tsx,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+frontend/src/components/.gitkeep,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+frontend/src/context/.gitkeep,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+frontend/src/context/AuthContext.tsx,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+frontend/src/context/ThemeContext.tsx,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+frontend/src/hooks/.gitkeep,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+frontend/src/index.css,REQUIRED,Protected entry/config/test/page or referenced by repository code.,frontend/src/main.tsx (basename reference)
+frontend/src/main.tsx,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+frontend/src/pages/.gitkeep,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+frontend/src/services/.gitkeep,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+frontend/src/utils/.gitkeep,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+frontend/src/vite-env.d.ts,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+frontend/tailwind.config.js,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+frontend/tsconfig.json,POTENTIALLY UNUSED,No static import/reference found; review before deleting.,
+frontend/tsconfig.node.json,REQUIRED,Protected entry/config/test/page or referenced by repository code.,frontend/tsconfig.json (basename reference)
+frontend/vite.config.ts,REQUIRED,Protected entry/config/test/page or referenced by repository code.,frontend/tsconfig.node.json (basename reference)
+gesture_accuracy_report.md,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,run_full_audit.py (path reference)
+import_audit.md,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,run_full_audit.py (path reference)
+integration_report.md,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+multilingual/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+multilingual/language_registry.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/communication_hub.py (python import); multilingual/__init__.py (python import); multilingual/locale_formatter.py (python import); tests/test_systems.py (python import)
+multilingual/locale_formatter.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,multilingual/__init__.py (python import)
+multilingual/rtl_handler.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,multilingual/__init__.py (python import); tests/test_systems.py (python import)
+requirements.txt,REQUIRED,Protected entry/config/test/page or referenced by repository code.,README.md (path reference); backend/Dockerfile (path reference); dependency_report.md (path reference); run_full_audit.py (path reference)
+run_full_audit.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+speech/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+speech/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+speech/__pycache__/schemas.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+speech/__pycache__/stt_engine.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+speech/__pycache__/tts_engine.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+speech/__pycache__/voice_profile.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+speech/__pycache__/whisper_engine.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+speech/providers/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+speech/providers/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+speech/providers/__pycache__/base.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+speech/providers/__pycache__/browser_provider.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+speech/providers/__pycache__/gtts_provider.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+speech/providers/base.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,speech/providers/browser_provider.py (python import); speech/providers/gtts_provider.py (python import)
+speech/providers/browser_provider.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,speech/providers/__init__.py (python import); speech/stt_engine.py (python import); speech/tts_engine.py (python import); tests/test_speech.py (python import)
+speech/providers/gtts_provider.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,speech/providers/__init__.py (python import); speech/tts_engine.py (python import); tests/test_speech.py (python import)
+speech/schemas.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/services/audio_service.py (python import); speech/providers/base.py (python import); speech/providers/browser_provider.py (python import); speech/providers/gtts_provider.py (python import)
+speech/stt_engine.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/communication_hub.py (python import); speech/__init__.py (python import); tests/test_speech.py (python import)
+speech/tts_engine.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/communication_hub.py (python import); app/pages/emergency.py (python import); app/services/audio_service.py (python import); speech/__init__.py (python import)
+speech/voice_profile.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,speech/tts_engine.py (python import); tests/test_speech.py (python import)
+speech/whisper_engine.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/services/audio_service.py (python import)
+static_analysis_report.md,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,run_full_audit.py (path reference)
+streamlit_audit.md,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,run_full_audit.py (path reference)
+tests/test_gesture_recognition.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+tests/test_scaffolding.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+tests/test_speech.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+tests/test_systems.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+tests/test_translation.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,
+translation/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+translation/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+translation/__pycache__/context_manager.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+translation/__pycache__/engine.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+translation/__pycache__/grammar_fixer.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+translation/__pycache__/schemas.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+translation/context_manager.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,tests/test_translation.py (python import); translation/engine.py (python import)
+translation/engine.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,app/pages/communication_hub.py (python import); tests/test_translation.py (python import); translation/__init__.py (python import); app/main.py (basename reference)
+translation/grammar_fixer.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,tests/test_translation.py (python import); translation/engine.py (python import)
+translation/providers/__init__.py,POTENTIALLY UNUSED,Package marker; keep unless package is removed.,
+translation/providers/__pycache__/__init__.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+translation/providers/__pycache__/base.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+translation/providers/__pycache__/google_adapter.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+translation/providers/__pycache__/rule_based.cpython-311.pyc,SAFE TO DELETE,Generated report/cache artifact; not required for runtime or tests.,
+translation/providers/base.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,translation/providers/google_adapter.py (python import); translation/providers/rule_based.py (python import)
+translation/providers/google_adapter.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,tests/test_translation.py (python import); translation/engine.py (python import); translation/providers/__init__.py (python import)
+translation/providers/rule_based.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,tests/test_translation.py (python import); translation/engine.py (python import); translation/providers/__init__.py (python import); translation/providers/google_adapter.py (python import)
+translation/schemas.py,REQUIRED,Protected entry/config/test/page or referenced by repository code.,tests/test_translation.py (python import); translation/context_manager.py (python import); translation/engine.py (python import)

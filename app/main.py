@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+import runpy
 
 # Add project root to sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -343,20 +344,30 @@ pages_dir = Path(__file__).resolve().parent / "pages"
 frontend_pages_dir = Path(__file__).resolve().parent.parent / "frontend" / "pages"
 
 # Define multipage navigation structure
-pages = [
-    st.Page(pages_dir / "home.py", title="Home Landing", icon="🏠"),
-    st.Page(frontend_pages_dir / "live_vision_engine.py", title="Live Vision Engine", icon="👁️"),
-    st.Page(frontend_pages_dir / "live_gesture_recognition.py", title="Live Gesture Recognition", icon="🤟"),
-    st.Page(pages_dir / "live_translation.py", title="Live Translation", icon="🎥"),
-    st.Page(pages_dir / "training_studio.py", title="AI Training Studio", icon="🏋️"),
-    st.Page(pages_dir / "communication_hub.py", title="Conversation Hub", icon="💬"),
-    st.Page(pages_dir / "analytics.py", title="Analytics Platform", icon="📊"),
-    st.Page(pages_dir / "accessibility.py", title="Accessibility Engine", icon="♿"),
-    st.Page(pages_dir / "emergency.py", title="Emergency System", icon="🚨"),
-    st.Page(pages_dir / "settings.py", title="Settings", icon="⚙️"),
-    st.Page(pages_dir / "admin.py", title="Admin", icon="🛡️")
+page_specs = [
+    (pages_dir / "home.py", "Home Landing"),
+    (frontend_pages_dir / "live_vision_engine.py", "Live Vision Engine"),
+    (frontend_pages_dir / "live_gesture_recognition.py", "Live Gesture Recognition"),
+    (pages_dir / "live_translation.py", "Live Translation"),
+    (pages_dir / "training_studio.py", "AI Training Studio"),
+    (pages_dir / "communication_hub.py", "Conversation Hub"),
+    (pages_dir / "analytics.py", "Analytics Platform"),
+    (pages_dir / "accessibility.py", "Accessibility Engine"),
+    (pages_dir / "emergency.py", "Emergency System"),
+    (pages_dir / "settings.py", "Settings"),
+    (pages_dir / "admin.py", "Admin"),
 ]
 
 # Run Multi-page Routing
-pg = st.navigation(pages)
-pg.run()
+if hasattr(st, "Page") and hasattr(st, "navigation"):
+    pages = [st.Page(path, title=title) for path, title in page_specs]
+    pg = st.navigation(pages)
+    pg.run()
+else:
+    selected_title = st.sidebar.radio(
+        "Navigation",
+        [title for _, title in page_specs],
+        key="legacy_navigation",
+    )
+    selected_path = next(path for path, title in page_specs if title == selected_title)
+    runpy.run_path(str(selected_path), run_name="__main__")

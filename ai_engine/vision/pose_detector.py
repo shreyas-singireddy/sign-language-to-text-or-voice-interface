@@ -9,6 +9,11 @@ logger = get_structured_logger("vision.pose")
 
 class PoseDetector:
     def __init__(self):
+        self.pose = None
+        if not hasattr(mp, "solutions"):
+            logger.error("MediaPipe Solutions API is unavailable; pose detection is disabled.")
+            return
+
         self.mp_pose = mp.solutions.pose
         self.pose = self.mp_pose.Pose(
             min_detection_confidence=sys_config.detectors.min_detection_confidence,
@@ -19,6 +24,9 @@ class PoseDetector:
         """
         Parses RGB frame and returns pose telemetry structures.
         """
+        if self.pose is None:
+            return PoseTelemetryData(present=False)
+
         results = self.pose.process(frame_rgb)
         
         if not results.pose_landmarks:
@@ -78,4 +86,5 @@ class PoseDetector:
 
     def close(self):
         """Release MediaPipe model."""
-        self.pose.close()
+        if self.pose is not None:
+            self.pose.close()

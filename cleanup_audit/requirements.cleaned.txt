@@ -1,0 +1,26 @@
+# SignBridge AI dependencies
+streamlit>=1.35.0
+opencv-python>=4.8.0
+mediapipe>=0.10.30
+pymongo[srv]>=4.6.0
+python-dotenv>=1.0.0
+numpy>=1.24.0
+pandas>=2.0.0
+pytest>=8.0.0
+httpx>=0.25.0
+plotly>=5.18.0
+psutil>=5.9.0  # required by run_full_audit.py
+
+# Layer 6: TTS Engine
+gTTS>=2.4.0
+
+# Deep Learning Models (Commented out to prevent Windows Long Path errors on installation)
+# To train/load neural networks, enable Windows Long Paths and uncomment below:
+# tensorflow>=2.15.0
+# torch>=2.2.0
+# torchvision>=0.17.0
+
+# Speech Synthesis & Recognition engines (Commented out due to build dependencies)
+# To use Whisper and TTS, ensure Visual Studio C++ Build tools are installed and uncomment below:
+# openai-whisper>=20231117
+# TTS>=0.22.0

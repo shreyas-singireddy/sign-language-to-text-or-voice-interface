@@ -9,6 +9,11 @@ logger = get_structured_logger("vision.face")
 
 class FaceDetector:
     def __init__(self):
+        self.face_mesh = None
+        if not hasattr(mp, "solutions"):
+            logger.error("MediaPipe Solutions API is unavailable; face detection is disabled.")
+            return
+
         self.mp_face = mp.solutions.face_mesh
         self.face_mesh = self.mp_face.FaceMesh(
             max_num_faces=1,
@@ -20,6 +25,9 @@ class FaceDetector:
         """
         Parses RGB frame and returns face telemetry structures.
         """
+        if self.face_mesh is None:
+            return FaceTelemetryData(present=False)
+
         results = self.face_mesh.process(frame_rgb)
         
         if not results.multi_face_landmarks:
@@ -79,4 +87,5 @@ class FaceDetector:
 
     def close(self):
         """Release MediaPipe model."""
-        self.face_mesh.close()
+        if self.face_mesh is not None:
+            self.face_mesh.close()

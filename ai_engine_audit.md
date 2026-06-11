@@ -1,5 +1,3 @@
 # AI Model Architecture Audit Report
 
-- [x] LSTM Classifier loaded and outputs correct shape.
-- [x] BiLSTM Classifier loaded and outputs correct shape.
-- [x] Transformer Classifier loaded and outputs correct shape.
+- [ ] AI Engine model check exception: No module named 'torch'
