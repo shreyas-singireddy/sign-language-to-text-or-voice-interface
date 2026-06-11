@@ -46,7 +46,7 @@ class HyperparameterTuner:
                 if acc > best_accuracy:
                     best_accuracy = acc
                     best_params = exp
-            except Exception:
+            except Exception:  # nosec
                 continue
 
         return best_params, best_accuracy

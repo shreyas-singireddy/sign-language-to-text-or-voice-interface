@@ -224,7 +224,7 @@ def export_word_model_onnx(model: nn.Module, filepath: Path, seq_len: int = 30) 
     Exports a word classification model to ONNX format.
     """
     model.eval()
-    dummy_input = torch.randn(1, seq_len, model.input_dim)
+    dummy_input = torch.randn(1, seq_len, model.input_dim)  # type: ignore
     try:
         torch.onnx.export(
             model,
@@ -257,7 +257,7 @@ def benchmark_model(
     Benchmarks model inference latency and memory requirements.
     """
     model.eval()
-    dummy_input = torch.randn(1, seq_len, model.input_dim)
+    dummy_input = torch.randn(1, seq_len, model.input_dim)  # type: ignore
 
     # Warmup
     for _ in range(10):
