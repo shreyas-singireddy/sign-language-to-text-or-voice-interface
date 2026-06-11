@@ -145,13 +145,13 @@ class PerceptionService:
         # Fill left hand
         if frame.left_hand.present:
             for idx, lm in enumerate(frame.left_hand.landmarks[:21]):
-                offset = 1404 + (idx * 3)
+                offset = 1536 + (idx * 3)
                 coords[offset:offset+3] = [lm.x, lm.y, lm.z]
                 
         # Fill right hand
         if frame.right_hand.present:
             for idx, lm in enumerate(frame.right_hand.landmarks[:21]):
-                offset = 1467 + (idx * 3)
+                offset = 1599 + (idx * 3)
                 coords[offset:offset+3] = [lm.x, lm.y, lm.z]
                 
         return coords
@@ -181,7 +181,7 @@ class PerceptionService:
         if frame.left_hand.present and len(frame.left_hand.landmarks) > 0:
             for idx in range(len(frame.left_hand.landmarks)):
                 if idx < 21:
-                    offset = 1404 + (idx * 3)
+                    offset = 1536 + (idx * 3)
                     frame.left_hand.landmarks[idx].x = coords[offset]
                     frame.left_hand.landmarks[idx].y = coords[offset+1]
                     frame.left_hand.landmarks[idx].z = coords[offset+2]
@@ -199,7 +199,7 @@ class PerceptionService:
         if frame.right_hand.present and len(frame.right_hand.landmarks) > 0:
             for idx in range(len(frame.right_hand.landmarks)):
                 if idx < 21:
-                    offset = 1467 + (idx * 3)
+                    offset = 1599 + (idx * 3)
                     frame.right_hand.landmarks[idx].x = coords[offset]
                     frame.right_hand.landmarks[idx].y = coords[offset+1]
                     frame.right_hand.landmarks[idx].z = coords[offset+2]

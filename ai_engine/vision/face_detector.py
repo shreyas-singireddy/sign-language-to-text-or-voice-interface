@@ -1,5 +1,6 @@
 import numpy as np
 import mediapipe as mp
+import cv2
 from typing import Tuple, List
 from ai_engine.utils.logger import get_structured_logger
 from ai_engine.utils.config import sys_config
@@ -37,11 +38,61 @@ class FaceDetector:
         width = np.linalg.norm(np.array([points[78].x - points[308].x, points[78].y - points[308].y]))
         mouth_open = float(gap / (width + 1e-6))
 
-        # Head Rotation estimation using key features
-        # Yaw: horizontal eye balance relative to nose center (index 1 is nose tip, 33 left eye corner, 263 right eye)
-        yaw = self._estimate_yaw(points[33], points[263], points[1])
-        pitch = self._estimate_pitch(points[1], points[33], points[263])
-        roll = self._estimate_roll(points[33], points[263])
+        # Head Rotation estimation using Perspective-n-Point (PnP)
+        img_h, img_w, _ = frame_rgb.shape
+        
+        # Select 2D image coordinates from MediaPipe FaceMesh
+        # indices: 1 = nose tip, 152 = chin, 33 = left eye outer corner, 263 = right eye outer corner, 61 = left mouth corner, 291 = right mouth corner
+        image_points = np.array([
+            [points[1].x * img_w, points[1].y * img_h],      # Nose tip
+            [points[152].x * img_w, points[152].y * img_h],  # Chin
+            [points[33].x * img_w, points[33].y * img_h],    # Left eye corner
+            [points[263].x * img_w, points[263].y * img_h],  # Right eye corner
+            [points[61].x * img_w, points[61].y * img_h],    # Left mouth corner
+            [points[291].x * img_w, points[291].y * img_h]   # Right mouth corner
+        ], dtype="double")
+
+        # 3D model points of a standard head mesh
+        model_points = np.array([
+            (0.0, 0.0, 0.0),             # Nose tip
+            (0.0, -330.0, -65.0),        # Chin
+            (-225.0, 170.0, -135.0),     # Left eye corner
+            (225.0, 170.0, -135.0),      # Right eye corner
+            (-150.0, -150.0, -125.0),    # Left mouth corner
+            (150.0, -150.0, -125.0)      # Right mouth corner
+        ], dtype="double")
+
+        focal_length = img_w
+        center = (img_w / 2.0, img_h / 2.0)
+        camera_matrix = np.array([
+            [focal_length, 0, center[0]],
+            [0, focal_length, center[1]],
+            [0, 0, 1]
+        ], dtype="double")
+        dist_coeffs = np.zeros((4, 1))
+
+        success, rotation_vector, translation_vector = cv2.solvePnP(
+            model_points, image_points, camera_matrix, dist_coeffs, flags=cv2.SOLVEPNP_ITERATIVE
+        )
+
+        pitch, yaw, roll = 0.0, 0.0, 0.0
+        if success:
+            rmat, _ = cv2.Rodrigues(rotation_vector)
+            # Compute Euler angles from rotation matrix
+            sy = np.sqrt(rmat[0,0]*rmat[0,0] +  rmat[1,0]*rmat[1,0])
+            singular = sy < 1e-6
+            if not singular:
+                pitch = np.arctan2(rmat[2,1], rmat[2,2])
+                yaw = np.arctan2(-rmat[2,0], sy)
+                roll = np.arctan2(rmat[1,0], rmat[0,0])
+            else:
+                pitch = np.arctan2(-rmat[1,2], rmat[1,1])
+                yaw = np.arctan2(-rmat[2,0], sy)
+                roll = 0.0
+
+            pitch = round(float(np.degrees(pitch)), 2)
+            yaw = round(float(np.degrees(yaw)), 2)
+            roll = round(float(np.degrees(roll)), 2)
 
         return FaceTelemetryData(
             present=True,
@@ -53,29 +104,6 @@ class FaceDetector:
             head_rotation_roll=roll,
             visibility=1.0
         )
-
-    def _estimate_yaw(self, l_eye: Point3D, r_eye: Point3D, nose: Point3D) -> float:
-        """Estimates horizontal yaw tilt."""
-        left_dist = abs(nose.x - l_eye.x)
-        right_dist = abs(r_eye.x - nose.x)
-        diff = right_dist - left_dist
-        # Scale to degrees
-        return float(diff * 90.0)
-
-    def _estimate_pitch(self, nose: Point3D, l_eye: Point3D, r_eye: Point3D) -> float:
-        """Estimates vertical pitch tilt."""
-        eyes_y = (l_eye.y + r_eye.y) / 2.0
-        diff = nose.y - eyes_y
-        # Scale to degrees
-        return float((diff - 0.05) * 120.0)
-
-    def _estimate_roll(self, l_eye: Point3D, r_eye: Point3D) -> float:
-        """Estimates rotational roll tilt."""
-        dx = r_eye.x - l_eye.x
-        dy = r_eye.y - l_eye.y
-        if abs(dx) < 1e-6:
-            return 0.0
-        return float(np.degrees(np.arctan2(dy, dx)))
 
     def close(self):
         """Release MediaPipe model."""
