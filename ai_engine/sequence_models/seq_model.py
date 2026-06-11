@@ -79,7 +79,10 @@ class SequenceModel:
         assembled = []
         last_label = None
         consecutive_count = 0
-        min_consecutive_frames = 10  # Must be held stable for 10 frames to registers
+        # BUG-006 FIX: reduced from 10 to 5 frames.
+        # At Streamlit's effective 5-10 FPS, 10 frames requires 1-2 seconds of
+        # motionless holding, making gesture registration near-impossible.
+        min_consecutive_frames = 5
 
         for _, label in self.buffer:
             if label == "IDLE":

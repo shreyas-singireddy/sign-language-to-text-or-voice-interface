@@ -3,13 +3,23 @@ import numpy as np
 from ai_engine.schemas.landmark_schema import FrameLandmarkData, Point3D
 
 
+
 class LandmarkNormalizer:
     def normalize_frame(self, frame_data: FrameLandmarkData) -> FrameLandmarkData:
         """
-        Processes frame coordinates, shifting and scaling relative to shoulders midpoint anchor.
+        Normalizes landmark coordinates to a body-relative coordinate system.
+
+        Primary method:  Shoulder-midpoint anchor (when pose is available).
+                         All landmarks are shifted to shoulders-midpoint and
+                         divided by shoulder width for scale invariance.
+
+        Fallback method: Wrist-anchor normalization (BUG-008 fix).
+                         When pose is not detected (common for close-up laptop
+                         webcams), we use the detected hand wrist as the anchor
+                         and normalize by the hand bounding box diagonal.
+                         This ensures consistent input to the classifier even
+                         when the user's torso is not visible.
         """
-        # If shoulders are not visible in pose, we cannot compute standard shoulder normalization.
-        # Pose indices: Left Shoulder = 11, Right Shoulder = 12
         pose_data = frame_data.pose
 
         if not pose_data.present or len(pose_data.landmarks) <= 12:

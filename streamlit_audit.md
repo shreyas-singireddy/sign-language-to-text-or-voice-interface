@@ -9,5 +9,6 @@
 - [x] `app/pages/live_translation.py` compiled successfully without syntax errors.
 - [x] `app/pages/settings.py` compiled successfully without syntax errors.
 - [x] `app/pages/training_studio.py` compiled successfully without syntax errors.
+- [x] `app/pages/visual_debug_dashboard.py` compiled successfully without syntax errors.
 - [x] `frontend/pages/live_gesture_recognition.py` compiled successfully without syntax errors.
 - [x] `frontend/pages/live_vision_engine.py` compiled successfully without syntax errors.

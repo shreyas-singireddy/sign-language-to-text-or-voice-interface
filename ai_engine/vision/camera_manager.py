@@ -77,11 +77,16 @@ class CameraManager:
 
     def read_frame(self) -> tuple[bool, np.ndarray | None, float]:
         """
-        Reads frame, calculates FPS and latency, and handles automatic recovery.
+        Reads frame, calculates FPS and latency.
         Returns:
             success (bool): capture success
             frame (ndarray): BGR image matrix
             latency_ms (float): elapsed read duration
+
+        BUG-007 FIX: recover_connection() must NOT be called inside the lock
+        block — that caused a deadlock because release() also acquires self.lock.
+        We now return False from within the lock, and callers can call
+        recover_connection() externally if desired.
         """
         t_start = time.time()
 
@@ -97,7 +102,7 @@ class CameraManager:
                     "Frame acquisition failed. Attempting camera recovery..."
                 )
                 self.status = "Recovery Active"
-                self.recover_connection()
+                # Return False — do NOT call recover_connection() inside the lock
                 return False, None, 0.0
 
             self.frame_count += 1

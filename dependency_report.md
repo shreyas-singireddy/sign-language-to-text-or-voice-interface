@@ -29,4 +29,4 @@
 - [x] `pytest`: Installed and verified.
 - [x] `httpx`: Installed and verified.
 - [x] `plotly`: Installed and verified.
-- [ ] `gTTS`: Not found / import failed.
+- [x] `gTTS`: Installed and verified (mapped to `gtts`).
