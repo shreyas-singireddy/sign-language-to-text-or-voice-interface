@@ -1,6 +1,8 @@
 import time
 from contextlib import contextmanager
+
 from ai_engine.schemas.telemetry_schema import PerformanceProfilerData
+
 
 class PerformanceProfiler:
     def __init__(self):
@@ -31,7 +33,8 @@ class PerformanceProfiler:
             hand_inference_ms=self.hand_time,
             pose_inference_ms=self.pose_time,
             face_inference_ms=self.face_time,
-            total_pipeline_ms=self.pipeline_time
+            total_pipeline_ms=self.pipeline_time,
         )
+
 
 performance_profiler = PerformanceProfiler()

@@ -1,8 +1,10 @@
 import datetime
 import uuid
+
 from config.logger import setup_logger
 
 logger = setup_logger("ai_engine.dataset_manager")
+
 
 class DatasetRecorder:
     def __init__(self):
@@ -24,7 +26,9 @@ class DatasetRecorder:
         self.captured_frames_count = 0
         self.export_status = "Recording Active"
         self.in_memory_records = []
-        logger.info(f"Dataset recording session started: ID={self.session_id}, Label={self.current_label}")
+        logger.info(
+            f"Dataset recording session started: ID={self.session_id}, Label={self.current_label}"
+        )
         return self.session_id
 
     def pause_session(self):
@@ -57,14 +61,14 @@ class DatasetRecorder:
         self.is_recording = False
         self.recorded_samples_count += 1
         self.export_status = "Completed Repetition"
-        
+
         session_summary = {
             "session_id": self.session_id,
             "label": self.current_label,
             "frames_count": self.captured_frames_count,
-            "timestamp": datetime.datetime.now().isoformat()
+            "timestamp": datetime.datetime.now().isoformat(),
         }
-        
+
         logger.info(f"Dataset recording session finished: {session_summary}")
         return session_summary
 
@@ -83,9 +87,10 @@ class DatasetRecorder:
             "total_frames": self.captured_frames_count,
             "format": "NumPy Sequence (.npy)",
             "shape": f"(1, {self.captured_frames_count}, 1662)",
-            "message": "Vision data compiled and formatted for future training models."
+            "message": "Vision data compiled and formatted for future training models.",
         }
         logger.info(f"Dataset export completed: {export_details}")
         return export_details
+
 
 dataset_recorder = DatasetRecorder()

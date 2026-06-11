@@ -1,10 +1,11 @@
 import numpy as np
+
 from ai_engine.computer_vision.holistic import MediaPipeHolisticManager
+from ai_engine.feature_extractor.extractor import feature_extractor
+from ai_engine.inference_preparation.preprocessor import inference_preprocessor
 from ai_engine.landmark_extraction.extractor import landmark_extractor
 from ai_engine.landmark_processor.processor import landmark_processor
-from ai_engine.feature_extractor.extractor import feature_extractor
 from ai_engine.temporal_memory.memory import temporal_memory
-from ai_engine.inference_preparation.preprocessor import inference_preprocessor
 from config.logger import setup_logger
 
 logger = setup_logger("ai_engine.pipeline.vision")
@@ -14,6 +15,7 @@ try:
     from ai_engine.motion_analysis.analyser import motion_analyser
 except ImportError:
     motion_analyser = None
+
 
 class VisionPipeline:
     def __init__(self):
@@ -43,41 +45,38 @@ class VisionPipeline:
                 "distances": {},
                 "angles": {},
                 "readiness": {},
-                "annotated_frame": None
+                "annotated_frame": None,
             }
 
         # 1. MediaPipe Processing
         mp_results = self.holistic.process_frame(frame_bgr)
-        
+
         # 2. Extract Raw landmarks (shape: (1662,))
         raw_coords = self.raw_extractor.extract_landmarks(mp_results)
-        
+
         # 3. Landmark Processor (Cleaning, Point Recovery, Normalization)
         processed_coords = self.processor.process(raw_coords, mp_results)
-        
+
         # 4. Feature Extractor (Velocities, Distances, Angles)
         features = self.feat_extractor.extract_all(processed_coords)
-        
+
         # 5. Motion Analyser (Tremor, Occlusion, Activity, Health)
         motion_telemetry = {}
         if self.analyser is not None:
             motion_telemetry = self.analyser.evaluate(
-                processed_coords, 
-                features["mean_velocity"], 
-                mp_results
+                processed_coords, features["mean_velocity"], mp_results
             )
         else:
             motion_telemetry = {
                 "stability_index": 1.0,
                 "occlusion_score": 0.0,
                 "activity_index": 0.0,
-                "tracking_health": 1.0
+                "tracking_health": 1.0,
             }
 
         # 6. Assess AI Readiness
         readiness = self.prep.assess_data_readiness(
-            processed_coords, 
-            motion_telemetry["tracking_health"]
+            processed_coords, motion_telemetry["tracking_health"]
         )
 
         # Draw overlays
@@ -96,7 +95,7 @@ class VisionPipeline:
             "tracking_health": motion_telemetry["tracking_health"],
             "readiness": readiness,
             "annotated_frame": annotated_frame,
-            "mp_results": mp_results
+            "mp_results": mp_results,
         }
 
         # 7. Store to rolling buffers
@@ -109,7 +108,8 @@ class VisionPipeline:
             "mediapipe_active": self.holistic._initialized,
             "memory_stats": self.memory.get_memory_stats(),
             "processor_history_length": len(self.processor.history),
-            "preprocessor_sequence_length": self.prep.sequence_length
+            "preprocessor_sequence_length": self.prep.sequence_length,
         }
+
 
 vision_pipeline = VisionPipeline()

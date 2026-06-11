@@ -3,7 +3,7 @@ SignBridge AI — Layer 10: Keyboard Navigation Registry
 Defines keyboard shortcut mappings for accessibility.
 Injects JavaScript keyboard listeners into Streamlit via HTML components.
 """
-from typing import Dict, List
+
 from config.logger import setup_logger
 
 logger = setup_logger("accessibility.keyboard_nav")
@@ -29,19 +29,19 @@ class KeyboardShortcut:
 
 
 # Registry of all keyboard shortcuts
-SHORTCUTS: List[KeyboardShortcut] = [
-    KeyboardShortcut("s", "alt", "start_camera",     "Start/Stop camera"),
-    KeyboardShortcut("r", "alt", "reset_buffer",     "Reset translation buffer"),
-    KeyboardShortcut("t", "alt", "play_tts",         "Play voice synthesis"),
-    KeyboardShortcut("h", "alt", "go_home",          "Navigate to Home"),
-    KeyboardShortcut("v", "alt", "go_vision",        "Navigate to Vision Engine"),
-    KeyboardShortcut("g", "alt", "go_gesture",       "Navigate to Gesture Recognition"),
-    KeyboardShortcut("l", "alt", "go_translation",   "Navigate to Live Translation"),
-    KeyboardShortcut("c", "alt", "go_chat",          "Navigate to Communication Hub"),
-    KeyboardShortcut("e", "alt", "go_emergency",     "Navigate to Emergency System"),
-    KeyboardShortcut("Escape", "", "close_modal",    "Close modal / cancel action"),
-    KeyboardShortcut("+", "ctrl", "increase_font",   "Increase font size"),
-    KeyboardShortcut("-", "ctrl", "decrease_font",   "Decrease font size"),
+SHORTCUTS: list[KeyboardShortcut] = [
+    KeyboardShortcut("s", "alt", "start_camera", "Start/Stop camera"),
+    KeyboardShortcut("r", "alt", "reset_buffer", "Reset translation buffer"),
+    KeyboardShortcut("t", "alt", "play_tts", "Play voice synthesis"),
+    KeyboardShortcut("h", "alt", "go_home", "Navigate to Home"),
+    KeyboardShortcut("v", "alt", "go_vision", "Navigate to Vision Engine"),
+    KeyboardShortcut("g", "alt", "go_gesture", "Navigate to Gesture Recognition"),
+    KeyboardShortcut("l", "alt", "go_translation", "Navigate to Live Translation"),
+    KeyboardShortcut("c", "alt", "go_chat", "Navigate to Communication Hub"),
+    KeyboardShortcut("e", "alt", "go_emergency", "Navigate to Emergency System"),
+    KeyboardShortcut("Escape", "", "close_modal", "Close modal / cancel action"),
+    KeyboardShortcut("+", "ctrl", "increase_font", "Increase font size"),
+    KeyboardShortcut("-", "ctrl", "decrease_font", "Decrease font size"),
 ]
 
 
@@ -51,11 +51,11 @@ class KeyboardNavRegistry:
     Provides accessibility keyboard bindings for all major SignBridge actions.
     """
 
-    def get_all_shortcuts(self) -> List[dict]:
+    def get_all_shortcuts(self) -> list[dict]:
         """Return all shortcuts as serializable dicts."""
         return [s.to_dict() for s in SHORTCUTS]
 
-    def get_shortcuts_by_modifier(self, modifier: str) -> List[dict]:
+    def get_shortcuts_by_modifier(self, modifier: str) -> list[dict]:
         """Return shortcuts filtered by modifier key."""
         return [s.to_dict() for s in SHORTCUTS if s.modifier == modifier]
 

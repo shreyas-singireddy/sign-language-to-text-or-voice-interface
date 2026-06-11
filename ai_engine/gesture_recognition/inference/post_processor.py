@@ -1,11 +1,11 @@
 from collections import Counter
-from typing import List, Dict, Any
+
 
 class PostProcessor:
     def __init__(self, window_size: int = 5, min_noise_duration: int = 3):
         self.window_size = window_size
         self.min_noise_duration = min_noise_duration
-        self.label_window: List[str] = []
+        self.label_window: list[str] = []
 
     def smooth_predictions(self, predicted_label: str) -> str:
         """
@@ -18,14 +18,14 @@ class PostProcessor:
         # Return the most common label in the window (majority vote)
         count = Counter(self.label_window)
         most_common, frequency = count.most_common(1)[0]
-        
+
         # Require a minimum consensus to switch labels
         if frequency >= (self.window_size // 2 + 1):
             return most_common
-            
+
         return self.label_window[0]
 
-    def suppress_false_positives(self, label_history: List[str]) -> List[str]:
+    def suppress_false_positives(self, label_history: list[str]) -> list[str]:
         """
         Suppresses short-lived predictions (transient noise) that persist for fewer than
         `min_noise_duration` consecutive frames.
@@ -46,19 +46,19 @@ class PostProcessor:
                     cleaned.append(current_label)
                 current_label = label
                 consecutive_count = 1
-                
+
         # Catch tail
         if consecutive_count >= self.min_noise_duration:
             cleaned.append(current_label)
 
         return cleaned
 
-    def deduplicate_sequence(self, sequence: List[str]) -> List[str]:
+    def deduplicate_sequence(self, sequence: list[str]) -> list[str]:
         """
         Removes consecutive duplicate words (e.g. ['HELLO', 'HELLO', 'YES'] -> ['HELLO', 'YES']).
         Also removes blank tokens like 'IDLE'.
         """
-        deduplicated = []
+        deduplicated: list[str] = []
         for word in sequence:
             if word in ["IDLE", "WAITING_FOR_CLEAR_GESTURE", ""]:
                 continue
@@ -68,5 +68,6 @@ class PostProcessor:
 
     def clear(self):
         self.label_window.clear()
+
 
 post_processor = PostProcessor()

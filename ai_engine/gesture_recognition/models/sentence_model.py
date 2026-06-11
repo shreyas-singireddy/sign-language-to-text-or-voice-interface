@@ -1,23 +1,27 @@
+from typing import Any
+
 import torch
-import torch.nn as nn
-from typing import List, Dict, Any
+from torch import nn
+
 
 class SentenceCTCModel(nn.Module):
-    def __init__(self, input_dim: int = 1662, hidden_dim: int = 128, num_classes: int = 15):
+    def __init__(
+        self, input_dim: int = 1662, hidden_dim: int = 128, num_classes: int = 15
+    ):
         """
         CTC-style sequence model that processes continuous sequences of frame landmarks
         and outputs character or word probabilities for Connectionist Temporal Classification (CTC) decoding.
         """
-        super(SentenceCTCModel, self).__init__()
+        super().__init__()
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
-        
+
         self.lstm = nn.LSTM(
             input_size=input_dim,
             hidden_size=hidden_dim,
             num_layers=2,
             batch_first=True,
-            bidirectional=True
+            bidirectional=True,
         )
         self.fc = nn.Linear(hidden_dim * 2, num_classes)
 
@@ -32,7 +36,12 @@ class SentenceDecoder:
     def __init__(self):
         pass
 
-    def decode_transitions(self, predictions_history: List[Dict[str, Any]], velocity_history: List[float], confidence_threshold: float = 0.8) -> str:
+    def decode_transitions(
+        self,
+        predictions_history: list[dict[str, Any]],
+        velocity_history: list[float],
+        confidence_threshold: float = 0.8,
+    ) -> str:
         """
         Performs continuous sequence segmentation.
         Uses motion boundaries (velocity dips) and label changes to segment words
@@ -50,7 +59,7 @@ class SentenceDecoder:
         for idx, item in enumerate(predictions_history):
             label = item.get("prediction", "IDLE")
             conf = item.get("confidence", 0.0)
-            
+
             # Use velocity thresholds to identify transition pauses between gestures
             is_transition = False
             if idx < len(velocity_history):
@@ -84,5 +93,6 @@ class SentenceDecoder:
         # Remove blanks or temporary markers
         words = [w for w in words if w not in ["IDLE", "WAITING_FOR_CLEAR_GESTURE"]]
         return " ".join(words)
-        
+
+
 sentence_decoder = SentenceDecoder()

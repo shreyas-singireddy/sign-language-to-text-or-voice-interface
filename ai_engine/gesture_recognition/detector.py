@@ -1,8 +1,10 @@
 import numpy as np
-from config.config import SUPPORTED_GESTURES, GESTURE_CONFIDENCE_THRESHOLD, MODELS_DIR
+
+from config.config import GESTURE_CONFIDENCE_THRESHOLD, MODELS_DIR
 from config.logger import setup_logger
 
 logger = setup_logger("ai_engine.gesture.detector")
+
 
 class GestureDetector:
     def __init__(self):
@@ -17,7 +19,9 @@ class GestureDetector:
         """
         model_path = MODELS_DIR / "gesture_classifier.h5"
         if not model_path.exists():
-            logger.warning(f"No gesture classification model found at {model_path}. Using fallback heuristic classifier.")
+            logger.warning(
+                f"No gesture classification model found at {model_path}. Using fallback heuristic classifier."
+            )
             self.model_loaded = False
             return False
 
@@ -28,7 +32,9 @@ class GestureDetector:
             self.model_loaded = True
             return True
         except Exception as e:
-            logger.error(f"Error loading model from {model_path}: {e}. Falling back to heuristic classifier.")
+            logger.error(
+                f"Error loading model from {model_path}: {e}. Falling back to heuristic classifier."
+            )
             self.model_loaded = False
             return False
 
@@ -40,20 +46,21 @@ class GestureDetector:
             confidence (float): Classification probability [0.0 - 1.0]
         """
         from ai_engine.gesture_recognition.inference.predictor import gesture_predictor
+
         # Run prediction via the Layer 4 predictor (which handles ONNX and PyTorch)
         res = gesture_predictor.predict_alphabet(landmark_vector)
         pred = res["prediction"]
         conf = res["confidence"]
-        
+
         # If prediction fails, or readiness filter triggers "WAITING_FOR_CLEAR_GESTURE",
         # fallback to heuristic classification to keep UI responsive
         if pred == "WAITING_FOR_CLEAR_GESTURE" or conf < GESTURE_CONFIDENCE_THRESHOLD:
             lh_slice = landmark_vector[1404:1467]
             rh_slice = landmark_vector[1467:1530]
-            
+
             has_left = np.any(lh_slice > 0)
             has_right = np.any(rh_slice > 0)
-            
+
             if not has_left and not has_right:
                 return "IDLE", 1.0
 
@@ -67,7 +74,8 @@ class GestureDetector:
                 else:
                     return "THANKS", 0.85
             return "IDLE", 0.5
-            
+
         return pred, conf
+
 
 gesture_detector = GestureDetector()

@@ -2,13 +2,13 @@
 SignBridge AI — Layer 5 Translation Engine Test Suite
 Tests: provider abstraction, grammar fixer, context manager, engine pipeline.
 """
-import pytest
-from translation.providers.rule_based import RuleBasedProvider
-from translation.providers.google_adapter import GoogleTranslateAdapter
-from translation.grammar_fixer import GrammarFixer, grammar_fixer
+
 from translation.context_manager import TranslationContextManager
 from translation.engine import TranslationEngine
-from translation.schemas import TranslationRequest, TranslationProvider
+from translation.grammar_fixer import GrammarFixer
+from translation.providers.google_adapter import GoogleTranslateAdapter
+from translation.providers.rule_based import RuleBasedProvider
+from translation.schemas import TranslationProvider, TranslationRequest
 
 
 class TestRuleBasedProvider:
@@ -183,7 +183,9 @@ class TestTranslationEngine:
         assert len(result) > 0
 
     def test_translate_returns_translation_result(self):
-        request = TranslationRequest(recognized_signs=["WATER", "WANT"], target_language="English")
+        request = TranslationRequest(
+            recognized_signs=["WATER", "WANT"], target_language="English"
+        )
         result = self.engine.translate(request)
         assert result.final_translation
         assert result.english_base
@@ -198,15 +200,21 @@ class TestTranslationEngine:
         assert len(result) > 0
 
     def test_grammar_analysis_populated(self):
-        request = TranslationRequest(recognized_signs=["I", "WANT", "HELP"], target_language="English")
+        request = TranslationRequest(
+            recognized_signs=["I", "WANT", "HELP"], target_language="English"
+        )
         result = self.engine.translate(request)
         assert result.grammar_analysis is not None
         assert result.grammar_analysis.tense_inferred in {"present", "past", "future"}
 
     def test_empty_tokens_returns_empty(self):
-        request = TranslationRequest(recognized_signs=["   ", ""], target_language="English")
+        request = TranslationRequest(
+            recognized_signs=["   ", ""], target_language="English"
+        )
         result = self.engine.translate(request)
-        assert result.final_translation == "" or isinstance(result.final_translation, str)
+        assert result.final_translation == "" or isinstance(
+            result.final_translation, str
+        )
 
     def test_provider_status_returns_dict(self):
         status = self.engine.get_provider_status()

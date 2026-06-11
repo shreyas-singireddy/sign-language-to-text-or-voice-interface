@@ -1,9 +1,11 @@
 import pymongo
-from pymongo.errors import ConnectionFailure, ConfigurationError
-from config.config import MONGO_URI, DB_NAME
+from pymongo.errors import ConfigurationError, ConnectionFailure
+
+from config.config import DB_NAME, MONGO_URI
 from config.logger import setup_logger
 
 logger = setup_logger("database.mongodb")
+
 
 class MongoDBConnection:
     _instance = None
@@ -11,7 +13,7 @@ class MongoDBConnection:
 
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(MongoDBConnection, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
         return cls._instance
 
     def connect(self) -> bool:
@@ -23,23 +25,25 @@ class MongoDBConnection:
             return True
 
         if not MONGO_URI:
-            logger.warning("MONGO_URI not configured in env variables. Database operations will run in offline mode.")
+            logger.warning(
+                "MONGO_URI not configured in env variables. Database operations will run in offline mode."
+            )
             return False
 
         try:
             logger.info("Initializing MongoDB Client connection pool...")
             # Set a low timeout so Streamlit app does not hang indefinitely on startup
             self._client = pymongo.MongoClient(
-                MONGO_URI,
-                serverSelectionTimeoutMS=5000,
-                connectTimeoutMS=5000
+                MONGO_URI, serverSelectionTimeoutMS=5000, connectTimeoutMS=5000
             )
             # Trigger a ping command to verify connection
-            self._client.admin.command('ping')
+            self._client.admin.command("ping")
             logger.info("Successfully connected to MongoDB Atlas!")
             return True
         except (ConnectionFailure, ConfigurationError) as e:
-            logger.error(f"Failed to connect to MongoDB Atlas: {e}. Operating in offline/mock mode.")
+            logger.error(
+                f"Failed to connect to MongoDB Atlas: {e}. Operating in offline/mock mode."
+            )
             self._client = None
             return False
 
@@ -69,7 +73,7 @@ class MongoDBConnection:
         if self._client is None:
             return False
         try:
-            self._client.admin.command('ping')
+            self._client.admin.command("ping")
             return True
         except ConnectionFailure:
             logger.warning("MongoDB ping failed. Database link is down.")
@@ -81,6 +85,7 @@ class MongoDBConnection:
             self._client.close()
             self._client = None
             logger.info("MongoDB client connection closed.")
+
 
 # Singleton instance accessor
 db_conn = MongoDBConnection()

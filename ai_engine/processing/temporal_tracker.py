@@ -1,8 +1,10 @@
 import collections
+
 import numpy as np
-from typing import List, Dict
+
+from ai_engine.schemas.landmark_schema import FrameLandmarkData
 from ai_engine.utils.config import sys_config
-from ai_engine.schemas.landmark_schema import Point3D, FrameLandmarkData
+
 
 class TemporalTracker:
     def __init__(self, history_size: int = sys_config.telemetry.history_size):
@@ -29,7 +31,7 @@ class TemporalTracker:
                 "motion_energy": 0.0,
                 "trajectory_length": 0.0,
                 "smoothness": 100.0,
-                "motion_entropy": 0.0
+                "motion_entropy": 0.0,
             }
 
         # Extract coordinate centers / nose values over time to compute metrics
@@ -41,14 +43,18 @@ class TemporalTracker:
             comp = getattr(frame, component_name)
             if not comp.present:
                 continue
-                
+
             # Determine representative point: Center for hands/face, nose (idx 0) for pose
             if component_name in ("left_hand", "right_hand"):
                 ref = np.array([comp.center.x, comp.center.y, comp.center.z])
             elif component_name == "pose" and len(comp.landmarks) > 0:
-                ref = np.array([comp.landmarks[0].x, comp.landmarks[0].y, comp.landmarks[0].z])
+                ref = np.array(
+                    [comp.landmarks[0].x, comp.landmarks[0].y, comp.landmarks[0].z]
+                )
             elif component_name == "face" and len(comp.landmarks) > 0:
-                ref = np.array([comp.landmarks[1].x, comp.landmarks[1].y, comp.landmarks[1].z]) # Nose bridge
+                ref = np.array(
+                    [comp.landmarks[1].x, comp.landmarks[1].y, comp.landmarks[1].z]
+                )  # Nose bridge
             else:
                 continue
             positions.append(ref)
@@ -61,18 +67,18 @@ class TemporalTracker:
                 "motion_energy": 0.0,
                 "trajectory_length": 0.0,
                 "smoothness": 100.0,
-                "motion_entropy": 0.0
+                "motion_entropy": 0.0,
             }
 
         # Displacements (Velocity)
         trajectory_len = 0.0
         directions = []
         for i in range(1, len(positions)):
-            disp = positions[i] - positions[i-1]
+            disp = positions[i] - positions[i - 1]
             dist = np.linalg.norm(disp)
             speeds.append(dist)
             trajectory_len += dist
-            
+
             # Direction angle in XY plane
             if dist > 1e-5:
                 angle = np.degrees(np.arctan2(disp[1], disp[0]))
@@ -80,7 +86,7 @@ class TemporalTracker:
 
         # Accelerations
         for i in range(1, len(speeds)):
-            acc = abs(speeds[i] - speeds[i-1])
+            acc = abs(speeds[i] - speeds[i - 1])
             accelerations.append(acc)
 
         avg_vel = float(np.mean(speeds)) if speeds else 0.0
@@ -106,5 +112,5 @@ class TemporalTracker:
             "motion_energy": round(motion_energy, 4),
             "trajectory_length": round(trajectory_len, 4),
             "smoothness": round(smoothness, 2),
-            "motion_entropy": round(entropy, 3)
+            "motion_entropy": round(entropy, 3),
         }

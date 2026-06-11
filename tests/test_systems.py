@@ -2,20 +2,23 @@
 SignBridge AI — Layers 7–12 Systems Test Suite
 Tests: Conversation Platform, Analytics, Accessibility, Multilingual, Emergency System.
 """
-import pytest
-from datetime import datetime, timezone
+
+from datetime import UTC, datetime
 
 # ─── Layer 7: Conversation Platform ─────────────────────────────────────────────
+
 
 class TestConversationSession:
     """Tests for ConversationSession."""
 
     def setup_method(self):
         from conversation.session import ConversationSession
+
         self.session = ConversationSession(language="English")
 
     def test_session_has_unique_id(self):
         from conversation.session import ConversationSession
+
         s1 = ConversationSession()
         s2 = ConversationSession()
         assert s1.session_id != s2.session_id
@@ -37,8 +40,11 @@ class TestConversationSession:
 
     def test_emotion_detection_urgent(self):
         from conversation.schemas import EmotionTone
-        turn = self.session.process_signer_input(["EMERGENCY"], "EMERGENCY!", "English", 1.0)
-        assert turn.emotion == EmotionTone.URGENT or turn.emotion == EmotionTone.DISTRESSED
+
+        turn = self.session.process_signer_input(
+            ["EMERGENCY"], "EMERGENCY!", "English", 1.0
+        )
+        assert turn.emotion in (EmotionTone.URGENT, EmotionTone.DISTRESSED)
 
     def test_get_summary_returns_summary(self):
         self.session.process_signer_input(["WATER", "WANT"], "I want water.")
@@ -63,6 +69,7 @@ class TestDialogueManager:
 
     def setup_method(self):
         from conversation.dialogue_manager import DialogueManager
+
         self.manager = DialogueManager()
 
     def test_start_session_returns_string(self):
@@ -76,7 +83,9 @@ class TestDialogueManager:
 
     def test_process_turn_returns_dialogue_turn(self):
         session_id = self.manager.start_session()
-        turn = self.manager.process_turn(session_id, ["HELLO"], "Hello!", "English", 0.9)
+        turn = self.manager.process_turn(
+            session_id, ["HELLO"], "Hello!", "English", 0.9
+        )
         assert turn.final_text == "Hello!"
 
     def test_add_listener_reply(self):
@@ -116,35 +125,42 @@ class TestEmotionToneDetector:
 
     def setup_method(self):
         from conversation.emotion_tone import EmotionToneDetector
+
         self.detector = EmotionToneDetector()
 
     def test_detect_urgent_from_tokens(self):
         from conversation.schemas import EmotionTone
+
         result = self.detector.detect_from_tokens(["EMERGENCY"])
         assert result == EmotionTone.URGENT
 
     def test_detect_neutral_from_empty_tokens(self):
         from conversation.schemas import EmotionTone
+
         result = self.detector.detect_from_tokens([])
         assert result == EmotionTone.NEUTRAL
 
     def test_detect_grateful_from_text(self):
         from conversation.schemas import EmotionTone
+
         result = self.detector.detect_from_text("Thank you so much!")
         assert result == EmotionTone.GRATEFUL
 
     def test_detect_confused_from_text(self):
         from conversation.schemas import EmotionTone
+
         result = self.detector.detect_from_text("I don't understand.")
         assert result == EmotionTone.CONFUSED
 
     def test_token_emotion_takes_priority(self):
         from conversation.schemas import EmotionTone
+
         result = self.detector.detect(["EMERGENCY"], "Thank you.")
         assert result == EmotionTone.URGENT
 
     def test_get_response_suggestion_returns_string(self):
         from conversation.schemas import EmotionTone
+
         suggestion = self.detector.get_response_suggestion(EmotionTone.URGENT)
         assert len(suggestion) > 0
         assert "emergency" in suggestion.lower() or "urgent" in suggestion.lower()
@@ -152,11 +168,13 @@ class TestEmotionToneDetector:
 
 # ─── Layer 9: Analytics Platform ─────────────────────────────────────────────────
 
+
 class TestMetricsCollector:
     """Tests for the MetricsCollector."""
 
     def setup_method(self):
         from analytics.metrics_collector import MetricsCollector
+
         self.collector = MetricsCollector()
 
     def test_initial_total_zero(self):
@@ -171,7 +189,9 @@ class TestMetricsCollector:
         assert abs(self.collector.get_average_confidence() - 0.9) < 0.001
 
     def test_gesture_frequency_tracking(self):
-        self.collector.record_translation(["HELLO", "WORLD"], "Hello world!", "English", 0.8)
+        self.collector.record_translation(
+            ["HELLO", "WORLD"], "Hello world!", "English", 0.8
+        )
         freq = self.collector.get_gesture_frequency()
         assert freq.get("HELLO", 0) == 1
         assert freq.get("WORLD", 0) == 1
@@ -184,7 +204,9 @@ class TestMetricsCollector:
         assert dist.get("Spanish", 0) == 1
 
     def test_get_top_gestures_returns_list(self):
-        self.collector.record_translation(["HELLO", "HELLO", "HELP"], "Hello!", "English", 1.0)
+        self.collector.record_translation(
+            ["HELLO", "HELLO", "HELP"], "Hello!", "English", 1.0
+        )
         top = self.collector.get_top_gestures(5)
         assert isinstance(top, list)
         assert len(top) > 0
@@ -204,11 +226,13 @@ class TestMetricsCollector:
 
 # ─── Layer 10: Accessibility Engine ──────────────────────────────────────────────
 
+
 class TestThemeManager:
     """Tests for the ThemeManager."""
 
     def setup_method(self):
         from accessibility.theme_manager import ThemeManager
+
         self.manager = ThemeManager()
 
     def test_get_all_themes_returns_dict(self):
@@ -247,6 +271,7 @@ class TestKeyboardNavRegistry:
 
     def setup_method(self):
         from accessibility.keyboard_nav import KeyboardNavRegistry
+
         self.registry = KeyboardNavRegistry()
 
     def test_get_all_shortcuts_non_empty(self):
@@ -271,11 +296,13 @@ class TestKeyboardNavRegistry:
 
 # ─── Layer 11: Multilingual Engine ───────────────────────────────────────────────
 
+
 class TestLanguageRegistry:
     """Tests for the language registry."""
 
     def setup_method(self):
         from multilingual.language_registry import LanguageRegistry
+
         self.registry = LanguageRegistry()
 
     def test_get_all_returns_16_languages(self):
@@ -321,6 +348,7 @@ class TestRTLHandler:
 
     def setup_method(self):
         from multilingual.rtl_handler import RTLHandler
+
         self.handler = RTLHandler()
 
     def test_arabic_is_rtl(self):
@@ -331,8 +359,8 @@ class TestRTLHandler:
 
     def test_wrap_rtl_adds_div(self):
         result = self.handler.wrap_rtl_text("مرحبا", "Arabic")
-        assert '<div' in result
-        assert 'rtl' in result
+        assert "<div" in result
+        assert "rtl" in result
 
     def test_wrap_ltr_returns_plain_text(self):
         result = self.handler.wrap_rtl_text("Hello", "English")
@@ -347,11 +375,13 @@ class TestRTLHandler:
 
 # ─── Layer 12: Emergency System ───────────────────────────────────────────────────
 
+
 class TestSOSDetector:
     """Tests for the SOS detector."""
 
     def setup_method(self):
         from emergency.sos_detector import SOSDetector
+
         self.detector = SOSDetector()
 
     def test_sos_token_triggers_event(self):
@@ -360,7 +390,6 @@ class TestSOSDetector:
         assert event.severity in {"CRITICAL", "URGENT", "ALERT"}
 
     def test_emergency_token_triggers_urgent(self):
-        from emergency.sos_detector import LEVEL_URGENT
         event = self.detector.check_tokens(["EMERGENCY"])
         assert event is not None
 
@@ -378,16 +407,18 @@ class TestSOSDetector:
 
     def test_event_has_required_fields(self):
         event = self.detector.check_tokens(["EMERGENCY"])
-        assert hasattr(event, 'severity')
-        assert hasattr(event, 'confidence')
-        assert hasattr(event, 'message')
-        assert hasattr(event, 'timestamp')
+        assert hasattr(event, "severity")
+        assert hasattr(event, "confidence")
+        assert hasattr(event, "message")
+        assert hasattr(event, "timestamp")
 
     def test_window_accumulation(self):
         self.detector.update(["CHEST"])
-        event = self.detector.update(["PAIN"])
+        self.detector.update(["PAIN"])
         # Window should have accumulated CHEST + PAIN pattern
-        assert self.detector.get_event_count() >= 0  # May or may not trigger depending on order
+        assert (
+            self.detector.get_event_count() >= 0
+        )  # May or may not trigger depending on order
 
 
 class TestAlertDispatcher:
@@ -395,46 +426,50 @@ class TestAlertDispatcher:
 
     def setup_method(self):
         from emergency.alert_dispatcher import AlertDispatcher
+
         self.dispatcher = AlertDispatcher()
 
     def test_initial_alert_count_zero(self):
         assert self.dispatcher.get_alert_count() == 0
 
     def test_dispatch_increments_count(self):
-        from emergency.sos_detector import SOSEvent, LEVEL_URGENT
+        from emergency.sos_detector import LEVEL_URGENT, SOSEvent
+
         event = SOSEvent(
             severity=LEVEL_URGENT,
             triggered_tokens=["HELP"],
             matching_pattern=["HELP"],
             confidence=0.9,
-            timestamp=datetime.now(timezone.utc),
-            message="Test event"
+            timestamp=datetime.now(UTC),
+            message="Test event",
         )
         self.dispatcher.dispatch(event, "Test User")
         assert self.dispatcher.get_alert_count() == 1
 
     def test_dispatch_returns_record_with_id(self):
-        from emergency.sos_detector import SOSEvent, LEVEL_URGENT
+        from emergency.sos_detector import LEVEL_URGENT, SOSEvent
+
         event = SOSEvent(
             severity=LEVEL_URGENT,
             triggered_tokens=["HELP"],
             matching_pattern=["HELP"],
             confidence=0.9,
-            timestamp=datetime.now(timezone.utc),
-            message="Test"
+            timestamp=datetime.now(UTC),
+            message="Test",
         )
         record = self.dispatcher.dispatch(event)
         assert record.alert_id.startswith("ALT_")
 
     def test_clear_history(self):
-        from emergency.sos_detector import SOSEvent, LEVEL_URGENT
+        from emergency.sos_detector import LEVEL_URGENT, SOSEvent
+
         event = SOSEvent(
             severity=LEVEL_URGENT,
             triggered_tokens=["HELP"],
             matching_pattern=["HELP"],
             confidence=0.9,
-            timestamp=datetime.now(timezone.utc),
-            message="Test"
+            timestamp=datetime.now(UTC),
+            message="Test",
         )
         self.dispatcher.dispatch(event)
         self.dispatcher.clear_history()
@@ -446,32 +481,38 @@ class TestEmergencyPhrases:
 
     def test_sos_trigger_tokens_non_empty(self):
         from emergency.emergency_phrases import SOS_TRIGGER_TOKENS
+
         assert len(SOS_TRIGGER_TOKENS) > 0
         assert "EMERGENCY" in SOS_TRIGGER_TOKENS
 
     def test_get_english_phrase_passthrough(self):
         from emergency.emergency_phrases import get_emergency_phrase
+
         phrase = "EMERGENCY — I need immediate help!"
         result = get_emergency_phrase(phrase, "English")
         assert result == phrase
 
     def test_get_spanish_phrase(self):
         from emergency.emergency_phrases import get_emergency_phrase
+
         result = get_emergency_phrase("Call an ambulance.", "Spanish")
         assert "ambulancia" in result.lower()
 
     def test_get_hindi_phrase(self):
         from emergency.emergency_phrases import get_emergency_phrase
+
         result = get_emergency_phrase("I cannot breathe.", "Hindi")
         assert len(result) > 0
 
     def test_unknown_phrase_returns_english(self):
         from emergency.emergency_phrases import get_emergency_phrase
+
         result = get_emergency_phrase("Some unknown phrase", "Spanish")
         assert result == "Some unknown phrase"  # No translation = fallback
 
     def test_emergency_categories_non_empty(self):
         from emergency.emergency_phrases import EMERGENCY_CATEGORIES
+
         assert len(EMERGENCY_CATEGORIES) >= 4
         assert "Medical" in EMERGENCY_CATEGORIES
         assert "Safety" in EMERGENCY_CATEGORIES

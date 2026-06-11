@@ -4,6 +4,7 @@ Manages Right-to-Left text rendering for Arabic and Urdu.
 Injects CSS and HTML attributes to correctly display RTL content
 within Streamlit's LTR-default layout.
 """
+
 from config.logger import setup_logger
 
 logger = setup_logger("multilingual.rtl_handler")

@@ -3,12 +3,10 @@ SignBridge AI — Layer 7: Dialogue Manager
 Orchestrates the full conversation flow, managing multiple sessions,
 routing signer inputs through translation, and coordinating responses.
 """
-import uuid
-from typing import Dict, Optional, List
 
-from conversation.session import ConversationSession
-from conversation.schemas import DialogueTurn, SessionSummary, Message
 from config.logger import setup_logger
+from conversation.schemas import DialogueTurn, Message, SessionSummary
+from conversation.session import ConversationSession
 
 logger = setup_logger("conversation.dialogue_manager")
 
@@ -40,7 +38,7 @@ class DialogueManager:
     """
 
     def __init__(self):
-        self._sessions: Dict[str, ConversationSession] = {}
+        self._sessions: dict[str, ConversationSession] = {}
         logger.info("DialogueManager initialized.")
 
     def start_session(self, language: str = "English") -> str:
@@ -55,10 +53,14 @@ class DialogueManager:
         """
         session = ConversationSession(language=language)
         self._sessions[session.session_id] = session
-        logger.info(f"New conversation session started: {session.session_id} ({language})")
+        logger.info(
+            f"New conversation session started: {session.session_id} ({language})"
+        )
         return session.session_id
 
-    def get_or_create_session(self, session_id: Optional[str], language: str = "English") -> str:
+    def get_or_create_session(
+        self, session_id: str | None, language: str = "English"
+    ) -> str:
         """
         Return an existing session or create a new one.
 
@@ -76,7 +78,7 @@ class DialogueManager:
     def process_turn(
         self,
         session_id: str,
-        signs: List[str],
+        signs: list[str],
         translated_text: str,
         language: str = "English",
         confidence: float = 1.0,
@@ -102,7 +104,9 @@ class DialogueManager:
             confidence=confidence,
         )
 
-    def add_listener_reply(self, session_id: str, text: str, language: str = "English") -> Message:
+    def add_listener_reply(
+        self, session_id: str, text: str, language: str = "English"
+    ) -> Message:
         """
         Add a reply from the hearing participant to the session.
 
@@ -117,7 +121,7 @@ class DialogueManager:
         session = self._get_session(session_id)
         return session.add_listener_reply(text=text, language=language)
 
-    def get_messages(self, session_id: str) -> List[Message]:
+    def get_messages(self, session_id: str) -> list[Message]:
         """
         Retrieve all messages for a session.
 
@@ -130,7 +134,7 @@ class DialogueManager:
         session = self._get_session(session_id)
         return session.get_all_messages()
 
-    def get_recent_context(self, session_id: str, n: int = 5) -> List[str]:
+    def get_recent_context(self, session_id: str, n: int = 5) -> list[str]:
         """
         Get recent translation strings for context-aware grammar engine.
 
@@ -173,7 +177,7 @@ class DialogueManager:
             return True
         return False
 
-    def close_session(self, session_id: str) -> Optional[dict]:
+    def close_session(self, session_id: str) -> dict | None:
         """
         Close a session and return its export data.
 
@@ -194,14 +198,16 @@ class DialogueManager:
         """Return the number of currently active sessions."""
         return len(self._sessions)
 
-    def get_all_session_ids(self) -> List[str]:
+    def get_all_session_ids(self) -> list[str]:
         """Return all active session IDs."""
         return list(self._sessions.keys())
 
     def _get_session(self, session_id: str) -> ConversationSession:
         """Retrieve a session by ID, auto-creating if missing."""
         if session_id not in self._sessions:
-            logger.warning(f"Session {session_id} not found. Auto-creating new session.")
+            logger.warning(
+                f"Session {session_id} not found. Auto-creating new session."
+            )
             new_id = self.start_session()
             return self._sessions[new_id]
         return self._sessions[session_id]

@@ -2,9 +2,10 @@
 SignBridge AI — Layer 6: Speech Provider Base
 Abstract base class defining the contract for all TTS provider adapters.
 """
+
 from abc import ABC, abstractmethod
-from typing import List
-from speech.schemas import TTSResult, AvailableVoice
+
+from speech.schemas import AvailableVoice, TTSResult
 
 
 class BaseTTSProvider(ABC):
@@ -24,7 +25,9 @@ class BaseTTSProvider(ABC):
         """Audio format output: 'mp3' or 'wav'."""
 
     @abstractmethod
-    def synthesize(self, text: str, lang_code: str = "en", slow: bool = False, tld: str = "com") -> TTSResult:
+    def synthesize(
+        self, text: str, lang_code: str = "en", slow: bool = False, tld: str = "com"
+    ) -> TTSResult:
         """
         Synthesize text into audio bytes.
 
@@ -39,7 +42,7 @@ class BaseTTSProvider(ABC):
         """
 
     @abstractmethod
-    def get_available_voices(self) -> List[AvailableVoice]:
+    def get_available_voices(self) -> list[AvailableVoice]:
         """Return all voices available from this provider."""
 
     def health_check(self) -> bool:

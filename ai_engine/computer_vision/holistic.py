@@ -5,15 +5,16 @@ except ImportError:
 
 import cv2
 import numpy as np
+
 from config.config import (
-    MP_STATIC_IMAGE_MODE,
-    MP_MAX_NUM_HANDS,
     MP_MIN_DETECTION_CONFIDENCE,
-    MP_MIN_TRACKING_CONFIDENCE
+    MP_MIN_TRACKING_CONFIDENCE,
+    MP_STATIC_IMAGE_MODE,
 )
 from config.logger import setup_logger
 
 logger = setup_logger("ai_engine.cv.holistic")
+
 
 class MediaPipeHolisticManager:
     def __init__(self):
@@ -39,12 +40,12 @@ class MediaPipeHolisticManager:
             self.mp_holistic = mp.solutions.holistic
             self.mp_drawing = mp.solutions.drawing_utils
             self.mp_drawing_styles = mp.solutions.drawing_styles
-            
+
             # Setup holistic model
             self.holistic = self.mp_holistic.Holistic(
                 static_image_mode=MP_STATIC_IMAGE_MODE,
                 min_detection_confidence=MP_MIN_DETECTION_CONFIDENCE,
-                min_tracking_confidence=MP_MIN_TRACKING_CONFIDENCE
+                min_tracking_confidence=MP_MIN_TRACKING_CONFIDENCE,
             )
             self._initialized = True
             logger.info("MediaPipe Holistic Model loaded successfully.")
@@ -65,13 +66,13 @@ class MediaPipeHolisticManager:
 
         # Convert the BGR image to RGB before processing.
         frame_rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
-        
+
         # To improve performance, optionally mark the image as not writeable to
         # pass by reference.
         frame_rgb.flags.writeable = False
         results = self.holistic.process(frame_rgb)
         frame_rgb.flags.writeable = True
-        
+
         return results
 
     def draw_landmarks(self, frame_bgr: np.ndarray, results) -> np.ndarray:
@@ -82,7 +83,7 @@ class MediaPipeHolisticManager:
             return frame_bgr
 
         annotated_image = frame_bgr.copy()
-        
+
         # Draw face mesh connections
         if results.face_landmarks:
             self.mp_drawing.draw_landmarks(
@@ -90,7 +91,7 @@ class MediaPipeHolisticManager:
                 landmark_list=results.face_landmarks,
                 connections=self.mp_holistic.FACEMESH_CONTOURS,
                 landmark_drawing_spec=None,
-                connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_contours_style()
+                connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_contours_style(),
             )
 
         # Draw pose connections
@@ -99,7 +100,7 @@ class MediaPipeHolisticManager:
                 image=annotated_image,
                 landmark_list=results.pose_landmarks,
                 connections=self.mp_holistic.POSE_CONNECTIONS,
-                landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style()
+                landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style(),
             )
 
         # Draw left hand connections
@@ -109,7 +110,7 @@ class MediaPipeHolisticManager:
                 landmark_list=results.left_hand_landmarks,
                 connections=self.mp_holistic.HAND_CONNECTIONS,
                 landmark_drawing_spec=self.mp_drawing_styles.get_default_hand_landmarks_style(),
-                connection_drawing_spec=self.mp_drawing_styles.get_default_hand_connections_style()
+                connection_drawing_spec=self.mp_drawing_styles.get_default_hand_connections_style(),
             )
 
         # Draw right hand connections
@@ -119,7 +120,7 @@ class MediaPipeHolisticManager:
                 landmark_list=results.right_hand_landmarks,
                 connections=self.mp_holistic.HAND_CONNECTIONS,
                 landmark_drawing_spec=self.mp_drawing_styles.get_default_hand_landmarks_style(),
-                connection_drawing_spec=self.mp_drawing_styles.get_default_hand_connections_style()
+                connection_drawing_spec=self.mp_drawing_styles.get_default_hand_connections_style(),
             )
 
         return annotated_image
