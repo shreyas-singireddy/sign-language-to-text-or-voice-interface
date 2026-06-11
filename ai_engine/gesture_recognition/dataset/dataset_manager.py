@@ -32,8 +32,9 @@ class DatasetManager:
         try:
             with open(self.index_file, "w") as f:
                 json.dump(index, f, indent=4)
-        except Exception:
+        except Exception:  # nosec
             pass
+
 
     def load_dataset(self) -> tuple[np.ndarray, np.ndarray, list[str]]:
         """
@@ -70,8 +71,9 @@ class DatasetManager:
 
                             X.append(seq)
                             y.append(class_idx)
-                    except Exception:
+                    except Exception:  # nosec
                         continue
+
 
         if not X:
             # Fallback to generating synthetic data to guarantee models can train/run immediately

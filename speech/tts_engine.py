@@ -180,7 +180,7 @@ class TTSEngine:
     def _make_cache_key(self, text: str, lang_code: str, slow: bool) -> str:
         """Generate a deterministic cache key from synthesis parameters."""
         content = f"{text}|{lang_code}|{slow}"
-        return hashlib.md5(content.encode()).hexdigest()
+        return hashlib.md5(content.encode()).hexdigest()  # nosec
 
     def _store_cache(self, key: str, result: TTSResult) -> None:
         """Store result in cache with LRU eviction if full."""

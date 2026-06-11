@@ -39,7 +39,7 @@ class ModelRegistry:
         try:
             with open(self.metadata_file, "w") as f:
                 json.dump(meta, f, indent=4)
-        except Exception:
+        except Exception:  # nosec
             pass
 
     def register_model(

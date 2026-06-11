@@ -1,1 +1,13 @@
-[]
+[
+    {
+        "timestamp": "2026-06-11T10:38:29.828793+00:00",
+        "detectedGestures": [
+            "HELLO"
+        ],
+        "translatedText": "Hello",
+        "confidence": 0.95,
+        "language": "English",
+        "is_offline": true,
+        "id": "offline_1781174309828"
+    }
+]
