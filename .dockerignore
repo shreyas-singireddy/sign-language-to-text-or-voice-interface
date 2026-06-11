@@ -1,0 +1,28 @@
+# Root Docker Ignore
+.git
+.gitignore
+.dockerignore
+.editorconfig
+.gitlab-ci.yml
+.pre-commit-config.yaml
+.specify/
+requirements-dev.txt
+pyproject.toml
+
+# Python artifacts
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+
+# Environments & dependencies
+.venv/
+backend/.venv/
+backend/.venv312/
+backend/.env
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/

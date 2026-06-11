@@ -1,0 +1,26 @@
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "PL"]
+ignore = ["PLR0913", "PLR0915", "PLR0912"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+check_untyped_defs = true
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q --cov=ai_engine --cov=translation --cov=app --cov=speech --cov-fail-under=80"
+testpaths = [
+    "tests",
+]
+
+[tool.vulture]
+exclude = [".venv", ".venv312", "node_modules", "frontend/node_modules"]
+min_confidence = 80
+paths = ["ai_engine", "translation", "app", "speech", "database", "emergency", "multilingual", "communication", "analytics", "conversation"]
