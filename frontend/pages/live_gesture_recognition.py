@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import time
 import pandas as pd
+import mediapipe as mp
 from pathlib import Path
 
 # Graceful Plotly import with fallback check
@@ -157,12 +158,9 @@ with col_cam:
 
                     # Mirror and render frame
                     display_img = cv2.flip(frame, 1)
-                    if telemetry_data.landmarks.pose.present:
-                        display_img = perception_service.pose_det.mp_pose.solutions.drawing_utils.draw_landmarks(
-                            display_img, 
-                            telemetry_data.landmarks.pose.landmarks,
-                            None
-                        )
+                    # NOTE: mp_pose is already mp.solutions.pose — use mp.solutions directly
+                    # Landmark drawing is for visual overlay only; skip if raw landmark objects not available
+                    # (telemetry.landmarks.pose.landmarks are Pydantic Point3D dicts, not raw MP objects)
                     display_rgb = cv2.cvtColor(display_img, cv2.COLOR_BGR2RGB)
                     video_view.image(display_rgb, use_column_width=True)
                     

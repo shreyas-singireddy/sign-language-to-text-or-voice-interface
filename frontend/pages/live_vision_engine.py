@@ -109,13 +109,9 @@ with col_cam:
                             
                         # Flip and render frame
                         display_img = cv2.flip(frame, 1) # Mirror flip
-                        # Draw key joints overlay if detected
-                        if telemetry_data.landmarks.pose.present:
-                            display_img = perception_service.pose_det.mp_pose.solutions.drawing_utils.draw_landmarks(
-                                display_img, 
-                                telemetry_data.landmarks.pose.landmarks, # Need raw object, but this is mock visual helper
-                                None
-                            )
+                        # NOTE: pose.landmarks are Pydantic Point3D dicts, not raw MP landmark objects.
+                        # mp_pose is already mp.solutions.pose — chaining .solutions on it is invalid.
+                        # Full skeletal overlay is rendered in the Visual Debug Cockpit page instead.
                         # Render
                         display_rgb = cv2.cvtColor(display_img, cv2.COLOR_BGR2RGB)
                         video_view.image(display_rgb, use_column_width=True)

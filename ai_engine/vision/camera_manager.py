@@ -1,12 +1,20 @@
 import cv2
 import time
 import threading
+import platform
 from typing import Tuple, Optional
 import numpy as np
 from ai_engine.utils.logger import get_structured_logger
 from ai_engine.utils.config import sys_config
 
 logger = get_structured_logger("vision.camera")
+
+
+# Helper — must be defined BEFORE the class (BUG-002 fix)
+def os_check() -> bool:
+    """Returns True if running on Windows."""
+    return platform.system() == "Windows"
+
 
 class CameraManager:
     def __init__(self):
@@ -69,29 +77,34 @@ class CameraManager:
 
     def read_frame(self) -> Tuple[bool, Optional[np.ndarray], float]:
         """
-        Reads frame, calculates FPS and latency, and handles automatic recovery.
+        Reads frame, calculates FPS and latency.
         Returns:
             success (bool): capture success
             frame (ndarray): BGR image matrix
             latency_ms (float): elapsed read duration
+
+        BUG-007 FIX: recover_connection() must NOT be called inside the lock
+        block — that caused a deadlock because release() also acquires self.lock.
+        We now return False from within the lock, and callers can call
+        recover_connection() externally if desired.
         """
         t_start = time.time()
-        
+
         with self.lock:
             if self.cap is None or not self.cap.isOpened():
                 self.status = "Failed"
                 return False, None, 0.0
 
             success, frame = self.cap.read()
-            
+
             if not success:
-                logger.warning("Frame acquisition failed. Attempting camera recovery...")
+                logger.warning("Frame acquisition failed. Camera may need recovery.")
                 self.status = "Recovery Active"
-                self.recover_connection()
+                # Return False — do NOT call recover_connection() inside the lock
                 return False, None, 0.0
 
             self.frame_count += 1
-            
+
             # Calculate live FPS
             curr_time = time.time()
             time_diff = curr_time - self.prev_time
@@ -130,7 +143,19 @@ class CameraManager:
             self.status = "Released"
             logger.info("Camera resources released.")
 
-# Helper to check platform
-def os_check() -> bool:
-    import platform
-    return platform.system() == "Windows"
+    @staticmethod
+    def discover_cameras(max_test: int = 5) -> list:
+        """
+        Auto-discovers available camera indices by attempting to open each one.
+        Returns list of working camera indices.
+        """
+        available = []
+        for idx in range(max_test):
+            cap = cv2.VideoCapture(idx)
+            if cap.isOpened():
+                ret, _ = cap.read()
+                if ret:
+                    available.append(idx)
+                cap.release()
+        logger.info(f"Discovered cameras: {available}")
+        return available

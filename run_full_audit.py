@@ -622,7 +622,7 @@ print("Generated gesture_accuracy_report.md")
 # ==========================================
 print("\n--- Step 13: Running Pytest and scoring ---")
 # Run pytest tests and capture output
-res = subprocess.run([str(PROJECT_ROOT / "backend" / ".venv312" / "Scripts" / "python.exe"), "-m", "pytest", "tests"], capture_output=True, text=True)
+res = subprocess.run([sys.executable, "-m", "pytest", "tests"], capture_output=True, text=True)
 pytest_success = res.returncode == 0
 pytest_out = res.stdout + res.stderr
 
