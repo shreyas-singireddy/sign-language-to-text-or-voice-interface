@@ -347,6 +347,7 @@ pages = [
     st.Page(pages_dir / "home.py", title="Home Landing", icon="🏠"),
     st.Page(frontend_pages_dir / "live_vision_engine.py", title="Live Vision Engine", icon="👁️"),
     st.Page(frontend_pages_dir / "live_gesture_recognition.py", title="Live Gesture Recognition", icon="🤟"),
+    st.Page(pages_dir / "visual_debug_dashboard.py", title="Visual Debug Cockpit", icon="🛠️"),
     st.Page(pages_dir / "live_translation.py", title="Live Translation", icon="🎥"),
     st.Page(pages_dir / "training_studio.py", title="AI Training Studio", icon="🏋️"),
     st.Page(pages_dir / "communication_hub.py", title="Conversation Hub", icon="💬"),

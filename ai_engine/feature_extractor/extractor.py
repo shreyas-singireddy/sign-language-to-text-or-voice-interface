@@ -11,17 +11,17 @@ class FeatureExtractor:
     def calculate_distances(self, landmarks: np.ndarray) -> dict:
         """
         Computes Euclidean distance between keypoints (e.g. thumb tip to index tip).
-        - Left hand index tip is at 1404 + (8 * 3) = 1428
-        - Left hand thumb tip is at 1404 + (4 * 3) = 1416
-        - Right hand index tip is at 1467 + (8 * 3) = 1491
-        - Right hand thumb tip is at 1467 + (4 * 3) = 1479
+        - Left hand index tip is at 1536 + (8 * 3) = 1560
+        - Left hand thumb tip is at 1536 + (4 * 3) = 1548
+        - Right hand index tip is at 1599 + (8 * 3) = 1623
+        - Right hand thumb tip is at 1599 + (4 * 3) = 1611
         """
         distances = {}
         
-        lh_thumb = landmarks[1416:1419]
-        lh_index = landmarks[1428:1431]
-        rh_thumb = landmarks[1479:1482]
-        rh_index = landmarks[1491:1494]
+        lh_thumb = landmarks[1548:1551]
+        lh_index = landmarks[1560:1563]
+        rh_thumb = landmarks[1611:1614]
+        rh_index = landmarks[1623:1626]
 
         # Left hand pinch distance
         if np.any(lh_thumb != 0) and np.any(lh_index != 0):
@@ -36,8 +36,8 @@ class FeatureExtractor:
             distances["rh_thumb_index"] = 0.0
 
         # Hand to Hand distance (wrists center)
-        lh_wrist = landmarks[1404:1407]
-        rh_wrist = landmarks[1467:1470]
+        lh_wrist = landmarks[1536:1539]
+        rh_wrist = landmarks[1599:1602]
         if np.any(lh_wrist != 0) and np.any(rh_wrist != 0):
             distances["hand_to_hand"] = float(np.linalg.norm(lh_wrist - rh_wrist))
         else:
