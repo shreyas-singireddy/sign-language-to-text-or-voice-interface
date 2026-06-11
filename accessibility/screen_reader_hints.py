@@ -4,7 +4,7 @@ Generates ARIA-compliant HTML hints for screen reader accessibility.
 Provides helper functions for wrapping UI elements with appropriate
 ARIA attributes, live regions, and role descriptors.
 """
-from typing import Optional
+
 from config.logger import setup_logger
 
 logger = setup_logger("accessibility.screen_reader_hints")
@@ -17,7 +17,12 @@ class ScreenReaderHints:
     WCAG 2.1 AA compliance.
     """
 
-    def live_region(self, content: str, aria_label: str = "Live translation output", politeness: str = "polite") -> str:
+    def live_region(
+        self,
+        content: str,
+        aria_label: str = "Live translation output",
+        politeness: str = "polite",
+    ) -> str:
         """
         Wrap content in an ARIA live region for dynamic content announcements.
 
@@ -51,7 +56,9 @@ class ScreenReaderHints:
         Returns:
             HTML with role="alert"
         """
-        return f'<div role="alert" aria-label="{label}" aria-atomic="true">{content}</div>'
+        return (
+            f'<div role="alert" aria-label="{label}" aria-atomic="true">{content}</div>'
+        )
 
     def status_badge(self, status_text: str, status_type: str = "info") -> str:
         """
@@ -130,7 +137,9 @@ class ScreenReaderHints:
         Returns:
             HTML with ARIA landmark
         """
-        return f'<div role="{role}" aria-label="{label}" id="main-content">{content}</div>'
+        return (
+            f'<div role="{role}" aria-label="{label}" id="main-content">{content}</div>'
+        )
 
     def image_description(self, alt_text: str, role: str = "img") -> str:
         """

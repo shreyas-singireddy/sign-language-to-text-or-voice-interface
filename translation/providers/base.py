@@ -2,8 +2,8 @@
 SignBridge AI — Layer 5: Translation Provider Base
 Abstract base class defining the contract for all translation provider adapters.
 """
+
 from abc import ABC, abstractmethod
-from typing import List, Optional
 
 
 class BaseTranslationProvider(ABC):
@@ -24,7 +24,9 @@ class BaseTranslationProvider(ABC):
         """Return True if this provider supports languages beyond English."""
 
     @abstractmethod
-    def signs_to_english(self, tokens: List[str], context: Optional[List[str]] = None) -> str:
+    def signs_to_english(
+        self, tokens: list[str], context: list[str] | None = None
+    ) -> str:
         """
         Convert a list of sign tokens into a grammatically correct English sentence.
 

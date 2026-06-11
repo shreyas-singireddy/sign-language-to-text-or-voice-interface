@@ -1,9 +1,12 @@
 import collections
+
 import numpy as np
+
 from config.config import MODELS_DIR, SEQUENCE_BUFFER_SIZE
 from config.logger import setup_logger
 
 logger = setup_logger("ai_engine.sequence.model")
+
 
 class SequenceModel:
     def __init__(self):
@@ -18,7 +21,9 @@ class SequenceModel:
         """
         model_path = MODELS_DIR / "sequence_model.h5"
         if not model_path.exists():
-            logger.warning(f"No sequence model found at {model_path}. Running sequence assembly heuristics.")
+            logger.warning(
+                f"No sequence model found at {model_path}. Running sequence assembly heuristics."
+            )
             self.model_loaded = False
             return False
 
@@ -45,8 +50,10 @@ class SequenceModel:
         if len(self.buffer) < 5:
             return []
 
+        from ai_engine.gesture_recognition.inference.post_processor import (
+            post_processor,
+        )
         from ai_engine.gesture_recognition.inference.predictor import gesture_predictor
-        from ai_engine.gesture_recognition.inference.post_processor import post_processor
 
         try:
             # Prepare sequence of landmark vectors from buffer
@@ -55,7 +62,7 @@ class SequenceModel:
             res = gesture_predictor.predict_word(seq_lms)
             word = res["prediction"]
             conf = res["confidence"]
-            
+
             # Enforce validation threshold
             if word != "WAITING_FOR_CLEAR_GESTURE" and conf >= 0.35:
                 # Add to translation list if it's not a duplicate of the last element in buffer
@@ -82,7 +89,7 @@ class SequenceModel:
                 last_label = None
                 consecutive_count = 0
                 continue
-                
+
             if label == last_label:
                 consecutive_count += 1
             else:
@@ -93,11 +100,12 @@ class SequenceModel:
                 # Add to translation list if it's not a direct duplicate of the last registered gesture
                 if not assembled or assembled[-1] != label:
                     assembled.append(label)
-                    
+
         return assembled
 
     def clear_buffer(self):
         """Clears the temporal frame cache."""
         self.buffer.clear()
+
 
 sequence_model = SequenceModel()

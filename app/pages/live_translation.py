@@ -1,11 +1,8 @@
-import streamlit as st
-import cv2
-import numpy as np
 import time
-import threading
-import queue
-import psutil
-import mediapipe as mp
+
+import cv2
+import streamlit as st
+
 from app.services.ai_service import ai_service
 from app.services.audio_service import audio_service
 from app.services.database_service import db_service
@@ -13,9 +10,14 @@ from config.config import SUPPORTED_LANGUAGES
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Page Header
-# ──────────────────────────────────────────────────────────────────────────────
-st.markdown('<h1 class="gradient-text" style="font-size: 3rem; margin-bottom: 5px;">LIVE TRANSLATION</h1>', unsafe_allow_html=True)
-st.markdown("<p style='font-size: 1.1rem; font-weight: bold; color: #1040C0;'>Real-time Sign Language → Text → Speech pipeline.</p>", unsafe_allow_html=True)
+st.markdown(
+    '<h1 class="gradient-text" style="font-size: 3rem; margin-bottom: 5px;">LIVE TRANSLATION</h1>',
+    unsafe_allow_html=True,
+)
+st.markdown(
+    "<p style='font-size: 1.1rem; font-weight: bold; color: #1040C0;'>Real-time Sign Language to Text and Speech pipeline.</p>",
+    unsafe_allow_html=True,
+)
 st.markdown("---")
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -172,17 +174,23 @@ with col_video:
             <h3 style="margin-top: 0px;">WEBCAM INGESTION STREAM</h3>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
-    # Controls
+    # Camera Toggle buttons
     camera_btn_col1, camera_btn_col2, camera_btn_col3 = st.columns(3)
     with camera_btn_col1:
-        start_cam = st.button("🔌 Start Camera", key="btn_start_cam", use_container_width=True)
+        start_cam = st.button(
+            "🔌 Start Camera", key="btn_start_cam", use_container_width=True
+        )
     with camera_btn_col2:
-        stop_cam = st.button("🛑 Stop Camera", key="btn_stop_cam", use_container_width=True)
+        stop_cam = st.button(
+            "🛑 Stop Camera", key="btn_stop_cam", use_container_width=True
+        )
     with camera_btn_col3:
-        reset_seq = st.button("🔄 Reset Buffer", key="btn_reset_seq", use_container_width=True)
+        reset_seq = st.button(
+            "🔄 Reset Buffer", key="btn_reset_seq", use_container_width=True
+        )
 
     debug_mode = st.toggle("🔬 Debug Overlay", value=st.session_state["debug_mode"], key="toggle_debug")
     st.session_state["debug_mode"] = debug_mode
@@ -205,25 +213,53 @@ with col_video:
 
     # ── Video display placeholder ──
     video_placeholder = st.empty()
-    status_placeholder = st.empty()
 
-    # ── Debug metrics bar (shown when debug_mode is on) ──
-    if st.session_state["debug_mode"] and st.session_state["camera_active"]:
-        debug_col1, debug_col2, debug_col3 = st.columns(3)
-        with debug_col1:
-            fps_metric = st.empty()
-        with debug_col2:
-            latency_metric = st.empty()
-        with debug_col3:
-            mem_metric = st.empty()
+    if st.session_state.get("camera_active", False):
+        st.markdown(
+            '<div class="pulse-badge">● RECORDING ACTIVE</div>', unsafe_allow_html=True
+        )
 
-        debug_col4, debug_col5 = st.columns(2)
-        with debug_col4:
-            queue_metric = st.empty()
-        with debug_col5:
-            hands_metric = st.empty()
+        # Open camera stream using OpenCV
+        from ai_engine.computer_vision.camera import CameraManager
+
+        cam = CameraManager()
+        if cam.start():
+            try:
+                # Continuous loop for frame rendering
+                while st.session_state.get("camera_active", False):
+                    success, frame = cam.get_frame()
+                    if not success:
+                        st.error(
+                            "Failed to read camera frame. Check webcam connection."
+                        )
+                        break
+
+                    # Process frame
+                    results = ai_service.process_frame(frame)
+
+                    # Flip frame for mirror display
+                    display_frame = cv2.flip(results["annotated_frame"], 1)
+                    # Convert to RGB for Streamlit rendering
+                    display_frame_rgb = cv2.cvtColor(display_frame, cv2.COLOR_BGR2RGB)
+
+                    # Render image
+                    video_placeholder.image(
+                        display_frame_rgb, channels="RGB", use_column_width=True
+                    )
+
+                    # Update states
+                    st.session_state["detected_sequence"] = results["sequence"]
+                    st.session_state["translation_buffer"] = results["translation"]
+
+                    # Small sleep to manage render rates (approx 24 fps)
+                    time.sleep(0.04)
+            finally:
+                cam.stop()
+                video_placeholder.empty()
     else:
-        fps_metric = latency_metric = mem_metric = queue_metric = hands_metric = None
+        video_placeholder.info(
+            "Click '🔌 Start Camera' to launch webcam translation stream."
+        )
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -236,14 +272,15 @@ with col_results:
             <h3 style="margin-top: 0px;">TRANSLATION ENGINE PANEL</h3>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
+    # Language selection dropdown
     selected_language = st.selectbox(
         "Output Translation Language",
         options=list(SUPPORTED_LANGUAGES.keys()),
         index=0,
-        key="select_lang_translation"
+        key="select_lang_translation",
     )
 
     st.markdown("### Text Output")
@@ -257,7 +294,7 @@ with col_results:
             </p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # Current gesture + confidence live display
@@ -300,128 +337,34 @@ with col_results:
     # Voice synthesis
     st.markdown("---")
     st.markdown("### Voice Synthesis")
+
+    # Generate Voice Button
     tts_lang_code = SUPPORTED_LANGUAGES[selected_language]
 
-    if st.button("🔊 Play Voice Translation", key="btn_play_voice",
-                 disabled=(not text_output), use_container_width=True):
+    if st.button(
+        "🔊 Play Voice Translation",
+        key="btn_play_voice",
+        disabled=(not text_output),
+        use_container_width=True,
+    ):
         with st.spinner("Synthesizing voice..."):
-            try:
-                audio_bytes = audio_service.generate_speech(text_output, lang_code=tts_lang_code)
-                if audio_bytes:
-                    st.audio(audio_bytes, format="audio/mp3")
-                else:
-                    st.warning("Audio synthesis returned empty result. Check internet connection for gTTS.")
-            except Exception as e:
-                st.error(f"TTS Error: {e}")
-
-    # Database logging
-    if st.button("💾 Log Translation to Database", key="btn_log_db",
-                 disabled=(not text_output), use_container_width=True):
-        try:
-            record = db_service.log_translation(
-                detected_gestures=active_seq,
-                translated_text=text_output,
-                confidence=st.session_state.get("live_confidence", 0.88),
-                language=selected_language
+            audio_bytes = audio_service.generate_speech(
+                text_output, lang_code=tts_lang_code
             )
-            st.success(f"Log saved! ID: {record['id']}")
-        except Exception as e:
-            st.error(f"Database error: {e}")
+            st.audio(audio_bytes, format="audio/wav")
 
-
-# ──────────────────────────────────────────────────────────────────────────────
-# FRAME CONSUMPTION — pulls from the queue and renders ONE frame per rerun
-# Streamlit automatically re-runs this script at ~33ms intervals when active
-# ──────────────────────────────────────────────────────────────────────────────
-if st.session_state["camera_active"]:
-    status_placeholder.markdown('<div class="pulse-badge">● RECORDING ACTIVE</div>', unsafe_allow_html=True)
-
-    q = st.session_state["cam_queue"]
-    payload = None
-
-    # Drain queue — use latest available frame
-    while True:
-        try:
-            payload = q.get_nowait()
-        except queue.Empty:
-            break
-
-    if payload is not None:
-        if "error" in payload:
-            st.error(payload["error"])
-            _stop_camera()
-        else:
-            # Update session state with latest results
-            st.session_state["detected_sequence"] = payload.get("sequence", [])
-            st.session_state["translation_buffer"] = payload.get("translation", "")
-            st.session_state["live_gesture"] = payload.get("gesture", "IDLE")
-            st.session_state["live_confidence"] = payload.get("confidence", 0.0)
-            st.session_state["live_hands_detected"] = payload.get("hands_detected", False)
-            st.session_state["live_fps"] = payload.get("fps", 0.0)
-            st.session_state["live_latency_ms"] = payload.get("latency_ms", 0.0)
-            st.session_state["live_queue_depth"] = payload.get("queue_depth", 0)
-            st.session_state["live_mem_mb"] = payload.get("mem_mb", 0.0)
-
-            # Render annotated frame
-            annotated = payload.get("annotated_frame")
-            if annotated is not None:
-                display = cv2.flip(annotated, 1)
-
-                # Debug overlay: burn metrics into frame
-                if st.session_state["debug_mode"]:
-                    fps_val = payload.get("fps", 0.0)
-                    lat_val = payload.get("latency_ms", 0.0)
-                    gest_val = payload.get("gesture", "IDLE")
-                    conf_val = int(payload.get("confidence", 0.0) * 100)
-                    hands_val = "HANDS" if payload.get("hands_detected") else "NO HANDS"
-                    q_val = payload.get("queue_depth", 0)
-                    mem_val = payload.get("mem_mb", 0.0)
-
-                    overlay_lines = [
-                        f"FPS: {fps_val:.1f}",
-                        f"LATENCY: {lat_val:.1f}ms",
-                        f"GESTURE: {gest_val} ({conf_val}%)",
-                        f"{hands_val}",
-                        f"QUEUE: {q_val}",
-                        f"MEM: {mem_val:.0f}MB",
-                    ]
-                    y = 30
-                    for line in overlay_lines:
-                        cv2.putText(display, line, (10, y),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.65,
-                                    (0, 255, 100), 2, cv2.LINE_AA)
-                        y += 28
-
-                    # Hand detection indicator box
-                    box_color = (0, 220, 80) if payload.get("hands_detected") else (0, 0, 220)
-                    cv2.rectangle(display, (display.shape[1]-160, 10), (display.shape[1]-10, 50), box_color, -1)
-                    cv2.putText(display, hands_val[:9], (display.shape[1]-155, 38),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-
-                display_rgb = cv2.cvtColor(display, cv2.COLOR_BGR2RGB)
-                video_placeholder.image(display_rgb, channels="RGB", use_column_width=True)
-
-                # Update debug metric cards
-                if st.session_state["debug_mode"] and fps_metric is not None:
-                    fps_metric.metric("FPS", f"{payload.get('fps', 0.0):.1f}")
-                    latency_metric.metric("Latency", f"{payload.get('latency_ms', 0.0):.1f}ms")
-                    mem_metric.metric("RAM", f"{payload.get('mem_mb', 0.0):.0f}MB")
-                    queue_metric.metric("Queue Depth", payload.get("queue_depth", 0))
-                    hands_metric.metric("Hands", "✅" if payload.get("hands_detected") else "❌")
-
-    else:
-        # No frame yet — show spinner
-        video_placeholder.info("⏳ Waiting for webcam frames...")
-
-    # Check if thread is still alive
-    t = st.session_state.get("cam_thread")
-    if t is not None and not t.is_alive():
-        st.warning("Camera thread stopped unexpectedly. Click Stop Camera to reset.")
-        st.session_state["camera_active"] = False
-
-    # Auto-rerun to pull the next frame (~33ms = ~30 fps display rate)
-    time.sleep(0.033)
-    st.rerun()
-
-else:
-    video_placeholder.info("Click '🔌 Start Camera' to launch webcam translation stream.")
+    # Database Logging section
+    if st.button(
+        "💾 Log Translation to Database",
+        key="btn_log_db",
+        disabled=(not text_output),
+        use_container_width=True,
+    ):
+        # Save record
+        record = db_service.log_translation(
+            detected_gestures=active_seq,
+            translated_text=text_output,
+            confidence=0.88,  # Mock pipeline average confidence
+            language=selected_language,
+        )
+        st.success(f"Log saved successfully! ID: {record['id']}")

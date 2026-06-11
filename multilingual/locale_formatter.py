@@ -3,10 +3,11 @@ SignBridge AI — Layer 11: Locale Formatter
 Formats numbers, dates, and times according to locale conventions
 for each of the 16 supported languages.
 """
+
 from datetime import datetime
-from typing import Optional
-from multilingual.language_registry import LANGUAGE_REGISTRY
+
 from config.logger import setup_logger
+from multilingual.language_registry import LANGUAGE_REGISTRY
 
 logger = setup_logger("multilingual.locale_formatter")
 
@@ -17,7 +18,9 @@ class LocaleFormatter:
     Uses the Language Registry to apply correct separators and formats.
     """
 
-    def format_number(self, value: float, language_name: str, decimal_places: int = 2) -> str:
+    def format_number(
+        self, value: float, language_name: str, decimal_places: int = 2
+    ) -> str:
         """
         Format a number according to the locale conventions of a language.
 
@@ -113,22 +116,118 @@ class LocaleFormatter:
             Dict of ui_key → translated string
         """
         UI_STRINGS = {
-            "English":    {"start": "Start", "stop": "Stop", "reset": "Reset", "save": "Save", "loading": "Loading..."},
-            "Hindi":      {"start": "शुरू करें", "stop": "रोकें", "reset": "रीसेट", "save": "सहेजें", "loading": "लोड हो रहा है..."},
-            "Telugu":     {"start": "ప్రారంభించు", "stop": "ఆపు", "reset": "రీసెట్", "save": "సేవ్ చేయి", "loading": "లోడ్ అవుతోంది..."},
-            "Spanish":    {"start": "Iniciar", "stop": "Detener", "reset": "Restablecer", "save": "Guardar", "loading": "Cargando..."},
-            "French":     {"start": "Démarrer", "stop": "Arrêter", "reset": "Réinitialiser", "save": "Sauvegarder", "loading": "Chargement..."},
-            "German":     {"start": "Starten", "stop": "Stoppen", "reset": "Zurücksetzen", "save": "Speichern", "loading": "Laden..."},
-            "Chinese":    {"start": "开始", "stop": "停止", "reset": "重置", "save": "保存", "loading": "加载中..."},
-            "Japanese":   {"start": "開始", "stop": "停止", "reset": "リセット", "save": "保存", "loading": "読み込み中..."},
-            "Arabic":     {"start": "بدء", "stop": "إيقاف", "reset": "إعادة تعيين", "save": "حفظ", "loading": "جار التحميل..."},
-            "Portuguese": {"start": "Iniciar", "stop": "Parar", "reset": "Redefinir", "save": "Salvar", "loading": "Carregando..."},
-            "Russian":    {"start": "Начать", "stop": "Стоп", "reset": "Сбросить", "save": "Сохранить", "loading": "Загрузка..."},
-            "Italian":    {"start": "Avvia", "stop": "Ferma", "reset": "Reimposta", "save": "Salva", "loading": "Caricamento..."},
-            "Korean":     {"start": "시작", "stop": "중지", "reset": "초기화", "save": "저장", "loading": "로드 중..."},
-            "Bengali":    {"start": "শুরু করুন", "stop": "বন্ধ করুন", "reset": "রিসেট", "save": "সংরক্ষণ", "loading": "লোড হচ্ছে..."},
-            "Tamil":      {"start": "தொடங்கு", "stop": "நிறுத்து", "reset": "மீட்டமை", "save": "சேமி", "loading": "ஏற்றுகிறது..."},
-            "Urdu":       {"start": "شروع کریں", "stop": "روکیں", "reset": "دوبارہ ترتیب دیں", "save": "محفوظ کریں", "loading": "لوڈ ہو رہا ہے..."},
+            "English": {
+                "start": "Start",
+                "stop": "Stop",
+                "reset": "Reset",
+                "save": "Save",
+                "loading": "Loading...",
+            },
+            "Hindi": {
+                "start": "शुरू करें",
+                "stop": "रोकें",
+                "reset": "रीसेट",
+                "save": "सहेजें",
+                "loading": "लोड हो रहा है...",
+            },
+            "Telugu": {
+                "start": "ప్రారంభించు",
+                "stop": "ఆపు",
+                "reset": "రీసెట్",
+                "save": "సేవ్ చేయి",
+                "loading": "లోడ్ అవుతోంది...",
+            },
+            "Spanish": {
+                "start": "Iniciar",
+                "stop": "Detener",
+                "reset": "Restablecer",
+                "save": "Guardar",
+                "loading": "Cargando...",
+            },
+            "French": {
+                "start": "Démarrer",
+                "stop": "Arrêter",
+                "reset": "Réinitialiser",
+                "save": "Sauvegarder",
+                "loading": "Chargement...",
+            },
+            "German": {
+                "start": "Starten",
+                "stop": "Stoppen",
+                "reset": "Zurücksetzen",
+                "save": "Speichern",
+                "loading": "Laden...",
+            },
+            "Chinese": {
+                "start": "开始",
+                "stop": "停止",
+                "reset": "重置",
+                "save": "保存",
+                "loading": "加载中...",
+            },
+            "Japanese": {
+                "start": "開始",
+                "stop": "停止",
+                "reset": "リセット",
+                "save": "保存",
+                "loading": "読み込み中...",
+            },
+            "Arabic": {
+                "start": "بدء",
+                "stop": "إيقاف",
+                "reset": "إعادة تعيين",
+                "save": "حفظ",
+                "loading": "جار التحميل...",
+            },
+            "Portuguese": {
+                "start": "Iniciar",
+                "stop": "Parar",
+                "reset": "Redefinir",
+                "save": "Salvar",
+                "loading": "Carregando...",
+            },
+            "Russian": {
+                "start": "Начать",
+                "stop": "Стоп",
+                "reset": "Сбросить",
+                "save": "Сохранить",
+                "loading": "Загрузка...",
+            },
+            "Italian": {
+                "start": "Avvia",
+                "stop": "Ferma",
+                "reset": "Reimposta",
+                "save": "Salva",
+                "loading": "Caricamento...",
+            },
+            "Korean": {
+                "start": "시작",
+                "stop": "중지",
+                "reset": "초기화",
+                "save": "저장",
+                "loading": "로드 중...",
+            },
+            "Bengali": {
+                "start": "শুরু করুন",
+                "stop": "বন্ধ করুন",
+                "reset": "রিসেট",
+                "save": "সংরক্ষণ",
+                "loading": "লোড হচ্ছে...",
+            },
+            "Tamil": {
+                "start": "தொடங்கு",
+                "stop": "நிறுத்து",
+                "reset": "மீட்டமை",
+                "save": "சேமி",
+                "loading": "ஏற்றுகிறது...",
+            },
+            "Urdu": {
+                "start": "شروع کریں",
+                "stop": "روکیں",
+                "reset": "دوبارہ ترتیب دیں",
+                "save": "محفوظ کریں",
+                "loading": "لوڈ ہو رہا ہے...",
+            },
         }
         return UI_STRINGS.get(language_name, UI_STRINGS["English"])
 

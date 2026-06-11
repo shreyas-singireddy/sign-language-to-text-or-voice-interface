@@ -3,13 +3,13 @@ SignBridge AI — Upgraded Analytics Dashboard (Layer 9)
 Full Plotly analytics platform with gesture heatmaps, emotion distribution,
 confidence histograms, language breakdown, and daily activity charts.
 """
-import streamlit as st
-import pandas as pd
+
 import plotly.graph_objects as go
-import plotly.express as px
-from app.services.database_service import db_service
-from analytics.report_generator import report_generator
+import streamlit as st
+
 from analytics.metrics_collector import metrics_collector
+from analytics.report_generator import report_generator
+from app.services.database_service import db_service
 
 # ─── Page Header ────────────────────────────────────────────────────────────────
 st.markdown(
@@ -21,7 +21,7 @@ st.markdown(
         Real-time translation telemetry, gesture heatmaps, confidence tracking, and language distribution.
     </p>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 st.markdown("---")
 
@@ -39,17 +39,19 @@ with kpi_col1:
             <span style="font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase;">Total Translations</span>
             <h2 style="font-size: 2.8rem; margin: 5px 0 0 0;">{summary['total_translations']}</h2>
         </div>
-        """, unsafe_allow_html=True
+        """,
+        unsafe_allow_html=True,
     )
 with kpi_col2:
-    avg_conf_pct = int(summary['average_confidence'] * 100)
+    avg_conf_pct = int(summary["average_confidence"] * 100)
     st.markdown(
         f"""
         <div class="bauhaus-card card-blue" style="padding: 15px; text-align: center;">
             <span style="font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase;">Avg Confidence</span>
             <h2 style="font-size: 2.8rem; margin: 5px 0 0 0;">{avg_conf_pct}%</h2>
         </div>
-        """, unsafe_allow_html=True
+        """,
+        unsafe_allow_html=True,
     )
 with kpi_col3:
     latency = summary.get("average_latency_ms", 0)
@@ -59,7 +61,8 @@ with kpi_col3:
             <span style="font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase;">Avg Latency</span>
             <h2 style="font-size: 2.8rem; margin: 5px 0 0 0;">{latency:.0f}<small style="font-size: 1.2rem;">ms</small></h2>
         </div>
-        """, unsafe_allow_html=True
+        """,
+        unsafe_allow_html=True,
     )
 with kpi_col4:
     db_status = db_analytics.get("db_status", "Unknown")
@@ -70,7 +73,8 @@ with kpi_col4:
             <span style="font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase;">Database</span>
             <h2 style="font-size: 2.8rem; margin: 5px 0 0 0; color: {status_color} !important;">{db_status}</h2>
         </div>
-        """, unsafe_allow_html=True
+        """,
+        unsafe_allow_html=True,
     )
 
 st.markdown("---")
@@ -147,7 +151,9 @@ with pie_col:
             go.Pie(
                 labels=emotion_data["labels"],
                 values=emotion_data["values"],
-                marker=dict(colors=emotion_data["colors"], line=dict(color="#121212", width=2)),
+                marker=dict(
+                    colors=emotion_data["colors"], line=dict(color="#121212", width=2)
+                ),
                 hole=0.4,
                 textfont=dict(family="Outfit", size=13, color="#FFFFFF"),
             )
@@ -225,7 +231,9 @@ else:
 
 # ─── METRICS RESET CONTROL ───────────────────────────────────────────────────────
 st.markdown("---")
-if st.button("🔄 Reset Live Session Metrics", key="btn_reset_metrics", use_container_width=True):
+if st.button(
+    "🔄 Reset Live Session Metrics", key="btn_reset_metrics", use_container_width=True
+):
     metrics_collector.reset()
     st.success("Live session metrics reset.")
     st.rerun()

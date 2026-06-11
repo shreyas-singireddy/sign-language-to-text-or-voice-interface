@@ -1,22 +1,36 @@
 # Spec-Kit: Body Tracking Subsystem
 
-## 1. Overview & Objectives
-The Body Tracking Subsystem extracts torso, shoulder, and arm landmarks to evaluate pose dynamics and support gesture interpretation that incorporates body movement.
+## 1. Purpose
+The Body Tracking Subsystem extracts upper body/torso skeletal structures, tracking shoulders, elbows, and wrists to normalize hand coordinates.
 
-## 2. Requirements & Traceability
-- **REQ-BT-001**: Must track upper body/torso skeleton structures utilizing MediaPipe Pose.
-- **REQ-BT-002**: Must return elbow, wrist, and shoulder coordinates for translation normalization.
+## 2. Requirements
+- **REQ-BT-001**: Track upper-body skeletal landmarks utilizing MediaPipe Pose.
+- **REQ-BT-002**: Compute shoulder width parameters to normalize hand landmark coordinates relative to body scale.
 
-## 3. Interface Definitions
-```python
-class BodyTracker:
-    def process_frame(self, frame: np.ndarray) -> dict:
-        """Processes video frame to extract pose landmarks.
-        Returns:
-            dict containing wrist, elbow, and shoulder coordinates.
-        """
-        pass
-```
+## 3. Architecture
+- **Inference Engine**: MediaPipe Pose model.
+- **Input**: RGB video stream frames.
+- **Output**: 33 3D skeletal landmarks.
 
-## 4. Verification Plan
-- **Test-BT-001**: Verified via `tests/test_body_tracking.py` to validate coordinate formatting and model load accuracy.
+## 4. Acceptance Criteria
+- Shoulders must be detected when user is seated 1–2 meters in front of the camera.
+- Shoulder coordinates must scale hand coordinates correctly to ensure cross-device consistency.
+
+## 5. Performance Targets
+- Torso coordinate scaling latency: <= 15ms.
+
+## 6. Security Considerations
+- Coordinates represent abstract body frames; no biometrics or body shapes are stored.
+
+## 7. Risks
+- Loose clothing can alter skeletal landmark positions. Normalizers must use moving averages to smooth coordinate drift.
+
+## 8. Test Cases
+- **Test-BT-1**: Validate shoulder-width scaling calculation.
+- **Test-BT-2**: Test landmark normalizer output structure.
+
+## 9. Verification Procedures
+1. Run pytest suite:
+   ```bash
+   pytest tests/test_scaffolding.py -k "test_landmark_normalizer"
+   ```

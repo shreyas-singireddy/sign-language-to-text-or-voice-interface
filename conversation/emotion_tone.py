@@ -3,67 +3,168 @@ SignBridge AI — Layer 7: Emotion Tone Detector
 Classifies the emotional tone of a sign sequence or translated text
 to enable appropriate response suggestions and UI adjustments.
 """
-from typing import List, Dict
-from conversation.schemas import EmotionTone
+
 from config.logger import setup_logger
+from conversation.schemas import EmotionTone
 
 logger = setup_logger("conversation.emotion_tone")
 
 # Token sets mapped to emotion categories
-EMOTION_TOKEN_MAP: Dict[EmotionTone, List[str]] = {
+EMOTION_TOKEN_MAP: dict[EmotionTone, list[str]] = {
     EmotionTone.URGENT: [
-        "EMERGENCY", "SOS", "DANGER", "FIRE", "HELP", "CALL", "POLICE",
-        "AMBULANCE", "DOCTOR", "HURRY", "NOW", "FAST", "CRITICAL",
-        "PAIN", "HURT", "CHEST", "BREATHE", "FALL", "STUCK", "TRAPPED"
+        "EMERGENCY",
+        "SOS",
+        "DANGER",
+        "FIRE",
+        "HELP",
+        "CALL",
+        "POLICE",
+        "AMBULANCE",
+        "DOCTOR",
+        "HURRY",
+        "NOW",
+        "FAST",
+        "CRITICAL",
+        "PAIN",
+        "HURT",
+        "CHEST",
+        "BREATHE",
+        "FALL",
+        "STUCK",
+        "TRAPPED",
     ],
     EmotionTone.DISTRESSED: [
-        "SORRY", "SAD", "CRY", "SCARED", "AFRAID", "LOST", "CONFUSED",
-        "DON'T KNOW", "ALONE", "HELP ME", "PLEASE", "NEED", "WORRY",
-        "BAD", "WRONG", "PROBLEM", "TROUBLE", "DIZZY", "SICK"
+        "SORRY",
+        "SAD",
+        "CRY",
+        "SCARED",
+        "AFRAID",
+        "LOST",
+        "CONFUSED",
+        "DON'T KNOW",
+        "ALONE",
+        "HELP ME",
+        "PLEASE",
+        "NEED",
+        "WORRY",
+        "BAD",
+        "WRONG",
+        "PROBLEM",
+        "TROUBLE",
+        "DIZZY",
+        "SICK",
     ],
     EmotionTone.GRATEFUL: [
-        "THANK", "THANKS", "THANK YOU", "APPRECIATE", "GOOD", "GREAT",
-        "WONDERFUL", "HAPPY", "LOVE", "BEST", "NICE", "PERFECT",
-        "AMAZING", "WONDERFUL", "EXCELLENT"
+        "THANK",
+        "THANKS",
+        "THANK YOU",
+        "APPRECIATE",
+        "GOOD",
+        "GREAT",
+        "WONDERFUL",
+        "HAPPY",
+        "LOVE",
+        "BEST",
+        "NICE",
+        "PERFECT",
+        "AMAZING",
+        "WONDERFUL",
+        "EXCELLENT",
     ],
     EmotionTone.FRIENDLY: [
-        "HELLO", "HI", "GOOD MORNING", "GOOD NIGHT", "HOW ARE YOU",
-        "NICE", "MEET", "WELCOME", "BYE", "GOODBYE", "PLEASE",
-        "FRIEND", "FAMILY", "LOVE", "CARE", "HAPPY"
+        "HELLO",
+        "HI",
+        "GOOD MORNING",
+        "GOOD NIGHT",
+        "HOW ARE YOU",
+        "NICE",
+        "MEET",
+        "WELCOME",
+        "BYE",
+        "GOODBYE",
+        "PLEASE",
+        "FRIEND",
+        "FAMILY",
+        "LOVE",
+        "CARE",
+        "HAPPY",
     ],
     EmotionTone.CONFUSED: [
-        "WHAT", "WHERE", "WHY", "HOW", "WHO", "WHEN", "UNDERSTAND",
-        "NOT UNDERSTAND", "REPEAT", "AGAIN", "EXPLAIN", "SLOW",
-        "HELP EXPLAIN", "CONFUSED", "MEAN", "LOST"
+        "WHAT",
+        "WHERE",
+        "WHY",
+        "HOW",
+        "WHO",
+        "WHEN",
+        "UNDERSTAND",
+        "NOT UNDERSTAND",
+        "REPEAT",
+        "AGAIN",
+        "EXPLAIN",
+        "SLOW",
+        "HELP EXPLAIN",
+        "CONFUSED",
+        "MEAN",
+        "LOST",
     ],
 }
 
 # Text phrase patterns mapped to emotion
-EMOTION_TEXT_PATTERNS: Dict[EmotionTone, List[str]] = {
+EMOTION_TEXT_PATTERNS: dict[EmotionTone, list[str]] = {
     EmotionTone.URGENT: [
-        "emergency", "danger", "help me", "call police", "call ambulance",
-        "need doctor", "chest pain", "cannot breathe", "can't breathe",
-        "immediate", "right now", "hurry", "sos"
+        "emergency",
+        "danger",
+        "help me",
+        "call police",
+        "call ambulance",
+        "need doctor",
+        "chest pain",
+        "cannot breathe",
+        "can't breathe",
+        "immediate",
+        "right now",
+        "hurry",
+        "sos",
     ],
     EmotionTone.DISTRESSED: [
-        "i am lost", "i don't know", "i am scared", "i am afraid",
-        "please help", "i am alone", "something is wrong", "i am sick"
+        "i am lost",
+        "i don't know",
+        "i am scared",
+        "i am afraid",
+        "please help",
+        "i am alone",
+        "something is wrong",
+        "i am sick",
     ],
     EmotionTone.GRATEFUL: [
-        "thank you", "i appreciate", "that's great", "wonderful", "perfect"
+        "thank you",
+        "i appreciate",
+        "that's great",
+        "wonderful",
+        "perfect",
     ],
     EmotionTone.FRIENDLY: [
-        "hello", "good morning", "good evening", "good night", "nice to meet",
-        "how are you", "goodbye", "have a great"
+        "hello",
+        "good morning",
+        "good evening",
+        "good night",
+        "nice to meet",
+        "how are you",
+        "goodbye",
+        "have a great",
     ],
     EmotionTone.CONFUSED: [
-        "i don't understand", "i do not understand", "can you repeat",
-        "what does that mean", "please explain", "i'm confused"
+        "i don't understand",
+        "i do not understand",
+        "can you repeat",
+        "what does that mean",
+        "please explain",
+        "i'm confused",
     ],
 }
 
 # Emotion → response suggestion templates
-RESPONSE_SUGGESTIONS: Dict[EmotionTone, str] = {
+RESPONSE_SUGGESTIONS: dict[EmotionTone, str] = {
     EmotionTone.URGENT: "🚨 Urgent situation detected. Respond quickly or call emergency services.",
     EmotionTone.DISTRESSED: "💙 This person needs reassurance. Respond calmly and offer assistance.",
     EmotionTone.GRATEFUL: "😊 They're expressing gratitude. A warm response is appropriate.",
@@ -89,7 +190,7 @@ class EmotionToneDetector:
         EmotionTone.NEUTRAL,
     ]
 
-    def detect_from_tokens(self, tokens: List[str]) -> EmotionTone:
+    def detect_from_tokens(self, tokens: list[str]) -> EmotionTone:
         """
         Detect emotion from a list of sign language tokens.
 
@@ -133,7 +234,7 @@ class EmotionToneDetector:
 
         return EmotionTone.NEUTRAL
 
-    def detect(self, tokens: List[str], text: str) -> EmotionTone:
+    def detect(self, tokens: list[str], text: str) -> EmotionTone:
         """
         Detect emotion using both tokens and text, tokens take priority.
 
@@ -159,7 +260,9 @@ class EmotionToneDetector:
         Returns:
             Response suggestion string for display in the UI
         """
-        return RESPONSE_SUGGESTIONS.get(emotion, RESPONSE_SUGGESTIONS[EmotionTone.NEUTRAL])
+        return RESPONSE_SUGGESTIONS.get(
+            emotion, RESPONSE_SUGGESTIONS[EmotionTone.NEUTRAL]
+        )
 
     def get_ui_color(self, emotion: EmotionTone) -> str:
         """

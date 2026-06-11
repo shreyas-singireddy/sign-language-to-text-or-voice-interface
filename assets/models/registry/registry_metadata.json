@@ -1,7 +1,7 @@
 {
     "active_versions": {
         "alphabet": null,
-        "word": "v_word_1781168619",
+        "word": "v_word_1781173931",
         "sentence": null
     },
     "models": [
@@ -201,12 +201,12 @@
             ]
         },
         {
-            "version": "v_word_1781168168",
+            "version": "v_word_1781173667",
             "model_type": "word",
             "model_name": "LSTM",
             "filename": "dummy.pt",
-            "filepath": "v_word_1781168168\\dummy.pt",
-            "timestamp": 1781168168,
+            "filepath": "v_word_1781173667\\dummy.pt",
+            "timestamp": 1781173667,
             "metrics": {
                 "acc": 0.9
             },
@@ -216,12 +216,12 @@
             ]
         },
         {
-            "version": "v_word_1781168452",
+            "version": "v_word_1781173767",
             "model_type": "word",
             "model_name": "LSTM",
             "filename": "dummy.pt",
-            "filepath": "v_word_1781168452\\dummy.pt",
-            "timestamp": 1781168452,
+            "filepath": "v_word_1781173767\\dummy.pt",
+            "timestamp": 1781173767,
             "metrics": {
                 "acc": 0.9
             },
@@ -231,12 +231,12 @@
             ]
         },
         {
-            "version": "v_word_1781168619",
+            "version": "v_word_1781173931",
             "model_type": "word",
             "model_name": "LSTM",
             "filename": "dummy.pt",
-            "filepath": "v_word_1781168619\\dummy.pt",
-            "timestamp": 1781168619,
+            "filepath": "v_word_1781173931\\dummy.pt",
+            "timestamp": 1781173931,
             "metrics": {
                 "acc": 0.9
             },

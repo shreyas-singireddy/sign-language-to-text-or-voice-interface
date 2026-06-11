@@ -1,15 +1,17 @@
 import datetime
 import json
-from pathlib import Path
+
 from bson import ObjectId
-from database.mongodb import db_conn
+
 from config.config import DATASETS_DIR
 from config.logger import setup_logger
+from database.mongodb import db_conn
 
 logger = setup_logger("services.database")
 
 # Local fallback storage path
 OFFLINE_HISTORY_FILE = DATASETS_DIR / "offline_history.json"
+
 
 class DatabaseService:
     def __init__(self):
@@ -23,17 +25,23 @@ class DatabaseService:
     def _get_analytics_collection(self):
         return db_conn.get_collection("system_analytics")
 
-    def log_translation(self, detected_gestures: list, translated_text: str, confidence: float, language: str) -> dict:
+    def log_translation(
+        self,
+        detected_gestures: list,
+        translated_text: str,
+        confidence: float,
+        language: str,
+    ) -> dict:
         """
         Saves a translation record. Works online (MongoDB Atlas) or offline (local JSON).
         """
         record = {
-            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "timestamp": datetime.datetime.now(datetime.UTC).isoformat(),
             "detectedGestures": detected_gestures,
             "translatedText": translated_text,
             "confidence": confidence,
             "language": language,
-            "is_offline": False
+            "is_offline": False,
         }
 
         col = self._get_history_collection()
@@ -41,25 +49,29 @@ class DatabaseService:
             try:
                 # Add BSON DateTime for MongoDB
                 mongo_record = record.copy()
-                mongo_record["timestamp"] = datetime.datetime.now(datetime.timezone.utc)
+                mongo_record["timestamp"] = datetime.datetime.now(datetime.UTC)
                 result = col.insert_one(mongo_record)
                 record["id"] = str(result.inserted_id)
                 logger.info(f"Logged translation to MongoDB: {translated_text}")
                 return record
             except Exception as e:
-                logger.error(f"Error logging to MongoDB: {e}. Falling back to local storage.")
+                logger.error(
+                    f"Error logging to MongoDB: {e}. Falling back to local storage."
+                )
 
         # Local Fallback
         record["is_offline"] = True
-        record["id"] = f"offline_{int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)}"
+        record["id"] = (
+            f"offline_{int(datetime.datetime.now(datetime.UTC).timestamp() * 1000)}"
+        )
         self._log_offline(record)
         return record
 
     def _log_offline(self, record: dict):
         try:
-            with open(OFFLINE_HISTORY_FILE, "r") as f:
+            with open(OFFLINE_HISTORY_FILE) as f:
                 history = json.load(f)
-            history.insert(0, record) # Prepend new record
+            history.insert(0, record)  # Prepend new record
             # Keep history capped at 100 entries locally
             history = history[:100]
             with open(OFFLINE_HISTORY_FILE, "w") as f:
@@ -79,16 +91,22 @@ class DatabaseService:
                 cursor = col.find().sort("timestamp", -1).limit(limit)
                 for doc in cursor:
                     doc["id"] = str(doc.get("_id"))
-                    doc["timestamp"] = doc["timestamp"].isoformat() if isinstance(doc["timestamp"], datetime.datetime) else doc["timestamp"]
+                    doc["timestamp"] = (
+                        doc["timestamp"].isoformat()
+                        if isinstance(doc["timestamp"], datetime.datetime)
+                        else doc["timestamp"]
+                    )
                     doc.pop("_id", None)
                     records.append(doc)
                 return records
             except Exception as e:
-                logger.error(f"Failed to fetch history from MongoDB: {e}. Reading local files.")
+                logger.error(
+                    f"Failed to fetch history from MongoDB: {e}. Reading local files."
+                )
 
         # Fallback to local files
         try:
-            with open(OFFLINE_HISTORY_FILE, "r") as f:
+            with open(OFFLINE_HISTORY_FILE) as f:
                 records = json.load(f)
             return records[:limit]
         except Exception as e:
@@ -101,7 +119,7 @@ class DatabaseService:
         """
         if record_id.startswith("offline_"):
             try:
-                with open(OFFLINE_HISTORY_FILE, "r") as f:
+                with open(OFFLINE_HISTORY_FILE) as f:
                     history = json.load(f)
                 updated_history = [r for r in history if r.get("id") != record_id]
                 with open(OFFLINE_HISTORY_FILE, "w") as f:
@@ -129,7 +147,7 @@ class DatabaseService:
         """
         history = self.get_history(limit=500)
         total_translations = len(history)
-        
+
         # Calculate stats
         avg_confidence = 0.0
         lang_counts = {}
@@ -142,7 +160,7 @@ class DatabaseService:
                 conf_sum += r.get("confidence", 0.0)
                 lang = r.get("language", "Unknown")
                 lang_counts[lang] = lang_counts.get(lang, 0) + 1
-                
+
                 for gesture in r.get("detectedGestures", []):
                     gesture_counts[gesture] = gesture_counts.get(gesture, 0) + 1
 
@@ -150,7 +168,7 @@ class DatabaseService:
                 dt = r.get("timestamp", "")[:10]
                 if dt:
                     daily_counts[dt] = daily_counts.get(dt, 0) + 1
-            
+
             avg_confidence = conf_sum / total_translations
 
         return {
@@ -159,7 +177,8 @@ class DatabaseService:
             "language_distribution": lang_counts,
             "gesture_frequency": gesture_counts,
             "daily_activity": daily_counts,
-            "db_status": "Online" if db_conn.is_connected() else "Offline"
+            "db_status": "Online" if db_conn.is_connected() else "Offline",
         }
+
 
 db_service = DatabaseService()

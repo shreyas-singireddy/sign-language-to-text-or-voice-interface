@@ -1,9 +1,11 @@
 import numpy as np
-from ai_engine.inference.pipeline import inference_pipeline
+
 from ai_engine.datasets.dataset_manager import dataset_manager
+from ai_engine.inference.pipeline import inference_pipeline
 from config.logger import setup_logger
 
 logger = setup_logger("services.ai")
+
 
 class AIService:
     def __init__(self):
@@ -41,5 +43,6 @@ class AIService:
         Deletes samples for a specific label.
         """
         return self.datasets.clear_label(label)
+
 
 ai_service = AIService()

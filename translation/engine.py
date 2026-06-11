@@ -11,21 +11,21 @@ Orchestrates the full sign-to-text translation pipeline:
 This engine is the sole public API for Layer 5.
 All other layers call translation_engine.translate().
 """
-import time
-from datetime import datetime, timezone
-from typing import List, Optional
 
+import time
+from datetime import UTC, datetime
+
+from config.logger import setup_logger
+from translation.context_manager import context_manager
+from translation.grammar_fixer import grammar_fixer
+from translation.providers.google_adapter import GoogleTranslateAdapter
+from translation.providers.rule_based import RuleBasedProvider
 from translation.schemas import (
+    GrammarAnalysis,
+    TranslationProvider,
     TranslationRequest,
     TranslationResult,
-    TranslationProvider,
-    GrammarAnalysis,
 )
-from translation.grammar_fixer import grammar_fixer
-from translation.context_manager import context_manager
-from translation.providers.rule_based import RuleBasedProvider
-from translation.providers.google_adapter import GoogleTranslateAdapter
-from config.logger import setup_logger
 
 logger = setup_logger("translation.engine")
 
@@ -68,7 +68,9 @@ class TranslationEngine:
         start_time = time.perf_counter()
 
         # ── Step 1: Normalize tokens ──────────────────────────────────────────
-        normalized_tokens = grammar_fixer.normalize_token_sequence(request.recognized_signs)
+        normalized_tokens = grammar_fixer.normalize_token_sequence(
+            request.recognized_signs
+        )
         if not normalized_tokens:
             logger.warning("Empty token sequence after normalization.")
             return self._empty_result(request)
@@ -78,7 +80,9 @@ class TranslationEngine:
 
         # ── Step 3: Resolve provider ─────────────────────────────────────────
         provider_key = request.provider
-        provider = self._providers.get(provider_key, self._providers[self._default_provider])
+        provider = self._providers.get(
+            provider_key, self._providers[self._default_provider]
+        )
 
         # ── Step 4: Retrieve context ─────────────────────────────────────────
         session_id = context_manager.get_or_create_session(None)
@@ -95,18 +99,24 @@ class TranslationEngine:
         if request.target_language == "English":
             final_translation = english_corrected
         else:
-            final_translation = provider.translate_to_language(english_corrected, request.target_language)
-            final_translation = grammar_fixer.fix(final_translation, target_language=request.target_language)
+            final_translation = provider.translate_to_language(
+                english_corrected, request.target_language
+            )
+            final_translation = grammar_fixer.fix(
+                final_translation, target_language=request.target_language
+            )
 
         # ── Step 8: Generate alternatives ────────────────────────────────────
-        alternatives = self._generate_alternatives(normalized_tokens, english_corrected, request.target_language)
+        alternatives = self._generate_alternatives(
+            normalized_tokens, english_corrected, request.target_language
+        )
 
         # ── Step 9: Store in context window ──────────────────────────────────
         context_manager.add_turn(
             session_id=session_id,
             signs=normalized_tokens,
             translation=english_corrected,
-            language=request.target_language
+            language=request.target_language,
         )
 
         elapsed_ms = round((time.perf_counter() - start_time) * 1000, 2)
@@ -129,15 +139,15 @@ class TranslationEngine:
                 "elapsed_ms": elapsed_ms,
                 "normalized_tokens": normalized_tokens,
                 "session_id": session_id,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+                "timestamp": datetime.now(UTC).isoformat(),
+            },
         )
 
     def translate_simple(
         self,
-        signs: List[str],
+        signs: list[str],
         target_language: str = "English",
-        confidence: float = 1.0
+        confidence: float = 1.0,
     ) -> str:
         """
         Simplified translation interface returning just the final text string.
@@ -159,9 +169,13 @@ class TranslationEngine:
         result = self.translate(request)
         return result.final_translation
 
-    def _analyze_grammar(self, raw_tokens: List[str], normalized: List[str]) -> GrammarAnalysis:
+    def _analyze_grammar(
+        self, raw_tokens: list[str], normalized: list[str]
+    ) -> GrammarAnalysis:
         """Build a GrammarAnalysis object for diagnostic reporting."""
-        subject_detected = any(t in {"I", "YOU", "HE", "SHE", "WE", "THEY"} for t in normalized)
+        subject_detected = any(
+            t in {"I", "YOU", "HE", "SHE", "WE", "THEY"} for t in normalized
+        )
 
         # Tense inference from temporal keywords
         future_markers = {"WILL", "GOING", "TOMORROW", "LATER", "SOON"}
@@ -176,9 +190,29 @@ class TranslationEngine:
             tense = "present"
 
         # Sentence type inference
-        question_markers = {"WHAT", "WHERE", "WHO", "WHEN", "WHY", "HOW", "CAN", "DO", "IS", "ARE"}
+        question_markers = {
+            "WHAT",
+            "WHERE",
+            "WHO",
+            "WHEN",
+            "WHY",
+            "HOW",
+            "CAN",
+            "DO",
+            "IS",
+            "ARE",
+        }
         exclamation_markers = {"EMERGENCY", "SOS", "DANGER", "HELP", "FIRE"}
-        imperative_markers = {"PLEASE", "CALL", "GIVE", "BRING", "TAKE", "GO", "STOP", "COME"}
+        imperative_markers = {
+            "PLEASE",
+            "CALL",
+            "GIVE",
+            "BRING",
+            "TAKE",
+            "GO",
+            "STOP",
+            "COME",
+        }
 
         if token_set & exclamation_markers:
             sentence_type = "exclamatory"
@@ -202,11 +236,8 @@ class TranslationEngine:
         )
 
     def _generate_alternatives(
-        self,
-        tokens: List[str],
-        english_base: str,
-        target_language: str
-    ) -> List[str]:
+        self, tokens: list[str], english_base: str, target_language: str
+    ) -> list[str]:
         """
         Generate 1-2 alternative phrasings for the translation.
         Used in the UI to offer the user phrasing choices.
@@ -223,7 +254,9 @@ class TranslationEngine:
                 if target_language == "English":
                     alternatives.append(alt_english)
                 else:
-                    alt_translated = rule_provider.translate_to_language(alt_english, target_language)
+                    alt_translated = rule_provider.translate_to_language(
+                        alt_english, target_language
+                    )
                     if alt_translated != english_base:
                         alternatives.append(alt_translated)
 
@@ -248,7 +281,7 @@ class TranslationEngine:
             ),
             context_applied=False,
             alternatives=[],
-            metadata={"error": "empty_token_sequence"}
+            metadata={"error": "empty_token_sequence"},
         )
 
     def set_default_provider(self, provider: TranslationProvider) -> None:

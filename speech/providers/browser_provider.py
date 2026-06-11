@@ -4,21 +4,33 @@ Bridges Streamlit's Python backend to the browser's native Web Speech API
 via injected JavaScript. Enables on-device TTS with zero latency and
 no external dependencies.
 """
-from typing import List
-from speech.providers.base import BaseTTSProvider
-from speech.schemas import TTSResult, TTSProvider, AvailableVoice
+
 from config.logger import setup_logger
+from speech.providers.base import BaseTTSProvider
+from speech.schemas import AvailableVoice, TTSProvider, TTSResult
 
 logger = setup_logger("speech.providers.browser")
 
 # Language name → BCP-47 codes supported by Web Speech API
 BROWSER_LANG_MAP = {
-    "en-US": "en-US", "en-GB": "en-GB", "en-AU": "en-AU",
-    "hi-IN": "hi-IN", "te-IN": "te-IN", "es-ES": "es-ES",
-    "fr-FR": "fr-FR", "de-DE": "de-DE", "zh-CN": "zh-CN",
-    "ja-JP": "ja-JP", "ar-SA": "ar-SA", "pt-PT": "pt-BR",
-    "ru-RU": "ru-RU", "it-IT": "it-IT", "ko-KR": "ko-KR",
-    "bn-IN": "bn-IN", "ta-IN": "ta-IN", "ur-PK": "ur-PK",
+    "en-US": "en-US",
+    "en-GB": "en-GB",
+    "en-AU": "en-AU",
+    "hi-IN": "hi-IN",
+    "te-IN": "te-IN",
+    "es-ES": "es-ES",
+    "fr-FR": "fr-FR",
+    "de-DE": "de-DE",
+    "zh-CN": "zh-CN",
+    "ja-JP": "ja-JP",
+    "ar-SA": "ar-SA",
+    "pt-PT": "pt-BR",
+    "ru-RU": "ru-RU",
+    "it-IT": "it-IT",
+    "ko-KR": "ko-KR",
+    "bn-IN": "bn-IN",
+    "ta-IN": "ta-IN",
+    "ur-PK": "ur-PK",
     "en": "en-US",
 }
 
@@ -39,7 +51,9 @@ class BrowserTTSProvider(BaseTTSProvider):
     def audio_format(self) -> str:
         return "browser_native"
 
-    def synthesize(self, text: str, lang_code: str = "en-US", slow: bool = False, tld: str = "com") -> TTSResult:
+    def synthesize(
+        self, text: str, lang_code: str = "en-US", slow: bool = False, tld: str = "com"
+    ) -> TTSResult:
         """
         Trigger browser Web Speech API to speak text.
         Returns empty audio bytes (audio plays directly in the browser).
@@ -52,7 +66,7 @@ class BrowserTTSProvider(BaseTTSProvider):
                 text_synthesized=text,
                 lang_code=lang_code,
                 success=False,
-                error="Empty text"
+                error="Empty text",
             )
 
         lang = BROWSER_LANG_MAP.get(lang_code, "en-US")
@@ -68,7 +82,9 @@ class BrowserTTSProvider(BaseTTSProvider):
             success=True,
         )
 
-    def get_javascript_snippet(self, text: str, lang_code: str = "en-US", slow: bool = False) -> str:
+    def get_javascript_snippet(
+        self, text: str, lang_code: str = "en-US", slow: bool = False
+    ) -> str:
         """
         Generate the JavaScript snippet to inject into Streamlit via st.components.v1.html().
         Call this separately to actually trigger browser TTS playback.
@@ -104,19 +120,75 @@ class BrowserTTSProvider(BaseTTSProvider):
         </script>
         """
 
-    def get_available_voices(self) -> List[AvailableVoice]:
+    def get_available_voices(self) -> list[AvailableVoice]:
         """
         Returns voices exposed through Web Speech API (browser-enumerated at runtime).
         Returns a representative list for UI display.
         """
         return [
-            AvailableVoice(id="browser_en_us",  name="Browser English (US)",  language="English",    lang_code="en-US",  provider=TTSProvider.BROWSER, accent="US"),
-            AvailableVoice(id="browser_en_gb",  name="Browser English (UK)",  language="English",    lang_code="en-GB",  provider=TTSProvider.BROWSER, accent="UK"),
-            AvailableVoice(id="browser_hi",     name="Browser Hindi",         language="Hindi",      lang_code="hi-IN",  provider=TTSProvider.BROWSER),
-            AvailableVoice(id="browser_es",     name="Browser Spanish",       language="Spanish",    lang_code="es-ES",  provider=TTSProvider.BROWSER),
-            AvailableVoice(id="browser_fr",     name="Browser French",        language="French",     lang_code="fr-FR",  provider=TTSProvider.BROWSER),
-            AvailableVoice(id="browser_de",     name="Browser German",        language="German",     lang_code="de-DE",  provider=TTSProvider.BROWSER),
-            AvailableVoice(id="browser_zh",     name="Browser Chinese",       language="Chinese",    lang_code="zh-CN",  provider=TTSProvider.BROWSER),
-            AvailableVoice(id="browser_ja",     name="Browser Japanese",      language="Japanese",   lang_code="ja-JP",  provider=TTSProvider.BROWSER),
-            AvailableVoice(id="browser_ar",     name="Browser Arabic",        language="Arabic",     lang_code="ar-SA",  provider=TTSProvider.BROWSER),
+            AvailableVoice(
+                id="browser_en_us",
+                name="Browser English (US)",
+                language="English",
+                lang_code="en-US",
+                provider=TTSProvider.BROWSER,
+                accent="US",
+            ),
+            AvailableVoice(
+                id="browser_en_gb",
+                name="Browser English (UK)",
+                language="English",
+                lang_code="en-GB",
+                provider=TTSProvider.BROWSER,
+                accent="UK",
+            ),
+            AvailableVoice(
+                id="browser_hi",
+                name="Browser Hindi",
+                language="Hindi",
+                lang_code="hi-IN",
+                provider=TTSProvider.BROWSER,
+            ),
+            AvailableVoice(
+                id="browser_es",
+                name="Browser Spanish",
+                language="Spanish",
+                lang_code="es-ES",
+                provider=TTSProvider.BROWSER,
+            ),
+            AvailableVoice(
+                id="browser_fr",
+                name="Browser French",
+                language="French",
+                lang_code="fr-FR",
+                provider=TTSProvider.BROWSER,
+            ),
+            AvailableVoice(
+                id="browser_de",
+                name="Browser German",
+                language="German",
+                lang_code="de-DE",
+                provider=TTSProvider.BROWSER,
+            ),
+            AvailableVoice(
+                id="browser_zh",
+                name="Browser Chinese",
+                language="Chinese",
+                lang_code="zh-CN",
+                provider=TTSProvider.BROWSER,
+            ),
+            AvailableVoice(
+                id="browser_ja",
+                name="Browser Japanese",
+                language="Japanese",
+                lang_code="ja-JP",
+                provider=TTSProvider.BROWSER,
+            ),
+            AvailableVoice(
+                id="browser_ar",
+                name="Browser Arabic",
+                language="Arabic",
+                lang_code="ar-SA",
+                provider=TTSProvider.BROWSER,
+            ),
         ]

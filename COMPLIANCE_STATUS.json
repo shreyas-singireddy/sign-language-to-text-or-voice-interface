@@ -1,0 +1,247 @@
+[
+  {
+    "Requirement": "GNU AGPLv3 License",
+    "File": "LICENSE",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% License compliance"
+  },
+  {
+    "Requirement": "Documentation: README.md",
+    "File": "README.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Documentation coverage"
+  },
+  {
+    "Requirement": "Documentation: CONTRIBUTING.md",
+    "File": "CONTRIBUTING.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Documentation coverage"
+  },
+  {
+    "Requirement": "Documentation: USER_MANUAL.md",
+    "File": "USER_MANUAL.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Documentation coverage"
+  },
+  {
+    "Requirement": "Documentation: AGENTS.md",
+    "File": "AGENTS.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Documentation coverage"
+  },
+  {
+    "Requirement": "Documentation: CHANGELOG.md",
+    "File": "CHANGELOG.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Documentation coverage"
+  },
+  {
+    "Requirement": "Documentation: SECURITY.md",
+    "File": "SECURITY.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Documentation coverage"
+  },
+  {
+    "Requirement": "Documentation: CODE_OF_CONDUCT.md",
+    "File": "CODE_OF_CONDUCT.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Documentation coverage"
+  },
+  {
+    "Requirement": "Documentation: SECURITY_POLICY.md",
+    "File": "SECURITY_POLICY.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Documentation coverage"
+  },
+  {
+    "Requirement": "Documentation: SECURITY_AUDIT.md",
+    "File": "SECURITY_AUDIT.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Documentation coverage"
+  },
+  {
+    "Requirement": "Documentation: VERSIONING.md",
+    "File": "VERSIONING.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Documentation coverage"
+  },
+  {
+    "Requirement": "Documentation: CONVENTIONAL_COMMITS.md",
+    "File": "CONVENTIONAL_COMMITS.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Documentation coverage"
+  },
+  {
+    "Requirement": "Repository Health: .editorconfig",
+    "File": ".editorconfig",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Repository health config"
+  },
+  {
+    "Requirement": "Repository Health: .env.example",
+    "File": ".env.example",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Repository health config"
+  },
+  {
+    "Requirement": "Repository Health: .dockerignore",
+    "File": ".dockerignore",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Repository health config"
+  },
+  {
+    "Requirement": "Repository Health: Dockerfile",
+    "File": "Dockerfile",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Repository health config"
+  },
+  {
+    "Requirement": "Repository Health: backend/.dockerignore",
+    "File": "backend/.dockerignore",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Repository health config"
+  },
+  {
+    "Requirement": "Repository Health: frontend/.dockerignore",
+    "File": "frontend/.dockerignore",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Repository health config"
+  },
+  {
+    "Requirement": "Repository Health: backend/Dockerfile",
+    "File": "backend/Dockerfile",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Repository health config"
+  },
+  {
+    "Requirement": "Repository Health: frontend/Dockerfile",
+    "File": "frontend/Dockerfile",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Repository health config"
+  },
+  {
+    "Requirement": "Quality Tooling Config: pyproject.toml",
+    "File": "pyproject.toml",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Tooling config coverage"
+  },
+  {
+    "Requirement": "Quality Tooling Config: requirements-dev.txt",
+    "File": "requirements-dev.txt",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Tooling config coverage"
+  },
+  {
+    "Requirement": "Quality Tooling Config: cliff.toml",
+    "File": "cliff.toml",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Tooling config coverage"
+  },
+  {
+    "Requirement": "CI/CD and Git Hook: .pre-commit-config.yaml",
+    "File": ".pre-commit-config.yaml",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Pre-commit/CI automation"
+  },
+  {
+    "Requirement": "CI/CD and Git Hook: .gitlab-ci.yml",
+    "File": ".gitlab-ci.yml",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Pre-commit/CI automation"
+  },
+  {
+    "Requirement": "Spec-Kit: .specify/constitution.md",
+    "File": ".specify/constitution.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Spec-Kit coverage"
+  },
+  {
+    "Requirement": "Spec-Kit: .specify/templates/spec_template.md",
+    "File": ".specify/templates/spec_template.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Spec-Kit coverage"
+  },
+  {
+    "Requirement": "Spec-Kit: .specify/specs/hand_tracking.md",
+    "File": ".specify/specs/hand_tracking.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Spec-Kit coverage"
+  },
+  {
+    "Requirement": "Spec-Kit: .specify/specs/face_tracking.md",
+    "File": ".specify/specs/face_tracking.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Spec-Kit coverage"
+  },
+  {
+    "Requirement": "Spec-Kit: .specify/specs/body_tracking.md",
+    "File": ".specify/specs/body_tracking.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Spec-Kit coverage"
+  },
+  {
+    "Requirement": "Spec-Kit: .specify/specs/gesture_recognition.md",
+    "File": ".specify/specs/gesture_recognition.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Spec-Kit coverage"
+  },
+  {
+    "Requirement": "Spec-Kit: .specify/specs/live_translation.md",
+    "File": ".specify/specs/live_translation.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Spec-Kit coverage"
+  },
+  {
+    "Requirement": "Spec-Kit: .specify/specs/speech_engine.md",
+    "File": ".specify/specs/speech_engine.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Spec-Kit coverage"
+  },
+  {
+    "Requirement": "Spec-Kit: .specify/specs/telemetry_dashboard.md",
+    "File": ".specify/specs/telemetry_dashboard.md",
+    "Evidence": "OK",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Spec-Kit coverage"
+  },
+  {
+    "Requirement": "Git Release Tag Check (v1.0.0)",
+    "File": ".git",
+    "Evidence": "v1.0.0 exists",
+    "Status": "PASS",
+    "Expected Compliance Impact": "100% Git tagging compliance"
+  }
+]

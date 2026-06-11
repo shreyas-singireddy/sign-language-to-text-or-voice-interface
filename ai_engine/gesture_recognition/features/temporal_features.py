@@ -1,7 +1,7 @@
 import numpy as np
-from typing import Dict, Any, Tuple
 
-def compute_trajectory_length(sequence_history: list) -> Tuple[float, float]:
+
+def compute_trajectory_length(sequence_history: list) -> tuple[float, float]:
     """
     Computes cumulative trajectory path length for left and right hand centers.
     Input: list of flat arrays (seq_len, 1662)
@@ -22,7 +22,7 @@ def compute_trajectory_length(sequence_history: list) -> Tuple[float, float]:
     for frame in sequence_history:
         lh = frame[1404:1467].reshape((21, 3))
         rh = frame[1467:1530].reshape((21, 3))
-        
+
         # Avoid zero/uninitialized hand coords
         if np.any(lh > 0.0):
             lh_centers.append(np.mean(lh, axis=0))
@@ -31,14 +31,15 @@ def compute_trajectory_length(sequence_history: list) -> Tuple[float, float]:
 
     # Accumulate distances
     for i in range(1, len(lh_centers)):
-        left_path += float(np.linalg.norm(lh_centers[i] - lh_centers[i-1]))
-        
+        left_path += float(np.linalg.norm(lh_centers[i] - lh_centers[i - 1]))
+
     for i in range(1, len(rh_centers)):
-        right_path += float(np.linalg.norm(rh_centers[i] - rh_centers[i-1]))
+        right_path += float(np.linalg.norm(rh_centers[i] - rh_centers[i - 1]))
 
     return left_path, right_path
 
-def compute_rolling_summary(sequence_history: list) -> Dict[str, np.ndarray]:
+
+def compute_rolling_summary(sequence_history: list) -> dict[str, np.ndarray]:
     """
     Computes temporal descriptors (mean and standard deviation) for all coordinates
     over the sequence window.
@@ -50,10 +51,8 @@ def compute_rolling_summary(sequence_history: list) -> Dict[str, np.ndarray]:
     mean = np.mean(seq_arr, axis=0)
     std = np.std(seq_arr, axis=0)
 
-    return {
-        "mean": mean,
-        "std": std
-    }
+    return {"mean": mean, "std": std}
+
 
 def get_gesture_duration(sequence_history: list, fps: float = 25.0) -> float:
     """

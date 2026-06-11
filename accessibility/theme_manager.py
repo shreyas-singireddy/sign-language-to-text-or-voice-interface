@@ -4,8 +4,9 @@ Manages UI accessibility themes including high-contrast mode,
 large-text mode, colorblind-friendly mode, and dark mode.
 Injects CSS overrides into Streamlit via st.markdown.
 """
-from typing import Dict
+
 from enum import Enum
+
 from config.logger import setup_logger
 
 logger = setup_logger("accessibility.theme_manager")
@@ -13,6 +14,7 @@ logger = setup_logger("accessibility.theme_manager")
 
 class AccessibilityTheme(str, Enum):
     """Available accessibility theme presets."""
+
     BAUHAUS_DEFAULT = "bauhaus_default"
     HIGH_CONTRAST = "high_contrast"
     LARGE_TEXT = "large_text"
@@ -22,9 +24,8 @@ class AccessibilityTheme(str, Enum):
 
 
 # CSS overrides for each theme
-THEME_CSS: Dict[AccessibilityTheme, str] = {
+THEME_CSS: dict[AccessibilityTheme, str] = {
     AccessibilityTheme.BAUHAUS_DEFAULT: "",  # Default — no override needed
-
     AccessibilityTheme.HIGH_CONTRAST: """
         html, body, .stApp {
             background-color: #000000 !important;
@@ -50,7 +51,6 @@ THEME_CSS: Dict[AccessibilityTheme, str] = {
         .card-blue { border-top: 15px solid #6699FF !important; }
         .card-yellow { border-top: 15px solid #FFFF00 !important; }
     """,
-
     AccessibilityTheme.LARGE_TEXT: """
         html, body, .stApp { font-size: 120% !important; }
         h1 { font-size: 3rem !important; }
@@ -60,7 +60,6 @@ THEME_CSS: Dict[AccessibilityTheme, str] = {
         .stButton > button { font-size: 1.3rem !important; padding: 16px 28px !important; }
         .stSelectbox, .stTextInput { font-size: 1.15rem !important; }
     """,
-
     AccessibilityTheme.COLORBLIND_SAFE: """
         .card-red { border-top: 15px solid #0072B2 !important; }
         .card-blue { border-top: 15px solid #E69F00 !important; }
@@ -71,7 +70,6 @@ THEME_CSS: Dict[AccessibilityTheme, str] = {
         .num-blue { background-color: #E69F00 !important; }
         .num-yellow { background-color: #009E73 !important; }
     """,
-
     AccessibilityTheme.DARK_MODE: """
         html, body, .stApp {
             background-color: #0D0D0D !important;
@@ -92,7 +90,6 @@ THEME_CSS: Dict[AccessibilityTheme, str] = {
         section[data-testid="stSidebar"] { background-color: #050505 !important; }
         input, select, textarea { background-color: #1A1A1A !important; color: #E8E8E8 !important; }
     """,
-
     AccessibilityTheme.REDUCED_MOTION: """
         *, *::before, *::after {
             animation-duration: 0.001ms !important;
@@ -104,7 +101,7 @@ THEME_CSS: Dict[AccessibilityTheme, str] = {
     """,
 }
 
-THEME_LABELS: Dict[AccessibilityTheme, str] = {
+THEME_LABELS: dict[AccessibilityTheme, str] = {
     AccessibilityTheme.BAUHAUS_DEFAULT: "Default (Bauhaus)",
     AccessibilityTheme.HIGH_CONTRAST: "High Contrast (WCAG AAA)",
     AccessibilityTheme.LARGE_TEXT: "Large Text (120% Scale)",
@@ -113,7 +110,7 @@ THEME_LABELS: Dict[AccessibilityTheme, str] = {
     AccessibilityTheme.REDUCED_MOTION: "Reduced Motion",
 }
 
-THEME_DESCRIPTIONS: Dict[AccessibilityTheme, str] = {
+THEME_DESCRIPTIONS: dict[AccessibilityTheme, str] = {
     AccessibilityTheme.BAUHAUS_DEFAULT: "Standard Bauhaus design system with primary color palette.",
     AccessibilityTheme.HIGH_CONTRAST: "Maximum contrast black/white theme for low vision users.",
     AccessibilityTheme.LARGE_TEXT: "120% larger text for improved readability.",
@@ -133,7 +130,7 @@ class ThemeManager:
         self._active_themes: set = {AccessibilityTheme.BAUHAUS_DEFAULT}
         logger.info("ThemeManager initialized.")
 
-    def get_all_themes(self) -> Dict[str, str]:
+    def get_all_themes(self) -> dict[str, str]:
         """Return all available themes as {value: label} dict for selectbox."""
         return {theme.value: label for theme, label in THEME_LABELS.items()}
 

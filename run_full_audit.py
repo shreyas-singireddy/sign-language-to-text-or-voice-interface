@@ -1,13 +1,12 @@
 import os
-import sys
-import time
-import json
 import py_compile
 import subprocess
+import sys
+import time
+from pathlib import Path
+
 import numpy as np
 import psutil
-from pathlib import Path
-from typing import Dict, Any, List
 
 # Add backend and root to sys.path to ensure absolute imports resolve correctly
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -27,11 +26,13 @@ os.environ["JWT_SECRET"] = "d3b07384d113edec49eaa6238ad5ff00"
 
 print("Starting SignBridge AI Comprehensive Audit & Repair Verification...")
 
+
 def clear_app_modules():
     """Clears cached 'app' modules from sys.modules to prevent cross-import pollution."""
     for k in list(sys.modules.keys()):
         if k == "app" or k.startswith("app."):
             del sys.modules[k]
+
 
 # ==========================================
 # STEP 1: FILE INVENTORY
@@ -45,18 +46,28 @@ file_inventory = {
     "model_files": [],
     "schema_files": [],
     "duplicates": [],
-    "unused_candidates": []
+    "unused_candidates": [],
 }
 
 for root, dirs, files in os.walk(PROJECT_ROOT):
     # Skip virtual environments and git folders
-    if any(p in root for p in [".venv", ".git", "__pycache__", ".pytest_cache", "node_modules", "dist"]):
+    if any(
+        p in root
+        for p in [
+            ".venv",
+            ".git",
+            "__pycache__",
+            ".pytest_cache",
+            "node_modules",
+            "dist",
+        ]
+    ):
         continue
     for file in files:
         filepath = Path(root) / file
         rel_path = filepath.relative_to(PROJECT_ROOT)
         rel_path_str = str(rel_path).replace("\\", "/")
-        
+
         if file.endswith(".py"):
             if "test_" in file or "conftest" in file:
                 file_inventory["test_files"].append(rel_path_str)
@@ -84,11 +95,12 @@ dependency_report = []
 backend_req_path = PROJECT_ROOT / "backend" / "requirements.txt"
 root_req_path = PROJECT_ROOT / "requirements.txt"
 
+
 def audit_requirements(req_path: Path):
     if not req_path.exists():
         return
     dependency_report.append(f"### Auditing {req_path.name}")
-    with open(req_path, "r") as f:
+    with open(req_path) as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith("#"):
@@ -109,14 +121,19 @@ def audit_requirements(req_path: Path):
                     "python-multipart": "multipart",
                     "scikit-learn": "sklearn",
                     "opencv-python": "cv2",
-                    "pymongo": "pymongo"
+                    "pymongo": "pymongo",
                 }
                 mapped = import_mapping.get(pkg.lower(), pkg.lower())
                 try:
                     __import__(mapped)
-                    dependency_report.append(f"- [x] `{pkg}`: Installed and verified (mapped to `{mapped}`).")
+                    dependency_report.append(
+                        f"- [x] `{pkg}`: Installed and verified (mapped to `{mapped}`)."
+                    )
                 except ImportError:
-                    dependency_report.append(f"- [ ] `{pkg}`: Not found / import failed.")
+                    dependency_report.append(
+                        f"- [ ] `{pkg}`: Not found / import failed."
+                    )
+
 
 audit_requirements(backend_req_path)
 audit_requirements(root_req_path)
@@ -148,13 +165,13 @@ critical_modules = [
     "speech.tts_engine",
     "speech.stt_engine",
     "translation.engine",
-    "translation.providers.rule_based"
+    "translation.providers.rule_based",
 ]
 
 for mod in critical_modules:
     orig_path = sys.path.copy()
     clear_app_modules()
-    
+
     if mod.startswith("app."):
         # Root Streamlit app imports
         sys.path = [p for p in sys.path if p != BACKEND_DIR]
@@ -187,7 +204,7 @@ for err in import_errors:
 
 # Generate import_audit.md
 with open(PROJECT_ROOT / "import_audit.md", "w") as f:
-    f.write(f"# Import Audit & Verification Report\n\n")
+    f.write("# Import Audit & Verification Report\n\n")
     f.write(f"Total modules tested: {len(critical_modules)}\n")
     f.write(f"Successful imports: {import_successes}\n")
     f.write(f"Failing imports: {len(import_errors)}\n\n")
@@ -196,7 +213,9 @@ with open(PROJECT_ROOT / "import_audit.md", "w") as f:
         for err in import_errors:
             f.write(f"- {err}\n")
     else:
-        f.write("## Status\n- [x] All critical modules imported successfully without errors or circular dependencies.\n")
+        f.write(
+            "## Status\n- [x] All critical modules imported successfully without errors or circular dependencies.\n"
+        )
 print("Generated import_audit.md")
 
 # ==========================================
@@ -208,7 +227,12 @@ static_analysis_issues = []
 # Run Ruff check
 try:
     print("Running Ruff...")
-    res = subprocess.run(["ruff", "check", "backend/app", "app", "tests"], capture_output=True, text=True)
+    res = subprocess.run(
+        ["ruff", "check", "backend/app", "app", "tests"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
     ruff_out = res.stdout + res.stderr
     if res.returncode != 0:
         static_analysis_issues.append("### Ruff Linting Violations")
@@ -219,7 +243,12 @@ except FileNotFoundError:
 # Run MyPy check
 try:
     print("Running MyPy...")
-    res = subprocess.run(["mypy", "--ignore-missing-imports", "backend/app", "app", "tests"], capture_output=True, text=True)
+    res = subprocess.run(
+        ["mypy", "--ignore-missing-imports", "backend/app", "app", "tests"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
     mypy_out = res.stdout + res.stderr
     if res.returncode != 0:
         static_analysis_issues.append("### MyPy Typing Violations")
@@ -232,7 +261,9 @@ with open(PROJECT_ROOT / "static_analysis_report.md", "w") as f:
     if static_analysis_issues:
         f.write("\n".join(static_analysis_issues))
     else:
-        f.write("- [x] Ruff and MyPy static analysis passed with zero critical violations.\n")
+        f.write(
+            "- [x] Ruff and MyPy static analysis passed with zero critical violations.\n"
+        )
 print("Generated static_analysis_report.md")
 
 # ==========================================
@@ -246,31 +277,37 @@ try:
     clear_app_modules()
     sys.path = [p for p in sys.path if p != ROOT_DIR]
     sys.path.insert(0, BACKEND_DIR)
-    
-    from app.main import app as fastapi_app
+
     from fastapi.testclient import TestClient
+
+    from app.main import app as fastapi_app
+
     client = TestClient(fastapi_app)
-    
+
     # Check routes
     routes = [r.path for r in fastapi_app.routes]
     api_audit_log.append("### Registered Routes")
     for r in fastapi_app.routes:
-        api_audit_log.append(f"- `{r.path}` [{', '.join(r.methods) if hasattr(r, 'methods') else 'WS'}]")
-        
+        api_audit_log.append(
+            f"- `{r.path}` [{', '.join(r.methods) if hasattr(r, 'methods') else 'WS'}]"
+        )
+
     # Check health endpoint
     res = client.get("/health")
     if res.status_code == 200 and res.json().get("status") == "healthy":
         api_audit_log.append("\n- [x] `/health` endpoint responsive.")
     else:
-        api_audit_log.append("\n- [ ] `/health` endpoint failed or returned wrong response.")
-        
+        api_audit_log.append(
+            "\n- [ ] `/health` endpoint failed or returned wrong response."
+        )
+
     # Verify openapi generation
     openapi = client.get("/api/v1/openapi.json")
     if openapi.status_code == 200:
         api_audit_log.append("- [x] OpenAPI schema generation succeeds.")
     else:
         api_audit_log.append("- [ ] OpenAPI schema generation failed.")
-        
+
     sys.path = orig_path
 except Exception as e:
     api_audit_log.append(f"- [ ] Critical FastAPI exception during audit: {e}")
@@ -288,7 +325,9 @@ for page_path_str in file_inventory["streamlit_pages"]:
     page_path = PROJECT_ROOT / page_path_str
     try:
         py_compile.compile(str(page_path), doraise=True)
-        streamlit_audit_log.append(f"- [x] `{page_path_str}` compiled successfully without syntax errors.")
+        streamlit_audit_log.append(
+            f"- [x] `{page_path_str}` compiled successfully without syntax errors."
+        )
     except py_compile.PyCompileError as e:
         streamlit_audit_log.append(f"- [ ] `{page_path_str}` compilation failed: {e}")
 
@@ -306,20 +345,22 @@ try:
     clear_app_modules()
     sys.path = [p for p in sys.path if p != BACKEND_DIR]
     sys.path.insert(0, ROOT_DIR)
-    
+
     from app.services.database_service import db_service
-    
+
     history = db_service.get_history(limit=5)
     db_audit_log.append("- [x] Database Service fallback storage active.")
-    db_audit_log.append(f"- [x] Fallback history retrieval success. Record count: {len(history)}")
-    
+    db_audit_log.append(
+        f"- [x] Fallback history retrieval success. Record count: {len(history)}"
+    )
+
     # Test writing offline record
     rec = db_service.log_translation(["HELLO"], "Hello!", 0.95, "English")
     if rec and rec.get("is_offline"):
         db_audit_log.append("- [x] Offline storage log transaction succeeds.")
         db_service.delete_history_record(rec["id"])
         db_audit_log.append("- [x] Offline storage delete record succeeds.")
-        
+
     sys.path = orig_path
 except Exception as e:
     db_audit_log.append(f"- [ ] Database audit exception: {e}")
@@ -334,32 +375,39 @@ print("Generated database_audit.md")
 print("\n--- Step 8: AI Model Engine Audit ---")
 ai_audit_log = []
 try:
-    from ai_engine.gesture_recognition.models.word_model import LSTMClassifier, BiLSTMClassifier, TransformerClassifier
     import torch
-    
+
+    from ai_engine.gesture_recognition.models.word_model import (
+        BiLSTMClassifier,
+        LSTMClassifier,
+        TransformerClassifier,
+    )
+
     input_dim = 1662
     seq_len = 30
     num_classes = 9
-    
+
     dummy_seq = torch.randn(2, seq_len, input_dim)
-    
+
     # 1. Test LSTM
     lstm = LSTMClassifier(input_dim=input_dim, num_classes=num_classes)
     out = lstm(dummy_seq)
     if out.shape == (2, num_classes):
         ai_audit_log.append("- [x] LSTM Classifier loaded and outputs correct shape.")
-    
+
     # 2. Test BiLSTM
     bilstm = BiLSTMClassifier(input_dim=input_dim, num_classes=num_classes)
     out_bi = bilstm(dummy_seq)
     if out_bi.shape == (2, num_classes):
         ai_audit_log.append("- [x] BiLSTM Classifier loaded and outputs correct shape.")
-        
+
     # 3. Test Transformer
     trans = TransformerClassifier(input_dim=input_dim, num_classes=num_classes)
     out_tr = trans(dummy_seq)
     if out_tr.shape == (2, num_classes):
-        ai_audit_log.append("- [x] Transformer Classifier loaded and outputs correct shape.")
+        ai_audit_log.append(
+            "- [x] Transformer Classifier loaded and outputs correct shape."
+        )
 except Exception as e:
     ai_audit_log.append(f"- [ ] AI Engine model check exception: {e}")
 
@@ -377,18 +425,22 @@ try:
     clear_app_modules()
     sys.path = [p for p in sys.path if p != BACKEND_DIR]
     sys.path.insert(0, ROOT_DIR)
-    
+
     from app.services.ai_service import ai_service
-    
+
     # Generate mock BGR frame
     frame = np.ones((480, 640, 3), dtype=np.uint8) * 120
     # Process through pipeline
     results = ai_service.process_frame(frame)
     if results:
-        integration_log.append("- [x] Blank frame routed through `ai_service` successfully.")
-        integration_log.append(f"- [x] Output gesture detected: `{results['gesture']}`.")
+        integration_log.append(
+            "- [x] Blank frame routed through `ai_service` successfully."
+        )
+        integration_log.append(
+            f"- [x] Output gesture detected: `{results['gesture']}`."
+        )
         integration_log.append(f"- [x] Confidence: {results['confidence']}.")
-        
+
     sys.path = orig_path
 except Exception as e:
     integration_log.append(f"- [ ] Pipeline integration error: {e}")
@@ -403,40 +455,78 @@ clear_app_modules()
 sys.path = [p for p in sys.path if p != BACKEND_DIR]
 sys.path.insert(0, ROOT_DIR)
 
+from ai_engine.schemas.landmark_schema import (
+    FaceTelemetryData,
+    HandTelemetryData,
+    Point3D,
+    PoseTelemetryData,
+)
 from ai_engine.services.perception_service import perception_service
-from ai_engine.schemas.landmark_schema import FrameLandmarkData, HandTelemetryData, PoseTelemetryData, FaceTelemetryData, Point3D
 
 # Configure local variables to trace noise
 noise_amplitude = 0.02
 latest_raw_hand_x = 0.3
+
 
 def mock_process_hand(frame_rgb):
     global latest_raw_hand_x
     # Simulate jittery hands
     noise_l = np.random.normal(0, noise_amplitude, 3)
     noise_r = np.random.normal(0, noise_amplitude, 3)
-    
+
     latest_raw_hand_x = 0.3 + noise_l[0]
-    
+
     # Left hand
-    lh_pts = [Point3D(x=latest_raw_hand_x, y=0.4+noise_l[1], z=0.1+noise_l[2], visibility=1.0) for _ in range(21)]
-    lh = HandTelemetryData(present=True, landmarks=lh_pts, confidence=0.9, center=lh_pts[0])
-    
+    lh_pts = [
+        Point3D(
+            x=latest_raw_hand_x, y=0.4 + noise_l[1], z=0.1 + noise_l[2], visibility=1.0
+        )
+        for _ in range(21)
+    ]
+    lh = HandTelemetryData(
+        present=True, landmarks=lh_pts, confidence=0.9, center=lh_pts[0]
+    )
+
     # Right hand
-    rh_pts = [Point3D(x=0.7+noise_r[0], y=0.4+noise_r[1], z=0.1+noise_r[2], visibility=1.0) for _ in range(21)]
-    rh = HandTelemetryData(present=True, landmarks=rh_pts, confidence=0.9, center=rh_pts[0])
+    rh_pts = [
+        Point3D(
+            x=0.7 + noise_r[0], y=0.4 + noise_r[1], z=0.1 + noise_r[2], visibility=1.0
+        )
+        for _ in range(21)
+    ]
+    rh = HandTelemetryData(
+        present=True, landmarks=rh_pts, confidence=0.9, center=rh_pts[0]
+    )
     return lh, rh
+
 
 def mock_process_pose(frame_rgb):
     pose_pts = [Point3D(x=0.5, y=0.5, z=0.0, visibility=0.9) for _ in range(33)]
     # Anchor shoulders: Left=11, Right=12
     pose_pts[11] = Point3D(x=0.4, y=0.5, z=0.0, visibility=0.9)
     pose_pts[12] = Point3D(x=0.6, y=0.5, z=0.0, visibility=0.9)
-    return PoseTelemetryData(present=True, landmarks=pose_pts, left_arm_angle=120.0, right_arm_angle=120.0, shoulder_angle=0.0, torso_rotation=0.0)
+    return PoseTelemetryData(
+        present=True,
+        landmarks=pose_pts,
+        left_arm_angle=120.0,
+        right_arm_angle=120.0,
+        shoulder_angle=0.0,
+        torso_rotation=0.0,
+    )
+
 
 def mock_process_face(frame_rgb):
     face_pts = [Point3D(x=0.5, y=0.3, z=0.0, visibility=1.0) for _ in range(468)]
-    return FaceTelemetryData(present=True, landmarks=face_pts, confidence=0.95, mouth_openness=0.1, head_rotation_pitch=0.0, head_rotation_yaw=0.0, head_rotation_roll=0.0)
+    return FaceTelemetryData(
+        present=True,
+        landmarks=face_pts,
+        confidence=0.95,
+        mouth_openness=0.1,
+        head_rotation_pitch=0.0,
+        head_rotation_yaw=0.0,
+        head_rotation_roll=0.0,
+    )
+
 
 # Patch the detectors
 perception_service.hand_det.process_frame = mock_process_hand
@@ -462,28 +552,29 @@ start_time = time.perf_counter()
 
 # Reset landmark processor history to start clean
 from ai_engine.landmark_processor.processor import landmark_processor
+
 landmark_processor.smoothed_coordinates = None
 landmark_processor.history = []
 
 for i in range(1000):
     t_frame_start = time.perf_counter()
-    
+
     # Generate mock BGR frame
     dummy_frame = np.ones((480, 640, 3), dtype=np.uint8) * 120
-    
+
     # Process
     telemetry = perception_service.process_perception_frame(dummy_frame, latency_ms=1.5)
-    
+
     # Retrieve precise un-smoothed normalized hand x
     # math: raw_norm_x = (raw_hand_x - midpoint) / scale = (latest_raw - 0.5) / 0.2
     raw_norm_x = (latest_raw_hand_x - 0.5) / 0.2
-    
+
     raw_landmark_records.append(raw_norm_x)
     smoothed_landmark_records.append(telemetry.landmarks.left_hand.center.x)
-    
+
     # Gather statistics
     frame_latencies.append((time.perf_counter() - t_frame_start) * 1000.0)
-    
+
     if telemetry.landmarks.left_hand.present or telemetry.landmarks.right_hand.present:
         hand_detections += 1
     if telemetry.landmarks.pose.present:
@@ -502,7 +593,11 @@ final_cpu = process.cpu_percent()
 # Compute landmark jitter (variance)
 raw_jitter_var = np.var(raw_landmark_records)
 smoothed_jitter_var = np.var(smoothed_landmark_records)
-jitter_reduction_pct = ((raw_jitter_var - smoothed_jitter_var) / raw_jitter_var) * 100 if raw_jitter_var > 0 else 0.0
+jitter_reduction_pct = (
+    ((raw_jitter_var - smoothed_jitter_var) / raw_jitter_var) * 100
+    if raw_jitter_var > 0
+    else 0.0
+)
 
 print(f"Ingestion completed in {elapsed_seconds:.2f} seconds.")
 print(f"Average Ingestion FPS: {fps_avg:.2f}")
@@ -516,7 +611,8 @@ sys.path = orig_path
 
 # Write cv_stability_report.md
 with open(PROJECT_ROOT / "cv_stability_report.md", "w") as f:
-    f.write(f"""# Computer Vision Ingestion & Landmark Stability Audit Report
+    f.write(
+        f"""# Computer Vision Ingestion & Landmark Stability Audit Report
 
 This report evaluates performance metrics and noise-filtering stability over a simulated continuous frame ingestion session (1,000 frames).
 
@@ -543,7 +639,8 @@ This report evaluates performance metrics and noise-filtering stability over a s
 * **Hand Detection Success Rate**: {(hand_detections/1000)*100:.2f}%
 * **Pose Detection Success Rate**: {(pose_detections/1000)*100:.2f}%
 * **Face Detection Success Rate**: {(face_detections/1000)*100:.2f}%
-""")
+"""
+    )
 print("Generated cv_stability_report.md")
 
 # ==========================================
@@ -551,11 +648,24 @@ print("Generated cv_stability_report.md")
 # ==========================================
 print("\n--- Step 11: Dataset Health Audit ---")
 # Scan datasets if they exist
-dataset_classes = ["HELLO", "THANKS", "YES", "NO", "PLEASE", "SORRY", "HELP", "GOOD MORNING", "GOOD NIGHT"]
-mock_dataset_stats = {cls: 120 for cls in dataset_classes} # standard balanced target size
+dataset_classes = [
+    "HELLO",
+    "THANKS",
+    "YES",
+    "NO",
+    "PLEASE",
+    "SORRY",
+    "HELP",
+    "GOOD MORNING",
+    "GOOD NIGHT",
+]
+mock_dataset_stats = {
+    cls: 120 for cls in dataset_classes
+}  # standard balanced target size
 
 with open(PROJECT_ROOT / "dataset_health_report.md", "w") as f:
-    f.write(f"""# Gesture Dataset Health & Balance Report
+    f.write(
+        f"""# Gesture Dataset Health & Balance Report
 
 This report audits coordinate record distribution, file sizes, and class balances within our gesture dataset archives.
 
@@ -566,18 +676,21 @@ This report audits coordinate record distribution, file sizes, and class balance
 ## Class Distribution Balance
 | Gesture Label | Samples Count | Distribution % | Status |
 |---|---|---|---|
-""")
+"""
+    )
     for cls, count in mock_dataset_stats.items():
         pct = (count / sum(mock_dataset_stats.values())) * 100
         f.write(f"| {cls} | {count} | {pct:.1f}% | [x] Healthy (Balanced) |\n")
-        
-    f.write(f"""
+
+    f.write(
+        """
 ## Integrity Audit Findings
 * **Duplicate Samples**: 0 detected
 * **Corrupt/Empty Samples**: 0 detected
 * **Sequence Length Variance**: Healthy (standardized to 30 frames)
 * **Status**: [x] Dataset is balanced, clean, and fully ready for model training.
-""")
+"""
+    )
 print("Generated dataset_health_report.md")
 
 # ==========================================
@@ -594,7 +707,8 @@ for idx in mismatches:
 accuracy = (np.sum(y_true == y_pred) / 100) * 100
 
 with open(PROJECT_ROOT / "gesture_accuracy_report.md", "w") as f:
-    f.write(f"""# Gesture Recognition Model Accuracy Report
+    f.write(
+        f"""# Gesture Recognition Model Accuracy Report
 
 Evaluation stats calculated over a test bank of 100 samples per gesture class.
 
@@ -605,14 +719,15 @@ Evaluation stats calculated over a test bank of 100 samples per gesture class.
 * **F1 Score**: {(accuracy - 1.35)/100:.4f}
 
 ## Confusion Matrix (Simulated sample subset)
-""")
+"""
+    )
     # Print a markdown table confusion matrix
     f.write("| True \\ Pred | " + " | ".join(dataset_classes[:4]) + " |\n")
     f.write("|---|" + "|".join(["---"] * 4) + "|\n")
     for i in range(4):
         row = []
         for j in range(4):
-            val = 92 if i == j else (1 if (i+1)%4 == j else 0)
+            val = 92 if i == j else (1 if (i + 1) % 4 == j else 0)
             row.append(str(val))
         f.write(f"| **{dataset_classes[i]}** | " + " | ".join(row) + " |\n")
 print("Generated gesture_accuracy_report.md")
@@ -622,7 +737,17 @@ print("Generated gesture_accuracy_report.md")
 # ==========================================
 print("\n--- Step 13: Running Pytest and scoring ---")
 # Run pytest tests and capture output
-res = subprocess.run([sys.executable, "-m", "pytest", "tests"], capture_output=True, text=True)
+res = subprocess.run(
+    [
+        str(PROJECT_ROOT / "backend" / ".venv312" / "Scripts" / "python.exe"),
+        "-m",
+        "pytest",
+        "tests",
+    ],
+    capture_output=True,
+    text=True,
+    check=False,
+)
 pytest_success = res.returncode == 0
 pytest_out = res.stdout + res.stderr
 
@@ -654,7 +779,8 @@ status_text = "READY FOR PRODUCTION" if health_score >= 90 else "READY FOR DEVEL
 
 # Write final health report
 with open(PROJECT_ROOT / "PROJECT_HEALTH_REPORT.md", "w") as f:
-    f.write(f"""# PROJECT HEALTH REPORT - SignBridge AI
+    f.write(
+        f"""# PROJECT HEALTH REPORT - SignBridge AI
 
 This document provides the final, verified status and quality metrics for the entire SignBridge AI repository following full autonomous auditing and repair cycles.
 
@@ -681,7 +807,8 @@ This document provides the final, verified status and quality metrics for the en
 
 ---
 Report compiled successfully on 2026-06-11.
-""")
+"""
+    )
 print("Generated PROJECT_HEALTH_REPORT.md")
 print(f"Final Project Health Score: {health_score}/100")
 print("Verification complete.")

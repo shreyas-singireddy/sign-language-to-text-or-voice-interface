@@ -1,6 +1,7 @@
 from ai_engine.schemas.landmark_schema import FrameLandmarkData
 from ai_engine.schemas.telemetry_schema import OcclusionTelemetryData
 
+
 class OcclusionMetricsCalculator:
     def calculate(self, frame_data: FrameLandmarkData) -> OcclusionTelemetryData:
         """
@@ -44,13 +45,17 @@ class OcclusionMetricsCalculator:
         # Compute occlusion percentage
         occlusion_count = 0
         total_checks = 4
-        if hand_outside: occlusion_count += 1
-        if partial_face: occlusion_count += 1
-        if body_cutoff: occlusion_count += 1
-        if missing_lms: occlusion_count += 1
+        if hand_outside:
+            occlusion_count += 1
+        if partial_face:
+            occlusion_count += 1
+        if body_cutoff:
+            occlusion_count += 1
+        if missing_lms:
+            occlusion_count += 1
 
         occlusion_pct = (occlusion_count / total_checks) * 100.0
-        
+
         # Tracking loss is proportional to occlusion and missing landmarks
         tracking_loss = 0.0
         if not frame_data.left_hand.present and not frame_data.right_hand.present:
@@ -66,7 +71,8 @@ class OcclusionMetricsCalculator:
             hand_outside_frame=hand_outside,
             partial_face=partial_face,
             missing_landmarks=missing_lms,
-            body_cutoff=body_cutoff
+            body_cutoff=body_cutoff,
         )
+
 
 occlusion_metrics_calc = OcclusionMetricsCalculator()

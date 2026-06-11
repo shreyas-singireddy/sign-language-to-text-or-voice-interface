@@ -1,0 +1,53 @@
+{
+    "session_id": "session_20260611_155928",
+    "label": "HELLO",
+    "total_frames": 1,
+    "frames": [
+        {
+            "timestamp": 1.0,
+            "left_hand": {
+                "present": false,
+                "landmarks": [],
+                "confidence": 0.0,
+                "center": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "visibility": 1.0
+                },
+                "bounding_box": null
+            },
+            "right_hand": {
+                "present": false,
+                "landmarks": [],
+                "confidence": 0.0,
+                "center": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "visibility": 1.0
+                },
+                "bounding_box": null
+            },
+            "pose": {
+                "present": false,
+                "landmarks": [],
+                "confidence": 0.0,
+                "left_arm_angle": 180.0,
+                "right_arm_angle": 180.0,
+                "shoulder_angle": 0.0,
+                "torso_rotation": 0.0
+            },
+            "face": {
+                "present": false,
+                "landmarks": [],
+                "confidence": 0.0,
+                "mouth_openness": 0.0,
+                "head_rotation_pitch": 0.0,
+                "head_rotation_yaw": 0.0,
+                "head_rotation_roll": 0.0,
+                "visibility": 0.0
+            }
+        }
+    ]
+}

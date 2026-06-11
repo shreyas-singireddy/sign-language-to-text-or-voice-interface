@@ -3,11 +3,12 @@ SignBridge AI — Layer 5: Context Manager
 Maintains a sliding window of recent translations to enable
 context-aware grammar correction and conversational coherence.
 """
+
 import uuid
-from datetime import datetime, timezone
-from typing import List, Optional, Dict
-from translation.schemas import ContextEntry, ContextWindow
+from datetime import UTC, datetime
+
 from config.logger import setup_logger
+from translation.schemas import ContextEntry, ContextWindow
 
 logger = setup_logger("translation.context_manager")
 
@@ -29,7 +30,7 @@ class TranslationContextManager:
     """
 
     def __init__(self, max_turns: int = DEFAULT_WINDOW_SIZE):
-        self._sessions: Dict[str, ContextWindow] = {}
+        self._sessions: dict[str, ContextWindow] = {}
         self._max_turns = max_turns
         logger.info(f"ContextManager initialized (window={max_turns} turns)")
 
@@ -42,14 +43,12 @@ class TranslationContextManager:
         """
         session_id = str(uuid.uuid4())
         self._sessions[session_id] = ContextWindow(
-            entries=[],
-            max_turns=self._max_turns,
-            session_id=session_id
+            entries=[], max_turns=self._max_turns, session_id=session_id
         )
         logger.debug(f"Created translation session: {session_id}")
         return session_id
 
-    def get_or_create_session(self, session_id: Optional[str]) -> str:
+    def get_or_create_session(self, session_id: str | None) -> str:
         """
         Return existing session ID or create a new one if not found.
 
@@ -64,11 +63,7 @@ class TranslationContextManager:
         return self.create_session()
 
     def add_turn(
-        self,
-        session_id: str,
-        signs: List[str],
-        translation: str,
-        language: str
+        self, session_id: str, signs: list[str], translation: str, language: str
     ) -> None:
         """
         Add a completed translation turn to the context window.
@@ -82,9 +77,7 @@ class TranslationContextManager:
         if session_id not in self._sessions:
             logger.warning(f"Session {session_id} not found. Creating new session.")
             self._sessions[session_id] = ContextWindow(
-                entries=[],
-                max_turns=self._max_turns,
-                session_id=session_id
+                entries=[], max_turns=self._max_turns, session_id=session_id
             )
 
         window = self._sessions[session_id]
@@ -95,18 +88,20 @@ class TranslationContextManager:
             translation=translation,
             language=language,
             turn_index=turn_index,
-            timestamp=datetime.now(timezone.utc).isoformat()
+            timestamp=datetime.now(UTC).isoformat(),
         )
 
         window.entries.append(entry)
 
         # Enforce sliding window limit
         if len(window.entries) > window.max_turns:
-            window.entries = window.entries[-window.max_turns:]
+            window.entries = window.entries[-window.max_turns :]
 
-        logger.debug(f"Context turn {turn_index} added for session {session_id}: '{translation}'")
+        logger.debug(
+            f"Context turn {turn_index} added for session {session_id}: '{translation}'"
+        )
 
-    def get_context_strings(self, session_id: str) -> List[str]:
+    def get_context_strings(self, session_id: str) -> list[str]:
         """
         Retrieve recent translations as plain strings for grammar context injection.
 
@@ -120,7 +115,7 @@ class TranslationContextManager:
             return []
         return [entry.translation for entry in self._sessions[session_id].entries]
 
-    def get_recent_signs(self, session_id: str, n: int = 3) -> List[List[str]]:
+    def get_recent_signs(self, session_id: str, n: int = 3) -> list[list[str]]:
         """
         Retrieve the last N sign sequences from context.
 
@@ -174,7 +169,7 @@ class TranslationContextManager:
             return True
         return False
 
-    def get_session_summary(self, session_id: str) -> Dict:
+    def get_session_summary(self, session_id: str) -> dict:
         """
         Return a summary dict of a session's context state.
 
@@ -185,7 +180,12 @@ class TranslationContextManager:
             Dict with turn_count, languages_used, recent_translations
         """
         if session_id not in self._sessions:
-            return {"session_id": session_id, "turn_count": 0, "languages_used": [], "recent_translations": []}
+            return {
+                "session_id": session_id,
+                "turn_count": 0,
+                "languages_used": [],
+                "recent_translations": [],
+            }
 
         window = self._sessions[session_id]
         languages = list({e.language for e in window.entries})

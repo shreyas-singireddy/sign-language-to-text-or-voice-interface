@@ -1,7 +1,9 @@
 import datetime
+
 from config.logger import setup_logger
 
 logger = setup_logger("communication.hub")
+
 
 class CommunicationHub:
     def __init__(self):
@@ -11,17 +13,19 @@ class CommunicationHub:
         """
         Creates a new interactive sign-language conversation session.
         """
-        session_id = f"session_{int(datetime.datetime.now(datetime.timezone.utc).timestamp())}"
+        session_id = f"session_{int(datetime.datetime.now(datetime.UTC).timestamp())}"
         self.active_sessions[session_id] = {
             "creator": user_id,
-            "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "created_at": datetime.datetime.now(datetime.UTC).isoformat(),
             "messages": [],
-            "status": "Active"
+            "status": "Active",
         }
         logger.info(f"Created communication session {session_id} for user {user_id}")
         return session_id
 
-    def post_message(self, session_id: str, sender: str, text: str, voice_bytes: bytes = None) -> bool:
+    def post_message(
+        self, session_id: str, sender: str, text: str, voice_bytes: bytes = None
+    ) -> bool:
         """
         Appends a translated sign/message to a session transcript.
         """
@@ -30,10 +34,10 @@ class CommunicationHub:
             return False
 
         message = {
-            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "timestamp": datetime.datetime.now(datetime.UTC).isoformat(),
             "sender": sender,
             "text": text,
-            "has_audio": voice_bytes is not None
+            "has_audio": voice_bytes is not None,
         }
         self.active_sessions[session_id]["messages"].append(message)
         logger.info(f"Message posted in {session_id} by {sender}: '{text}'")
@@ -56,5 +60,6 @@ class CommunicationHub:
             logger.info(f"Session {session_id} has been closed.")
             return True
         return False
+
 
 communication_hub = CommunicationHub()
