@@ -11,13 +11,18 @@ class AIService:
     def __init__(self):
         self.pipeline = inference_pipeline
         self.datasets = dataset_manager
+        self.current_language = "English"
+
+    def set_target_language(self, language: str):
+        """Sets the target language for the translation engine."""
+        self.current_language = language
 
     def process_frame(self, frame: np.ndarray) -> dict:
         """
         Runs the full AI pipeline on a single frame.
         Flow: frame -> landmarks -> gesture -> translation
         """
-        return self.pipeline.run(frame)
+        return self.pipeline.run(frame, language=self.current_language)
 
     def get_pipeline_status(self) -> dict:
         """

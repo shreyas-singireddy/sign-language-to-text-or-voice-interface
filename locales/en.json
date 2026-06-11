@@ -1,0 +1,13 @@
+{
+    "HELLO": "Hello!",
+    "YES": "Yes",
+    "NO": "No",
+    "THANKS": "Thank you!",
+    "PLEASE": "Please",
+    "HELP": "Help me!",
+    "SORRY": "I am sorry",
+    "GOOD MORNING": "Good morning",
+    "GOOD NIGHT": "Good night",
+    "IDLE": "",
+    "WAITING_FOR_CLEAR_GESTURE": "Waiting for gesture..."
+}

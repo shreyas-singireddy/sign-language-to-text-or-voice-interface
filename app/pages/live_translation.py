@@ -282,6 +282,9 @@ with col_results:
         index=0,
         key="select_lang_translation",
     )
+    
+    # Update AI service language so the background thread uses it
+    ai_service.set_target_language(selected_language)
 
     st.markdown("### Text Output")
     text_output = st.session_state.get("translation_buffer", "")
