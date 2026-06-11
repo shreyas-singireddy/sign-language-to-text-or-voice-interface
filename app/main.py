@@ -1,6 +1,13 @@
+import sys
+from pathlib import Path
+
+# Add project root to sys.path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 import streamlit as st
 import time
-from pathlib import Path
 from config.config import PROJECT_NAME
 from database.mongodb import db_conn
 from config.logger import setup_logger
@@ -24,7 +31,7 @@ def inject_bauhaus_styles():
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap');
         
         /* Base Overrides */
-        html, body, [class*="css"] {
+        html, body, .stApp {
             font-family: 'Outfit', sans-serif;
             background-color: #F0F0F0 !important;
             color: #121212 !important;
@@ -217,16 +224,15 @@ if not st.session_state["authenticated"]:
         
         # 1. SPLASH SCREEN STEP
         if st.session_state["auth_step"] == "splash":
-            st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-            st.markdown(
+            st.html("<div style='height: 40px;'></div>")
+            st.html(
                 """
                 <div class="bauhaus-card card-red" style="text-align: center;">
-                    <h1 style="font-size: 3.5rem; letter-spacing: -2px; margin-bottom: 5px;">SIGNBRIDGE AI</h1>
+                    <h1 style="font-size: 3.5rem; letter-spacing: -2px; margin-bottom: 5px; color: #121212 !important;">SIGNBRIDGE AI</h1>
                     <p style="font-size: 1.25rem; font-weight: 600; text-transform: uppercase; color: #1040C0 !important; margin-top: 0px;">
                         Breaking Communication Barriers with AI
                     </p>
                     
-                    <!-- Animated geometric composition -->
                     <div class="geo-composition">
                         <div class="circle-shape"></div>
                         <div class="square-shape"></div>
@@ -237,8 +243,7 @@ if not st.session_state["authenticated"]:
                         Accessibility Platform utilizing Computer Vision & Sign-to-Speech translation
                     </p>
                 </div>
-                """,
-                unsafe_allow_html=True
+                """
             )
             
             if st.button("Enter SignBridge AI", key="btn_enter_splash"):
@@ -248,21 +253,20 @@ if not st.session_state["authenticated"]:
         # 2. LOGIN FORM STEP
         elif st.session_state["auth_step"] == "login":
             st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-            st.markdown(
+            st.html(
                 """
                 <div class="bauhaus-card card-blue">
-                    <h2 style="font-size: 2.2rem; margin-bottom: 10px;">SIGNBRIDGE REGISTER</h2>
+                    <h2 style="font-size: 2.2rem; margin-bottom: 10px; color: #121212 !important;">SIGNBRIDGE REGISTER</h2>
                     <p style="font-size: 0.95rem; color: #555555; margin-bottom: 20px;">
                         Create your vision-locked credentials using OTP validation. Fast, email-free authentication.
                     </p>
                 </div>
-                """,
-                unsafe_allow_html=True
+                """
             )
             
             with st.container(border=True):
-                name = st.text_input("FULL NAME", placeholder="Enter your full name", id="input_login_name")
-                phone = st.text_input("MOBILE NUMBER", placeholder="e.g. +1 555-0199", id="input_login_phone")
+                name = st.text_input("FULL NAME", placeholder="Enter your full name", key="input_login_name")
+                phone = st.text_input("MOBILE NUMBER", placeholder="e.g. +1 555-0199", key="input_login_phone")
                 
                 st.markdown("<br/>", unsafe_allow_html=True)
                 
@@ -278,10 +282,10 @@ if not st.session_state["authenticated"]:
         # 3. OTP VERIFICATION STEP
         elif st.session_state["auth_step"] == "otp":
             st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-            st.markdown(
+            st.html(
                 f"""
                 <div class="bauhaus-card card-yellow">
-                    <h2 style="font-size: 2.2rem; margin-bottom: 10px;">OTP VERIFICATION</h2>
+                    <h2 style="font-size: 2.2rem; margin-bottom: 10px; color: #121212 !important;">OTP VERIFICATION</h2>
                     <p style="font-size: 0.95rem; color: #555555; margin-bottom: 15px;">
                         We sent a 4-digit code to <strong>{st.session_state['user_phone']}</strong>.
                     </p>
@@ -289,12 +293,11 @@ if not st.session_state["authenticated"]:
                         DEMO OTP CODE: <span style="font-size: 1.25rem; color: #D02020;">1919</span>
                     </div>
                 </div>
-                """,
-                unsafe_allow_html=True
+                """
             )
             
             with st.container(border=True):
-                otp_code = st.text_input("ENTER 4-DIGIT CODE", placeholder="Enter OTP code here", id="input_otp_code")
+                otp_code = st.text_input("ENTER 4-DIGIT CODE", placeholder="Enter OTP code here", key="input_otp_code")
                 
                 st.markdown("<br/>", unsafe_allow_html=True)
                 col_sub1, col_sub2 = st.columns(2)
@@ -313,10 +316,10 @@ if not st.session_state["authenticated"]:
         # 4. WELCOME STEP
         elif st.session_state["auth_step"] == "welcome":
             st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-            st.markdown(
+            st.html(
                 f"""
                 <div class="bauhaus-card card-red" style="text-align: center;">
-                    <h2 style="font-size: 2.5rem; margin-bottom: 10px;">WELCOME TO SIGNBRIDGE</h2>
+                    <h2 style="font-size: 2.5rem; margin-bottom: 10px; color: #121212 !important;">WELCOME TO SIGNBRIDGE</h2>
                     <p style="font-size: 1.25rem; color: #1040C0; font-weight: bold; text-transform: uppercase;">
                         {st.session_state['user_name']}
                     </p>
@@ -324,8 +327,7 @@ if not st.session_state["authenticated"]:
                         Your device connection has been authenticated. You are ready to open the dashboard workspace.
                     </p>
                 </div>
-                """,
-                unsafe_allow_html=True
+                """
             )
             
             if st.button("Launch Dashboard", key="btn_launch_app"):

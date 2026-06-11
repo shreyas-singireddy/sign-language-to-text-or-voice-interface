@@ -21,8 +21,9 @@ class DatabaseHelper:
             self.db = self.client[settings.DB_NAME]
             logger.info("Connected successfully to MongoDB Atlas.")
         except Exception as e:
-            logger.error(f"Error connecting to MongoDB: {e}")
-            raise e
+            logger.error(f"Error connecting to MongoDB: {e}. Running in offline/fallback mode.")
+            self.client = None
+            self.db = None
 
     async def disconnect(self) -> None:
         if self.client:

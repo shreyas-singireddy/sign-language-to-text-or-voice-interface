@@ -26,10 +26,10 @@ with col_control:
     selected_label = st.selectbox(
         "Target Gesture Label",
         options=SUPPORTED_GESTURES,
-        id="select_training_label"
+        key="select_training_label"
     )
     
-    custom_label = st.text_input("Or Define Custom Label:", value="", id="input_custom_label")
+    custom_label = st.text_input("Or Define Custom Label:", value="", key="input_custom_label")
     label_to_record = custom_label.strip().upper() if custom_label.strip() else selected_label
 
     frames_to_record = st.slider("Sequence Length (Number of Frames)", min_value=10, max_value=60, value=30, step=5)
@@ -107,7 +107,7 @@ with col_dataset:
         
         # Clear specific label dataset
         st.markdown("### Manage Dataset")
-        label_to_clear = st.selectbox("Select label to delete samples:", options=list(stats.keys()), id="select_clear_label")
+        label_to_clear = st.selectbox("Select label to delete samples:", options=list(stats.keys()), key="select_clear_label")
         
         if st.button("🗑️ Delete Samples for Label", key="btn_clear_label", use_container_width=True):
             if ai_service.clear_label_dataset(label_to_clear) if hasattr(ai_service, "clear_label_dataset") else ai_service.clear_dataset_label(label_to_clear):

@@ -7,6 +7,14 @@ from ai_engine.schemas.landmark_schema import Point3D, BoundingBox3D, HandTeleme
 
 logger = get_structured_logger("vision.hands")
 
+# Diagnostic logging for MediaPipe initialization
+try:
+    logger.info(f"MediaPipe path: {getattr(mp, '__file__', 'unknown')}")
+    logger.info(f"MediaPipe version: {getattr(mp, '__version__', 'unknown')}")
+    logger.info(f"MediaPipe solutions available: {hasattr(mp, 'solutions')}")
+except Exception as e:
+    logger.error(f"MediaPipe diagnostic failed: {e}")
+
 class HandDetector:
     def __init__(self):
         self.mp_hands = mp.solutions.hands

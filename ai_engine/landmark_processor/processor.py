@@ -4,24 +4,29 @@ from config.logger import setup_logger
 logger = setup_logger("ai_engine.landmark_processor")
 
 class LandmarkProcessor:
-    def __init__(self, buffer_size: int = 5):
+    def __init__(self, buffer_size: int = 5, alpha: float = 0.3):
         self.buffer_size = buffer_size
+        self.alpha = alpha
         self.history = []
         self.last_valid_coordinates = None
+        self.smoothed_coordinates = None
 
     def clean_coordinates(self, raw_coords: np.ndarray) -> np.ndarray:
         """
-        Applies noise reduction (rolling filter) over coordinates to smooth jitter.
+        Applies noise reduction (Exponential Moving Average) over coordinates to smooth jitter.
         Input raw_coords shape: (1662,)
         """
-        # Save to cache history
+        if self.smoothed_coordinates is None:
+            self.smoothed_coordinates = raw_coords.copy()
+        else:
+            self.smoothed_coordinates = self.alpha * raw_coords + (1.0 - self.alpha) * self.smoothed_coordinates
+
+        # Keep history buffer for compatibility
         self.history.append(raw_coords)
         if len(self.history) > self.buffer_size:
             self.history.pop(0)
 
-        # Compute simple rolling average
-        smoothed = np.mean(self.history, axis=0)
-        return smoothed
+        return self.smoothed_coordinates
 
     def recover_missing_points(self, raw_coords: np.ndarray, mp_results) -> np.ndarray:
         """

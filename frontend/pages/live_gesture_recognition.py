@@ -239,7 +239,7 @@ with col_panels:
 
     with tab_training:
         st.markdown("### Create Custom Gesture Label")
-        custom_label = st.text_input("Enter Gesture Name:", value="GREETING", id="input_custom_train_label")
+        custom_label = st.text_input("Enter Gesture Name:", value="GREETING", key="input_custom_train_label")
         
         # Recording controller
         st.markdown("#### Record Landmark Dataset")
@@ -290,7 +290,7 @@ with col_panels:
             df_stats = pd.DataFrame(list(stats.items()), columns=["Label", "Repetitions"])
             st.dataframe(df_stats, use_container_width=True, hide_index=True)
             
-            label_to_delete = st.selectbox("Select label to clear:", options=list(stats.keys()), id="select_delete_label")
+            label_to_delete = st.selectbox("Select label to clear:", options=list(stats.keys()), key="select_delete_label")
             if st.button("🗑️ Delete Samples for Label", key="btn_delete_samples_label"):
                 if gesture_service.clear_dataset_label(label_to_delete):
                     st.success(f"Deleted samples for label '{label_to_delete}'")
@@ -324,7 +324,7 @@ with col_panels:
         
         if all_models:
             model_options = [m["version"] for m in all_models]
-            rollback_target = st.selectbox("Select Target Version to Restore", options=model_options, id="select_rollback_target")
+            rollback_target = st.selectbox("Select Target Version to Restore", options=model_options, key="select_rollback_target")
             
             # Find selected model metadata
             selected_meta = next(m for m in all_models if m["version"] == rollback_target)

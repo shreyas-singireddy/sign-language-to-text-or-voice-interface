@@ -71,6 +71,12 @@ class PerceptionService:
         # 3. Landmark Normalization
         frame_normalized = self.normalizer.normalize_frame(frame_raw)
 
+        # Apply Exponential Moving Average (EMA) smoothing for stability and jitter reduction
+        from ai_engine.landmark_processor.processor import landmark_processor
+        norm_lms = self._flatten_landmarks(frame_normalized)
+        smoothed_norm_lms = landmark_processor.clean_coordinates(norm_lms)
+        self._update_from_flat_landmarks(frame_normalized, smoothed_norm_lms)
+
         # 4. Temporal Tracking & Motion calculations
         self.lh_tracker.update(frame_normalized)
         self.rh_tracker.update(frame_normalized)
@@ -85,10 +91,8 @@ class PerceptionService:
         motion_metrics = motion_metrics_calc.compile_metrics(lh_kin, rh_kin, pose_kin, face_kin)
 
         # 5. Stability & Quality metrics
-        # Flatten raw and smoothed coordinates for jitter check
-        raw_lms = self._flatten_landmarks(frame_raw)
-        norm_lms = self._flatten_landmarks(frame_normalized)
-        stability_metrics = stability_metrics_calc.calculate(raw_lms, norm_lms)
+        # Calculate jitter as the difference between raw normalized and smoothed normalized coordinates
+        stability_metrics = stability_metrics_calc.calculate(norm_lms, smoothed_norm_lms)
 
         # 6. Visibility and Occlusion checks
         visibility_metrics = visibility_metrics_calc.calculate(frame_normalized)
@@ -151,6 +155,63 @@ class PerceptionService:
                 coords[offset:offset+3] = [lm.x, lm.y, lm.z]
                 
         return coords
+
+    def _update_from_flat_landmarks(self, frame: FrameLandmarkData, coords: np.ndarray) -> None:
+        """Updates frame landmark coordinates in-place from a flattened vector."""
+        # Update pose
+        if frame.pose.present:
+            for idx in range(len(frame.pose.landmarks)):
+                if idx < 33:
+                    offset = idx * 4
+                    frame.pose.landmarks[idx].x = coords[offset]
+                    frame.pose.landmarks[idx].y = coords[offset+1]
+                    frame.pose.landmarks[idx].z = coords[offset+2]
+                    frame.pose.landmarks[idx].visibility = coords[offset+3]
+                    
+        # Update face
+        if frame.face.present:
+            for idx in range(len(frame.face.landmarks)):
+                if idx < 468:
+                    offset = 132 + (idx * 3)
+                    frame.face.landmarks[idx].x = coords[offset]
+                    frame.face.landmarks[idx].y = coords[offset+1]
+                    frame.face.landmarks[idx].z = coords[offset+2]
+                    
+        # Update left hand
+        if frame.left_hand.present and len(frame.left_hand.landmarks) > 0:
+            for idx in range(len(frame.left_hand.landmarks)):
+                if idx < 21:
+                    offset = 1404 + (idx * 3)
+                    frame.left_hand.landmarks[idx].x = coords[offset]
+                    frame.left_hand.landmarks[idx].y = coords[offset+1]
+                    frame.left_hand.landmarks[idx].z = coords[offset+2]
+            
+            # Recalculate center
+            xs = [p.x for p in frame.left_hand.landmarks]
+            ys = [p.y for p in frame.left_hand.landmarks]
+            zs = [p.z for p in frame.left_hand.landmarks]
+            if frame.left_hand.center:
+                frame.left_hand.center.x = float(np.mean(xs))
+                frame.left_hand.center.y = float(np.mean(ys))
+                frame.left_hand.center.z = float(np.mean(zs))
+                    
+        # Update right hand
+        if frame.right_hand.present and len(frame.right_hand.landmarks) > 0:
+            for idx in range(len(frame.right_hand.landmarks)):
+                if idx < 21:
+                    offset = 1467 + (idx * 3)
+                    frame.right_hand.landmarks[idx].x = coords[offset]
+                    frame.right_hand.landmarks[idx].y = coords[offset+1]
+                    frame.right_hand.landmarks[idx].z = coords[offset+2]
+                    
+            # Recalculate center
+            xs = [p.x for p in frame.right_hand.landmarks]
+            ys = [p.y for p in frame.right_hand.landmarks]
+            zs = [p.z for p in frame.right_hand.landmarks]
+            if frame.right_hand.center:
+                frame.right_hand.center.x = float(np.mean(xs))
+                frame.right_hand.center.y = float(np.mean(ys))
+                frame.right_hand.center.z = float(np.mean(zs))
 
     def _calculate_frame_quality(self, frame: np.ndarray, vis: VisibilityTelemetryData, stab: StabilityTelemetryData) -> SystemReadinessData:
         """

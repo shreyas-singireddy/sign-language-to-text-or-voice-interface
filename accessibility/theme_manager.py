@@ -26,7 +26,7 @@ THEME_CSS: Dict[AccessibilityTheme, str] = {
     AccessibilityTheme.BAUHAUS_DEFAULT: "",  # Default — no override needed
 
     AccessibilityTheme.HIGH_CONTRAST: """
-        html, body, [class*="css"] {
+        html, body, .stApp {
             background-color: #000000 !important;
             color: #FFFFFF !important;
         }
@@ -52,7 +52,7 @@ THEME_CSS: Dict[AccessibilityTheme, str] = {
     """,
 
     AccessibilityTheme.LARGE_TEXT: """
-        html, body, [class*="css"] { font-size: 120% !important; }
+        html, body, .stApp { font-size: 120% !important; }
         h1 { font-size: 3rem !important; }
         h2 { font-size: 2.5rem !important; }
         h3 { font-size: 2rem !important; }
@@ -73,7 +73,7 @@ THEME_CSS: Dict[AccessibilityTheme, str] = {
     """,
 
     AccessibilityTheme.DARK_MODE: """
-        html, body, [class*="css"] {
+        html, body, .stApp {
             background-color: #0D0D0D !important;
             color: #E8E8E8 !important;
         }

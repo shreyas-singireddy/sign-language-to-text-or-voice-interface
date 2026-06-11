@@ -152,8 +152,7 @@ with col_sos:
     test_tokens = st.text_input(
         "Enter sign tokens (comma-separated):",
         value="CHEST, PAIN",
-        key="input_sos_test_tokens",
-        id="input_emergency_tokens"
+        key="input_sos_test_tokens"
     )
     if st.button("🔍 Check SOS Pattern", key="btn_check_sos", use_container_width=True):
         token_list = [t.strip().upper() for t in test_tokens.split(",") if t.strip()]
@@ -205,8 +204,7 @@ with col_phrases:
         "Emergency Language:",
         options=list(SUPPORTED_LANGUAGES.keys()),
         index=0,
-        key="sel_emergency_lang",
-        id="select_emergency_lang"
+        key="sel_emergency_lang"
     )
     st.session_state["emergency_language"] = em_lang
 
@@ -248,11 +246,11 @@ st.markdown(
 
 contact_col1, contact_col2, contact_col3 = st.columns(3)
 with contact_col1:
-    ec1_name = st.text_input("Contact 1 Name", value="", key="ec1_name", id="input_ec1_name")
-    ec1_phone = st.text_input("Contact 1 Phone", value="", key="ec1_phone", id="input_ec1_phone")
+    ec1_name = st.text_input("Contact 1 Name", value="", key="ec1_name")
+    ec1_phone = st.text_input("Contact 1 Phone", value="", key="ec1_phone")
 with contact_col2:
-    ec2_name = st.text_input("Contact 2 Name", value="", key="ec2_name", id="input_ec2_name")
-    ec2_phone = st.text_input("Contact 2 Phone", value="", key="ec2_phone", id="input_ec2_phone")
+    ec2_name = st.text_input("Contact 2 Name", value="", key="ec2_name")
+    ec2_phone = st.text_input("Contact 2 Phone", value="", key="ec2_phone")
 with contact_col3:
     medical_info = st.text_area("Medical Information", value="", height=100, key="medical_info")
 

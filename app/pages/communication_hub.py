@@ -52,8 +52,7 @@ with col_controls:
         "Conversation Language",
         options=list(SUPPORTED_LANGUAGES.keys()),
         index=0,
-        key="sel_conv_lang",
-        id="select_conv_lang"
+        key="sel_conv_lang"
     )
     st.session_state["conv_language"] = conv_lang
 
@@ -137,8 +136,7 @@ with col_chat:
         sign_input = st.text_input(
             "Enter sign tokens (comma-separated):",
             placeholder="e.g. WATER, WANT",
-            key="input_sign_tokens",
-            id="input_conv_signs"
+            key="input_sign_tokens"
         )
     with input_col2:
         send_confidence = st.slider("Confidence", min_value=0.1, max_value=1.0, value=0.92, step=0.05, key="sl_confidence")
@@ -183,8 +181,7 @@ with col_chat:
     listener_reply = st.text_input(
         "Hearing participant reply:",
         placeholder="Type your response here...",
-        key="input_listener_reply",
-        id="input_listener_msg"
+        key="input_listener_reply"
     )
     if st.button("📨 Send Reply", key="btn_send_reply", use_container_width=True):
         if listener_reply.strip():

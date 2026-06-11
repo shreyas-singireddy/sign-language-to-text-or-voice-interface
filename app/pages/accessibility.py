@@ -119,7 +119,7 @@ with col_controls:
     )
     if font_scale != st.session_state["font_scale"]:
         st.session_state["font_scale"] = font_scale
-        font_css = f"html, body, [class*='css'] {{ font-size: {font_scale}% !important; }}"
+        font_css = f"html, body, .stApp {{ font-size: {font_scale}% !important; }}"
         st.markdown(f"<style>{font_css}</style>", unsafe_allow_html=True)
 
     st.markdown(f"**Active Scale:** `{font_scale}%`")
@@ -198,8 +198,7 @@ with test_col1:
     test_message = st.text_input(
         "Type a message to test screen reader live region:",
         value="",
-        key="sr_test_input",
-        id="input_sr_test"
+        key="sr_test_input"
     )
 with test_col2:
     if st.button("📢 Announce", key="btn_announce_sr", use_container_width=True):

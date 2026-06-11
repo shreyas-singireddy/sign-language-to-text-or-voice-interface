@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from speech.tts_engine import TTSEngine
+from speech.schemas import TTSRequest, TTSProvider
 from speech.whisper_engine import WhisperEngine
 from config.logger import setup_logger
 
@@ -16,7 +17,9 @@ class AudioService:
         Synthesizes text into speech. Returns audio bytes.
         """
         logger.info(f"Synthesizing text: '{text}' using language code: {lang_code}")
-        return self.tts.synthesize(text, lang_code)
+        request = TTSRequest(text=text, lang_code=lang_code)
+        result = self.tts.synthesize(request)
+        return result.audio_bytes
 
     def speech_to_text(self, audio_filepath: str) -> str:
         """

@@ -148,7 +148,7 @@ with col_cam:
         sessions_folders = [f.name for f in recordings_path.iterdir() if f.is_dir()]
         
         if sessions_folders:
-            selected_session = st.selectbox("Select Session File to Replay", options=sessions_folders, id="select_replay_session")
+            selected_session = st.selectbox("Select Session File to Replay", options=sessions_folders, key="select_replay_session")
             session_file = recordings_path / selected_session / "raw_landmarks.json"
             
             rep_col1, rep_col2 = st.columns(2)

@@ -110,7 +110,7 @@ with col_results:
         "Output Translation Language",
         options=list(SUPPORTED_LANGUAGES.keys()),
         index=0,
-        id="select_lang_translation"
+        key="select_lang_translation"
     )
 
     # Translation Display Box
