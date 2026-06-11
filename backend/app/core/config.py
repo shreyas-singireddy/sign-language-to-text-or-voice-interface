@@ -1,9 +1,24 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    model_config: SettingsConfigDict = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8')
+    PROJECT_NAME: str = "SignBridge AI"
+    API_V1_STR: str = "/api/v1"
+    PORT: int = 8000
+    HOST: str = "0.0.0.0"
+    
+    # MongoDB settings
+    MONGO_URI: str = Field(default="")
+    DB_NAME: str = "signbridge_ai"
     mongo_uri: str | None = None
+    
+    # Security settings
+    JWT_SECRET: str = Field(default="d3b07384d113edec49eaa6238ad5ff00")
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 11520
     jwt_secret: str = 'supersecret'
     jwt_expires_in: int = 3600
+
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 settings = Settings()
