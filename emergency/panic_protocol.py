@@ -3,10 +3,10 @@ SignBridge AI — Layer 12: Panic Protocol
 Activates the full emergency protocol when a critical SOS event is detected.
 Coordinates: dispatcher alert + TTS emergency audio + UI lockdown CSS.
 """
-from typing import Optional, List
-from emergency.sos_detector import SOSEvent, LEVEL_CRITICAL, LEVEL_URGENT
-from emergency.alert_dispatcher import AlertDispatcher, AlertRecord
+
 from config.logger import setup_logger
+from emergency.alert_dispatcher import AlertDispatcher, AlertRecord
+from emergency.sos_detector import LEVEL_CRITICAL, LEVEL_URGENT, SOSEvent
 
 logger = setup_logger("emergency.panic_protocol")
 
@@ -88,7 +88,7 @@ class PanicProtocol:
 
     def __init__(self, dispatcher: AlertDispatcher):
         self._dispatcher = dispatcher
-        self._activations: List[dict] = []
+        self._activations: list[dict] = []
         self._is_active = False
         logger.info("PanicProtocol initialized.")
 
@@ -154,7 +154,7 @@ class PanicProtocol:
         """Return number of times protocol has been activated."""
         return len(self._activations)
 
-    def get_activation_history(self) -> List[dict]:
+    def get_activation_history(self) -> list[dict]:
         """Return full activation history."""
         return list(self._activations)
 
@@ -181,7 +181,7 @@ class PanicProtocol:
         else:
             return f"Alert. {user_name} may need help. {event.message}"
 
-    def generate_quick_sos_html(self, phrases: List[str]) -> str:
+    def generate_quick_sos_html(self, phrases: list[str]) -> str:
         """
         Generate a quick-access SOS phrase panel HTML for the Emergency page.
 
@@ -230,4 +230,5 @@ class PanicProtocol:
 
 
 from emergency.alert_dispatcher import alert_dispatcher as _alert_dispatcher_singleton
+
 panic_protocol = PanicProtocol(dispatcher=_alert_dispatcher_singleton)

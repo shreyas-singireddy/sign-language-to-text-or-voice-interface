@@ -1,9 +1,10 @@
 import json
 import shutil
-from pathlib import Path
 import time
-from typing import Dict, Any, List, Optional
+from pathlib import Path
+
 from config.config import MODELS_DIR
+
 
 class ModelRegistry:
     def __init__(self, registry_dir: Path = MODELS_DIR / "registry"):
@@ -15,18 +16,21 @@ class ModelRegistry:
     def _initialize_metadata(self):
         if not self.metadata_file.exists():
             with open(self.metadata_file, "w") as f:
-                json.dump({
-                    "active_versions": {
-                        "alphabet": None,
-                        "word": None,
-                        "sentence": None
+                json.dump(
+                    {
+                        "active_versions": {
+                            "alphabet": None,
+                            "word": None,
+                            "sentence": None,
+                        },
+                        "models": [],
                     },
-                    "models": []
-                }, f)
+                    f,
+                )
 
     def _read_metadata(self) -> dict:
         try:
-            with open(self.metadata_file, "r") as f:
+            with open(self.metadata_file) as f:
                 return json.load(f)
         except Exception:
             return {"active_versions": {}, "models": []}
@@ -38,24 +42,31 @@ class ModelRegistry:
         except Exception:
             pass
 
-    def register_model(self, model_type: str, model_filepath: Path, metrics: Dict[str, float], classes: List[str], model_name: str = "LSTM") -> str:
+    def register_model(
+        self,
+        model_type: str,
+        model_filepath: Path,
+        metrics: dict[str, float],
+        classes: list[str],
+        model_name: str = "LSTM",
+    ) -> str:
         """
         Registers a new model version into the catalog.
         """
         model_type = model_type.lower()  # alphabet, word, sentence
         timestamp = int(time.time())
         version = f"v_{model_type}_{timestamp}"
-        
+
         # Save model file into registry folder
         dest_dir = self.registry_dir / version
         dest_dir.mkdir(parents=True, exist_ok=True)
-        
+
         dest_filepath = dest_dir / model_filepath.name
         shutil.copy2(model_filepath, dest_filepath)
-        
+
         # Update metadata index
         registry_meta = self._read_metadata()
-        
+
         model_record = {
             "version": version,
             "model_type": model_type,
@@ -64,17 +75,17 @@ class ModelRegistry:
             "filepath": str(dest_filepath.relative_to(self.registry_dir)),
             "timestamp": timestamp,
             "metrics": metrics,
-            "classes": classes
+            "classes": classes,
         }
-        
+
         registry_meta["models"].append(model_record)
         # Set as latest active by default
         registry_meta["active_versions"][model_type] = version
         self._write_metadata(registry_meta)
-        
+
         return version
 
-    def get_active_model_details(self, model_type: str) -> Optional[dict]:
+    def get_active_model_details(self, model_type: str) -> dict | None:
         """
         Returns catalog metadata for the active model version of a specific type.
         """
@@ -83,13 +94,13 @@ class ModelRegistry:
         active_version = meta.get("active_versions", {}).get(model_type)
         if not active_version:
             return None
-            
+
         for m in meta.get("models", []):
             if m["version"] == active_version:
                 return m
         return None
 
-    def get_active_model_path(self, model_type: str) -> Optional[Path]:
+    def get_active_model_path(self, model_type: str) -> Path | None:
         """
         Returns absolute filepath of the active model binary.
         """
@@ -98,7 +109,7 @@ class ModelRegistry:
             return self.registry_dir / details["filepath"]
         return None
 
-    def list_models(self, model_type: Optional[str] = None) -> List[dict]:
+    def list_models(self, model_type: str | None = None) -> list[dict]:
         """
         Lists registered model details.
         """
@@ -115,14 +126,18 @@ class ModelRegistry:
         """
         model_type = model_type.lower()
         meta = self._read_metadata()
-        
+
         # Verify target version exists
-        exists = any(m["version"] == target_version and m["model_type"] == model_type for m in meta.get("models", []))
+        exists = any(
+            m["version"] == target_version and m["model_type"] == model_type
+            for m in meta.get("models", [])
+        )
         if not exists:
             return False
-            
+
         meta["active_versions"][model_type] = target_version
         self._write_metadata(meta)
         return True
+
 
 model_registry = ModelRegistry()

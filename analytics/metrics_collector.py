@@ -9,10 +9,12 @@ Captures per-session analytics metrics in real-time:
 
 Stores all metrics in-memory with optional export to MongoDB.
 """
+
 import time
-from datetime import datetime, timezone
-from typing import List, Dict, Optional, Any
 from collections import defaultdict
+from datetime import UTC, datetime
+from typing import Any
+
 from config.logger import setup_logger
 
 logger = setup_logger("analytics.metrics_collector")
@@ -23,13 +25,13 @@ class TranslationEvent:
 
     def __init__(
         self,
-        signs: List[str],
+        signs: list[str],
         translated_text: str,
         language: str,
         confidence: float,
         provider: str,
         emotion: str,
-        elapsed_ms: float
+        elapsed_ms: float,
     ):
         self.signs = list(signs)
         self.translated_text = translated_text
@@ -38,7 +40,7 @@ class TranslationEvent:
         self.provider = provider
         self.emotion = emotion
         self.elapsed_ms = elapsed_ms
-        self.timestamp = datetime.now(timezone.utc)
+        self.timestamp = datetime.now(UTC)
 
 
 class MetricsCollector:
@@ -48,19 +50,19 @@ class MetricsCollector:
     """
 
     def __init__(self):
-        self._translation_events: List[TranslationEvent] = []
-        self._speech_events: List[Dict[str, Any]] = []
+        self._translation_events: list[TranslationEvent] = []
+        self._speech_events: list[dict[str, Any]] = []
         self._session_start: float = time.time()
-        self._gesture_frequency: Dict[str, int] = defaultdict(int)
-        self._language_counts: Dict[str, int] = defaultdict(int)
-        self._emotion_counts: Dict[str, int] = defaultdict(int)
-        self._confidence_samples: List[float] = []
-        self._latency_samples: List[float] = []
+        self._gesture_frequency: dict[str, int] = defaultdict(int)
+        self._language_counts: dict[str, int] = defaultdict(int)
+        self._emotion_counts: dict[str, int] = defaultdict(int)
+        self._confidence_samples: list[float] = []
+        self._latency_samples: list[float] = []
         logger.info("MetricsCollector initialized.")
 
     def record_translation(
         self,
-        signs: List[str],
+        signs: list[str],
         translated_text: str,
         language: str,
         confidence: float,
@@ -106,7 +108,9 @@ class MetricsCollector:
             f"({language}, conf={confidence:.2f})"
         )
 
-    def record_speech_synthesis(self, text: str, language: str, provider: str, success: bool) -> None:
+    def record_speech_synthesis(
+        self, text: str, language: str, provider: str, success: bool
+    ) -> None:
         """
         Record a TTS synthesis event.
 
@@ -116,13 +120,15 @@ class MetricsCollector:
             provider: TTS provider used
             success: Whether synthesis succeeded
         """
-        self._speech_events.append({
-            "text": text[:100],
-            "language": language,
-            "provider": provider,
-            "success": success,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        })
+        self._speech_events.append(
+            {
+                "text": text[:100],
+                "language": language,
+                "provider": provider,
+                "success": success,
+                "timestamp": datetime.now(UTC).isoformat(),
+            }
+        )
 
     def get_total_translations(self) -> int:
         """Return total number of translation events."""
@@ -140,19 +146,21 @@ class MetricsCollector:
             return 0.0
         return round(sum(self._latency_samples) / len(self._latency_samples), 1)
 
-    def get_gesture_frequency(self) -> Dict[str, int]:
+    def get_gesture_frequency(self) -> dict[str, int]:
         """Return gesture token frequency map (descending order)."""
-        return dict(sorted(self._gesture_frequency.items(), key=lambda x: x[1], reverse=True))
+        return dict(
+            sorted(self._gesture_frequency.items(), key=lambda x: x[1], reverse=True)
+        )
 
-    def get_language_distribution(self) -> Dict[str, int]:
+    def get_language_distribution(self) -> dict[str, int]:
         """Return language usage counts."""
         return dict(self._language_counts)
 
-    def get_emotion_distribution(self) -> Dict[str, int]:
+    def get_emotion_distribution(self) -> dict[str, int]:
         """Return emotion tone distribution."""
         return dict(self._emotion_counts)
 
-    def get_top_gestures(self, n: int = 10) -> List[Dict[str, Any]]:
+    def get_top_gestures(self, n: int = 10) -> list[dict[str, Any]]:
         """
         Return top N most frequent gestures.
 
@@ -166,33 +174,33 @@ class MetricsCollector:
         top = list(freq.items())[:n]
         return [{"gesture": g, "count": c} for g, c in top]
 
-    def get_daily_activity(self) -> Dict[str, int]:
+    def get_daily_activity(self) -> dict[str, int]:
         """
         Return translation counts grouped by date string.
 
         Returns:
             Dict of date_string → count
         """
-        daily: Dict[str, int] = defaultdict(int)
+        daily: dict[str, int] = defaultdict(int)
         for event in self._translation_events:
             date_str = event.timestamp.strftime("%Y-%m-%d")
             daily[date_str] += 1
         return dict(sorted(daily.items()))
 
-    def get_hourly_activity(self) -> Dict[str, int]:
+    def get_hourly_activity(self) -> dict[str, int]:
         """
         Return translation counts grouped by hour of day.
 
         Returns:
             Dict of 'HH:00' → count
         """
-        hourly: Dict[str, int] = defaultdict(int)
+        hourly: dict[str, int] = defaultdict(int)
         for event in self._translation_events:
             hour_str = event.timestamp.strftime("%H:00")
             hourly[hour_str] += 1
         return dict(sorted(hourly.items()))
 
-    def get_confidence_histogram(self, bins: int = 10) -> Dict[str, int]:
+    def get_confidence_histogram(self, bins: int = 10) -> dict[str, int]:
         """
         Return confidence scores bucketed into histogram bins.
 
@@ -206,7 +214,7 @@ class MetricsCollector:
             return {}
 
         bucket_size = 1.0 / bins
-        histogram: Dict[str, int] = defaultdict(int)
+        histogram: dict[str, int] = defaultdict(int)
         for score in self._confidence_samples:
             bucket_index = min(int(score / bucket_size), bins - 1)
             low = int(bucket_index * bucket_size * 100)
@@ -219,7 +227,7 @@ class MetricsCollector:
         """Return total session duration in seconds since collector was initialized."""
         return round(time.time() - self._session_start, 1)
 
-    def get_full_metrics_snapshot(self) -> Dict[str, Any]:
+    def get_full_metrics_snapshot(self) -> dict[str, Any]:
         """
         Return a complete snapshot of all collected metrics.
         Ideal for database storage or dashboard rendering.

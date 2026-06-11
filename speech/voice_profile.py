@@ -3,12 +3,11 @@ SignBridge AI — Layer 6: Voice Profiles
 Pre-defined voice profiles for accessibility scenarios.
 Each profile specifies the language, speech rate, and TTS provider.
 """
-from typing import Dict
+
 from speech.schemas import VoiceProfile
 
-
 # All built-in voice profiles accessible by name
-VOICE_PROFILES: Dict[str, VoiceProfile] = {
+VOICE_PROFILES: dict[str, VoiceProfile] = {
     "standard_english": VoiceProfile(
         name="Standard English",
         lang_code="en-US",
@@ -126,23 +125,23 @@ VOICE_PROFILES: Dict[str, VoiceProfile] = {
 }
 
 # Map from Streamlit language name → voice profile key
-LANGUAGE_TO_PROFILE: Dict[str, str] = {
-    "English":    "standard_english",
-    "Hindi":      "hindi",
-    "Telugu":     "telugu",
-    "Spanish":    "spanish",
-    "French":     "french",
-    "German":     "german",
-    "Chinese":    "chinese",
-    "Japanese":   "japanese",
-    "Arabic":     "arabic",
+LANGUAGE_TO_PROFILE: dict[str, str] = {
+    "English": "standard_english",
+    "Hindi": "hindi",
+    "Telugu": "telugu",
+    "Spanish": "spanish",
+    "French": "french",
+    "German": "german",
+    "Chinese": "chinese",
+    "Japanese": "japanese",
+    "Arabic": "arabic",
     "Portuguese": "portuguese",
-    "Russian":    "russian",
-    "Italian":    "italian",
-    "Korean":     "korean",
-    "Bengali":    "bengali",
-    "Tamil":      "tamil",
-    "Urdu":       "urdu",
+    "Russian": "russian",
+    "Italian": "italian",
+    "Korean": "korean",
+    "Bengali": "bengali",
+    "Tamil": "tamil",
+    "Urdu": "urdu",
 }
 
 

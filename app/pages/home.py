@@ -1,10 +1,12 @@
 import streamlit as st
-from database.mongodb import db_conn
-from config.config import PROJECT_NAME
 
 # Welcoming Header
-st.html('<h1 class="gradient-text" style="font-size: 3.8rem; margin-bottom: 0px; letter-spacing: -2px; color: #121212 !important;">SIGNBRIDGE AI</h1>')
-st.html('<p style="font-size: 1.25rem; font-weight: 700; color: #1040C0; text-transform: uppercase; margin-top: 0px;">Breaking Communication Barriers with AI</p>')
+st.html(
+    '<h1 class="gradient-text" style="font-size: 3.8rem; margin-bottom: 0px; letter-spacing: -2px; color: #121212 !important;">SIGNBRIDGE AI</h1>'
+)
+st.html(
+    '<p style="font-size: 1.25rem; font-weight: 700; color: #1040C0; text-transform: uppercase; margin-top: 0px;">Breaking Communication Barriers with AI</p>'
+)
 st.markdown("---")
 
 # 1. HERO SECTION
@@ -16,22 +18,30 @@ with col_hero_text:
         <div class="bauhaus-card card-red" style="min-height: 250px;">
             <h2 style="font-size: 2.5rem; line-height: 1.0; margin-bottom: 15px; color: #121212 !important;">COMMUNICATION WITHOUT BARRIERS</h2>
             <p style="font-size: 1.15rem; line-height: 1.6; color: #333333; margin-bottom: 25px;">
-                SignBridge AI transforms American Sign Language (ASL) gestures into real-time speech and text 
-                using Computer Vision and deep neural network sequence pipelines. Built with accessibility-first 
+                SignBridge AI transforms American Sign Language (ASL) gestures into real-time speech and text
+                using Computer Vision and deep neural network sequence pipelines. Built with accessibility-first
                 principles to ensure natural connection for deaf, mute, and hearing-impaired communities.
             </p>
         </div>
         """
     )
-    
+
     # CTA Buttons
     col_cta1, col_cta2 = st.columns(2)
     with col_cta1:
         if st.button("Start Live Translation", key="btn_hero_translate"):
-            st.switch_page("pages/live_translation.py") if hasattr(st, "switch_page") else st.info("Select 'Live Translation' in the sidebar.")
+            (
+                st.switch_page("pages/live_translation.py")
+                if hasattr(st, "switch_page")
+                else st.info("Select 'Live Translation' in the sidebar.")
+            )
     with col_cta2:
         if st.button("Configure Settings", key="btn_hero_settings"):
-            st.switch_page("pages/settings.py") if hasattr(st, "switch_page") else st.info("Select 'Settings' in the sidebar.")
+            (
+                st.switch_page("pages/settings.py")
+                if hasattr(st, "switch_page")
+                else st.info("Select 'Settings' in the sidebar.")
+            )
 
 with col_hero_shapes:
     st.html(
@@ -46,7 +56,10 @@ with col_hero_shapes:
 
 # 2. PROBLEM STATEMENT SECTION
 st.markdown("<br/>", unsafe_allow_html=True)
-st.markdown('<h2 style="font-size: 2.2rem; border-bottom: 4px solid #121212; padding-bottom: 10px;">THE COMMUNICATION GAP</h2>', unsafe_allow_html=True)
+st.markdown(
+    '<h2 style="font-size: 2.2rem; border-bottom: 4px solid #121212; padding-bottom: 10px;">THE COMMUNICATION GAP</h2>',
+    unsafe_allow_html=True,
+)
 
 col_prob1, col_prob2 = st.columns(2)
 with col_prob1:
@@ -55,8 +68,8 @@ with col_prob1:
         <div class="bauhaus-card card-yellow" style="min-height: 200px;">
             <h3 style="color: #D02020 !important; margin-top: 0px;">THE CHALLENGE</h3>
             <p style="font-size: 1rem; line-height: 1.6; color: #121212 !important;">
-                Over 70 million deaf individuals globally rely on sign language as their primary mode of communication. 
-                However, less than 1% of the hearing population understands sign language, creating absolute barriers in 
+                Over 70 million deaf individuals globally rely on sign language as their primary mode of communication.
+                However, less than 1% of the hearing population understands sign language, creating absolute barriers in
                 daily routines, workplaces, medical facilities, and emergency scenarios.
             </p>
         </div>
@@ -68,8 +81,8 @@ with col_prob2:
         <div class="bauhaus-card card-blue" style="min-height: 200px;">
             <h3 style="color: #1040C0 !important; margin-top: 0px;">THE SOLUTION</h3>
             <p style="font-size: 1rem; line-height: 1.6; color: #121212 !important;">
-                SignBridge AI bypasses traditional translators. By processing video feeds and predicting sign features 
-                in real time, it reconstructs conversational dialogue, offering instantaneous translation to hearing 
+                SignBridge AI bypasses traditional translators. By processing video feeds and predicting sign features
+                in real time, it reconstructs conversational dialogue, offering instantaneous translation to hearing
                 non-signers via text outputs and voice synthesis.
             </p>
         </div>
@@ -78,7 +91,10 @@ with col_prob2:
 
 # 3. SOLUTION PIPELINE FLOW CHART
 st.markdown("<br/>", unsafe_allow_html=True)
-st.markdown('<h2 style="font-size: 2.2rem; border-bottom: 4px solid #121212; padding-bottom: 10px;">THE TRANSLATION WORKFLOW</h2>', unsafe_allow_html=True)
+st.markdown(
+    '<h2 style="font-size: 2.2rem; border-bottom: 4px solid #121212; padding-bottom: 10px;">THE TRANSLATION WORKFLOW</h2>',
+    unsafe_allow_html=True,
+)
 
 st.html(
     """
@@ -88,19 +104,19 @@ st.html(
             <span style="font-size: 0.85rem; color: #555555;">Webcam Stream Ingests Frames</span>
         </div>
         <div style="flex: 0.2; min-width: 30px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; color: #121212 !important;">➔</div>
-        
+
         <div style="flex: 1; min-width: 150px; background-color: #FFFFFF; border: 3px solid #121212; padding: 15px; text-align: center; border-top: 8px solid #1040C0; color: #121212 !important;">
             <h4 style="margin: 0 0 5px 0; color: #121212 !important;">2. VISION</h4>
             <span style="font-size: 0.85rem; color: #555555;">MediaPipe Extracts Skeletons</span>
         </div>
         <div style="flex: 0.2; min-width: 30px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; color: #121212 !important;">➔</div>
-        
+
         <div style="flex: 1; min-width: 150px; background-color: #FFFFFF; border: 3px solid #121212; padding: 15px; text-align: center; border-top: 8px solid #F0C020; color: #121212 !important;">
             <h4 style="margin: 0 0 5px 0; color: #121212 !important;">3. DETECTION</h4>
             <span style="font-size: 0.85rem; color: #555555;">Gesture Engine Maps Shapes</span>
         </div>
         <div style="flex: 0.2; min-width: 30px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; color: #121212 !important;">➔</div>
-        
+
         <div style="flex: 1; min-width: 150px; background-color: #FFFFFF; border: 3px solid #121212; padding: 15px; text-align: center; border-top: 8px solid #121212; color: #121212 !important;">
             <h4 style="margin: 0 0 5px 0; color: #121212 !important;">4. TRANSLATION</h4>
             <span style="font-size: 0.85rem; color: #555555;">Text & Synthetic Speech Output</span>
@@ -111,7 +127,10 @@ st.html(
 
 # 4. HOW IT WORKS 4-STEP CONSTRUCTIVIST BLOCKS
 st.markdown("<br/>", unsafe_allow_html=True)
-st.markdown('<h2 style="font-size: 2.2rem; border-bottom: 4px solid #121212; padding-bottom: 10px;">CORE PIPELINE STAGES</h2>', unsafe_allow_html=True)
+st.markdown(
+    '<h2 style="font-size: 2.2rem; border-bottom: 4px solid #121212; padding-bottom: 10px;">CORE PIPELINE STAGES</h2>',
+    unsafe_allow_html=True,
+)
 
 hiw1, hiw2 = st.columns(2)
 with hiw1:
@@ -122,18 +141,18 @@ with hiw1:
             <div style="margin-left: 85px;">
                 <h3 style="margin-top: 0px; color: #121212 !important;">CAPTURE</h3>
                 <p style="font-size: 0.95rem; line-height: 1.5; color: #121212 !important;">
-                    The system reads frames from any camera (webcam, external source) using OpenCV, extracting raw 
+                    The system reads frames from any camera (webcam, external source) using OpenCV, extracting raw
                     visual information at 24+ frames per second.
                 </p>
             </div>
         </div>
-        
+
         <div class="bauhaus-card">
             <div class="geo-number num-blue">02</div>
             <div style="margin-left: 85px;">
                 <h3 style="margin-top: 0px; color: #121212 !important;">ANALYZE</h3>
                 <p style="font-size: 0.95rem; line-height: 1.5; color: #121212 !important;">
-                    Features are processed using MediaPipe to generate x, y, and z skeletal coordinates for 
+                    Features are processed using MediaPipe to generate x, y, and z skeletal coordinates for
                     pose, fingers, hands, and facial indicators.
                 </p>
             </div>
@@ -148,18 +167,18 @@ with hiw2:
             <div style="margin-left: 85px;">
                 <h3 style="margin-top: 0px; color: #121212 !important;">TRANSLATE</h3>
                 <p style="font-size: 0.95rem; line-height: 1.5; color: #121212 !important;">
-                    Sequence models monitor joint coordinates over temporal sliding windows to identify gestures 
+                    Sequence models monitor joint coordinates over temporal sliding windows to identify gestures
                     and decode them into coherent sentences.
                 </p>
             </div>
         </div>
-        
+
         <div class="bauhaus-card">
             <div class="geo-number" style="color: #FFFFFF !important;">04</div>
             <div style="margin-left: 85px;">
                 <h3 style="margin-top: 0px; color: #121212 !important;">COMMUNICATE</h3>
                 <p style="font-size: 0.95rem; line-height: 1.5; color: #121212 !important;">
-                    Decoded sentences are displayed visually and synthesized into synthetic audio formats, 
+                    Decoded sentences are displayed visually and synthesized into synthetic audio formats,
                     facilitating seamless accessibility.
                 </p>
             </div>
@@ -169,7 +188,10 @@ with hiw2:
 
 # 5. CORE FEATURES
 st.markdown("<br/>", unsafe_allow_html=True)
-st.markdown('<h2 style="font-size: 2.2rem; border-bottom: 4px solid #121212; padding-bottom: 10px;">CORE PLATFORM FEATURES</h2>', unsafe_allow_html=True)
+st.markdown(
+    '<h2 style="font-size: 2.2rem; border-bottom: 4px solid #121212; padding-bottom: 10px;">CORE PLATFORM FEATURES</h2>',
+    unsafe_allow_html=True,
+)
 
 f_col1, f_col2, f_col3 = st.columns(3)
 
@@ -185,7 +207,7 @@ with f_col1:
             <p style="font-size: 0.9rem; line-height: 1.5;">Training console to record and export coordinate dataset collections.</p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 with f_col2:
     st.markdown(
@@ -199,7 +221,7 @@ with f_col2:
             <p style="font-size: 0.9rem; line-height: 1.5;">Chat transcripts database and accessibility text-to-speech tools.</p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 with f_col3:
     st.markdown(
@@ -213,12 +235,15 @@ with f_col3:
             <p style="font-size: 0.9rem; line-height: 1.5;">Usage charts, daily timelines, and classification confidence indicators.</p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 # 6. ACCESSIBILITY COMMITMENT & FUTURE ROADMAP
 st.markdown("<br/>", unsafe_allow_html=True)
-st.markdown('<h2 style="font-size: 2.2rem; border-bottom: 4px solid #121212; padding-bottom: 10px;">OUR MANIFESTO</h2>', unsafe_allow_html=True)
+st.markdown(
+    '<h2 style="font-size: 2.2rem; border-bottom: 4px solid #121212; padding-bottom: 10px;">OUR MANIFESTO</h2>',
+    unsafe_allow_html=True,
+)
 
 col_man1, col_man2 = st.columns(2)
 with col_man1:
@@ -227,13 +252,13 @@ with col_man1:
         <div class="bauhaus-card card-red" style="min-height: 250px;">
             <h3 style="color:#D02020 !important;">ACCESSIBILITY MANIFESTO</h3>
             <p style="font-size: 0.95rem; line-height: 1.6;">
-                Communication is a fundamental human right. Our platform is designed around strict WCAG guidelines. 
-                With high-contrast geometric themes, large and clear sans-serif typography, and keyboard navigation 
+                Communication is a fundamental human right. Our platform is designed around strict WCAG guidelines.
+                With high-contrast geometric themes, large and clear sans-serif typography, and keyboard navigation
                 mechanisms, we guarantee accessibility for all users regardless of visual or motor capabilities.
             </p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 with col_man2:
     st.markdown(
@@ -248,7 +273,7 @@ with col_man2:
             </ul>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 # 7. CALL TO ACTION & FOOTER

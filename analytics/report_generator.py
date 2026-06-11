@@ -4,9 +4,11 @@ Generates chart-ready data objects for the Analytics Dashboard.
 Combines MetricsCollector data, database records, and heatmap builder
 into display-ready Plotly figure configurations.
 """
-from typing import Dict, List, Any, Optional
-from analytics.metrics_collector import metrics_collector
+
+from typing import Any
+
 from analytics.heatmap_builder import heatmap_builder
+from analytics.metrics_collector import metrics_collector
 from config.logger import setup_logger
 
 logger = setup_logger("analytics.report_generator")
@@ -18,7 +20,7 @@ class ReportGenerator:
     into Plotly-compatible chart configurations for the dashboard.
     """
 
-    def generate_full_report(self, db_analytics: Optional[Dict] = None) -> Dict[str, Any]:
+    def generate_full_report(self, db_analytics: dict | None = None) -> dict[str, Any]:
         """
         Generate a complete analytics report combining live session metrics
         and database historical data.
@@ -35,12 +37,16 @@ class ReportGenerator:
         if db_analytics:
             merged_gesture_freq = {**db_analytics.get("gesture_frequency", {})}
             for gesture, count in live["gesture_frequency"].items():
-                merged_gesture_freq[gesture] = merged_gesture_freq.get(gesture, 0) + count
+                merged_gesture_freq[gesture] = (
+                    merged_gesture_freq.get(gesture, 0) + count
+                )
 
             total_translations = (
                 db_analytics.get("total_translations", 0) + live["total_translations"]
             )
-            avg_confidence = db_analytics.get("average_confidence", live["average_confidence"])
+            avg_confidence = db_analytics.get(
+                "average_confidence", live["average_confidence"]
+            )
 
             language_dist = {**db_analytics.get("language_distribution", {})}
             for lang, count in live["language_distribution"].items():
@@ -59,8 +65,12 @@ class ReportGenerator:
         # Build chart data
         gesture_bar = self._build_gesture_bar(merged_gesture_freq)
         alphabet_heatmap = heatmap_builder.build_alphabet_heatmap(merged_gesture_freq)
-        emotion_pie = heatmap_builder.build_emotion_pie_data(live["emotion_distribution"])
-        confidence_bars = heatmap_builder.build_confidence_trend(live["confidence_histogram"])
+        emotion_pie = heatmap_builder.build_emotion_pie_data(
+            live["emotion_distribution"]
+        )
+        confidence_bars = heatmap_builder.build_confidence_trend(
+            live["confidence_histogram"]
+        )
         language_bar = self._build_language_bar(language_dist)
         daily_line = self._build_daily_line(daily_activity)
         hourly_bar = self._build_hourly_bar(live["hourly_activity"])
@@ -83,9 +93,11 @@ class ReportGenerator:
             "top_gestures": live["top_gestures"],
         }
 
-    def _build_gesture_bar(self, gesture_frequency: Dict[str, int]) -> Dict[str, Any]:
+    def _build_gesture_bar(self, gesture_frequency: dict[str, int]) -> dict[str, Any]:
         """Bar chart of top gesture frequencies."""
-        sorted_g = sorted(gesture_frequency.items(), key=lambda x: x[1], reverse=True)[:15]
+        sorted_g = sorted(gesture_frequency.items(), key=lambda x: x[1], reverse=True)[
+            :15
+        ]
         return {
             "x": [g[0] for g in sorted_g],
             "y": [g[1] for g in sorted_g],
@@ -94,9 +106,13 @@ class ReportGenerator:
             "title": "Top 15 Gesture Frequencies",
         }
 
-    def _build_language_bar(self, language_distribution: Dict[str, int]) -> Dict[str, Any]:
+    def _build_language_bar(
+        self, language_distribution: dict[str, int]
+    ) -> dict[str, Any]:
         """Bar chart of language usage distribution."""
-        sorted_l = sorted(language_distribution.items(), key=lambda x: x[1], reverse=True)
+        sorted_l = sorted(
+            language_distribution.items(), key=lambda x: x[1], reverse=True
+        )
         return {
             "x": [l[0] for l in sorted_l],
             "y": [l[1] for l in sorted_l],
@@ -105,7 +121,7 @@ class ReportGenerator:
             "title": "Translation Language Distribution",
         }
 
-    def _build_daily_line(self, daily_activity: Dict[str, int]) -> Dict[str, Any]:
+    def _build_daily_line(self, daily_activity: dict[str, int]) -> dict[str, Any]:
         """Line chart of daily translation activity."""
         sorted_d = sorted(daily_activity.items())
         return {
@@ -116,7 +132,7 @@ class ReportGenerator:
             "title": "Daily Translation Activity",
         }
 
-    def _build_hourly_bar(self, hourly_activity: Dict[str, int]) -> Dict[str, Any]:
+    def _build_hourly_bar(self, hourly_activity: dict[str, int]) -> dict[str, Any]:
         """Bar chart of hourly activity distribution."""
         sorted_h = sorted(hourly_activity.items())
         return {
@@ -127,7 +143,7 @@ class ReportGenerator:
             "title": "Translation Activity by Hour of Day",
         }
 
-    def generate_performance_report(self) -> Dict[str, Any]:
+    def generate_performance_report(self) -> dict[str, Any]:
         """
         Generate a targeted performance/latency report.
 

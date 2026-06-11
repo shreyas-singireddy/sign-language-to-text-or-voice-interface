@@ -1,63 +1,50 @@
-import pytest
-import numpy as np
-import torch
-from pathlib import Path
-import os
 import shutil
 
-from ai_engine.gesture_recognition.schemas.prediction_schema import (
-    AlphabetPredictionResponse,
-    WordPredictionResponse,
-    SentencePredictionResponse
-)
+import numpy as np
+import torch
+
+from ai_engine.gesture_recognition.dataset.sample_validator import sample_validator
 from ai_engine.gesture_recognition.features.landmark_features import (
-    unpack_landmarks,
+    compile_geometric_features,
     compute_angle,
-    extract_hand_features,
-    extract_pose_features,
-    extract_face_features,
-    compile_geometric_features
+    unpack_landmarks,
 )
 from ai_engine.gesture_recognition.features.motion_features import (
-    compute_velocities,
     compute_accelerations,
-    compute_hand_direction,
-    extract_motion_telemetry
+    compute_velocities,
+    extract_motion_telemetry,
 )
 from ai_engine.gesture_recognition.features.temporal_features import (
     compute_trajectory_length,
-    compute_rolling_summary,
-    get_gesture_duration
 )
-from ai_engine.gesture_recognition.models.alphabet_model import AlphabetMLP
-from ai_engine.gesture_recognition.models.word_model import (
-    LSTMClassifier,
-    BiLSTMClassifier,
-    TransformerClassifier,
-    TCNClassifier,
-    export_word_model_onnx,
-    benchmark_model
-)
-from ai_engine.gesture_recognition.models.sentence_model import SentenceCTCModel, sentence_decoder
-from ai_engine.gesture_recognition.dataset.sample_validator import sample_validator
-from ai_engine.gesture_recognition.dataset.dataset_manager import dataset_manager
-from ai_engine.gesture_recognition.dataset.gesture_recorder import gesture_recorder
-from ai_engine.gesture_recognition.storage.checkpoint_manager import CheckpointManager
-from ai_engine.gesture_recognition.storage.model_registry import model_registry
-from ai_engine.gesture_recognition.training.evaluator import evaluator
-from ai_engine.gesture_recognition.training.trainer import trainer
-from ai_engine.gesture_recognition.training.hyperparameter_tuner import hyperparameter_tuner
 from ai_engine.gesture_recognition.inference.confidence_engine import confidence_engine
 from ai_engine.gesture_recognition.inference.post_processor import post_processor
 from ai_engine.gesture_recognition.inference.predictor import gesture_predictor
-from ai_engine.gesture_recognition.services.gesture_service import gesture_service
+from ai_engine.gesture_recognition.models.alphabet_model import AlphabetMLP
+from ai_engine.gesture_recognition.models.word_model import (
+    BiLSTMClassifier,
+    LSTMClassifier,
+    TCNClassifier,
+    TransformerClassifier,
+)
+from ai_engine.gesture_recognition.schemas.prediction_schema import (
+    AlphabetPredictionResponse,
+    SentencePredictionResponse,
+    WordPredictionResponse,
+)
+from ai_engine.gesture_recognition.storage.checkpoint_manager import CheckpointManager
+from ai_engine.gesture_recognition.storage.model_registry import model_registry
+from ai_engine.gesture_recognition.training.evaluator import evaluator
+
 
 # ==========================================
 # 1. SCHEMAS & VALIDATORS TESTS
 # ==========================================
 def test_prediction_schemas():
     """Verify that pydantic schemas validate types correctly."""
-    p_alpha = AlphabetPredictionResponse(prediction="A", confidence=0.97, alternatives=["S", "E"])
+    p_alpha = AlphabetPredictionResponse(
+        prediction="A", confidence=0.97, alternatives=["S", "E"]
+    )
     assert p_alpha.prediction == "A"
     assert len(p_alpha.alternatives) == 2
 
@@ -66,6 +53,7 @@ def test_prediction_schemas():
 
     p_sent = SentencePredictionResponse(prediction="HELLO YES", confidence=0.92)
     assert p_sent.prediction == "HELLO YES"
+
 
 def test_sample_validator():
     """Verify landmark validators filter corrupt inputs."""
@@ -82,6 +70,7 @@ def test_sample_validator():
     is_valid, msg = sample_validator.validate_frame(nan_vector)
     assert is_valid is False
 
+
 # ==========================================
 # 2. FEATURE ENGINEERING TESTS
 # ==========================================
@@ -89,7 +78,7 @@ def test_landmark_features():
     """Verify math coordinate conversions and unpacking."""
     dummy_vector = np.ones(1662, dtype=np.float32)
     pose, face, lh, rh = unpack_landmarks(dummy_vector)
-    
+
     assert pose.shape == (33, 4)
     assert lh.shape == (21, 3)
     assert rh.shape == (21, 3)
@@ -102,6 +91,7 @@ def test_landmark_features():
 
     geom_feats = compile_geometric_features(dummy_vector)
     assert len(geom_feats) > 0
+
 
 def test_motion_and_temporal_features():
     """Verify velocity, acceleration, and trajectories."""
@@ -122,13 +112,14 @@ def test_motion_and_temporal_features():
     traj_l, traj_r = compute_trajectory_length(history)
     assert traj_l >= 0.0
 
+
 # ==========================================
 # 3. MODELS & TRAINING TESTS
 # ==========================================
 def test_pytorch_models_compile():
     """Verify PyTorch models forward pass and shapes."""
-    dummy_inputs = torch.randn(2, 30, 1662) # Batch 2, Seq 30
-    
+    dummy_inputs = torch.randn(2, 30, 1662)  # Batch 2, Seq 30
+
     lstm = LSTMClassifier(num_classes=5)
     out = lstm(dummy_inputs)
     assert out.shape == (2, 5)
@@ -145,22 +136,21 @@ def test_pytorch_models_compile():
     out = tcn(dummy_inputs)
     assert out.shape == (2, 5)
 
+
 def test_evaluator_metrics():
     """Verify F1, Accuracy, and confusion matrices calculations."""
     y_true = np.array([0, 1, 2, 0])
     y_pred = np.array([0, 1, 1, 0])
-    y_prob = np.array([
-        [0.8, 0.1, 0.1],
-        [0.1, 0.8, 0.1],
-        [0.1, 0.8, 0.1],
-        [0.9, 0.05, 0.05]
-    ])
+    y_prob = np.array(
+        [[0.8, 0.1, 0.1], [0.1, 0.8, 0.1], [0.1, 0.8, 0.1], [0.9, 0.05, 0.05]]
+    )
     classes = ["HELLO", "YES", "NO"]
-    
+
     metrics = evaluator.evaluate_predictions(y_true, y_pred, y_prob, classes)
     assert metrics["accuracy"] == 0.75
     assert "confusion_matrix" in metrics
     assert len(metrics["class_wise_statistics"]) == 3
+
 
 # ==========================================
 # 4. DATASET & REGISTRY MLOPS TESTS
@@ -173,7 +163,7 @@ def test_model_registry_and_checkpoints(tmp_path):
 
     model = AlphabetMLP(num_classes=5)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
-    
+
     chk_file = c_mgr.save_checkpoint(model, optimizer, 2, {"loss": 0.1})
     assert chk_file.exists()
 
@@ -183,16 +173,17 @@ def test_model_registry_and_checkpoints(tmp_path):
     # Register mock model
     dummy_model_path = tmp_path / "dummy.pt"
     torch.save(model.state_dict(), dummy_model_path)
-    
+
     ver = reg.register_model("word", dummy_model_path, {"acc": 0.9}, ["A", "B"], "LSTM")
     assert ver.startswith("v_word_")
 
     details = reg.get_active_model_details("word")
     assert details["version"] == ver
-    
+
     # Cleanup files
     if ver:
         shutil.rmtree(reg.registry_dir / ver, ignore_errors=True)
+
 
 # ==========================================
 # 5. INFERENCE END-TO-END TESTS
@@ -201,7 +192,10 @@ def test_predictor_pipeline_and_confidence():
     """Verify full predictors filtering and post-processing."""
     # Confidence Engine test
     score = confidence_engine.calculate_confidence(
-        raw_prob=0.92, predicted_label="HELLO", tracking_stability=85.0, visibility_score=90.0
+        raw_prob=0.92,
+        predicted_label="HELLO",
+        tracking_stability=85.0,
+        visibility_score=90.0,
     )
     assert score > 50.0
 

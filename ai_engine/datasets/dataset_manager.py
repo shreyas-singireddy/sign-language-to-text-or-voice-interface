@@ -1,11 +1,13 @@
-import os
 import json
-import numpy as np
 from pathlib import Path
+
+import numpy as np
+
 from config.config import DATASETS_DIR
 from config.logger import setup_logger
 
 logger = setup_logger("ai_engine.datasets")
+
 
 class DatasetManager:
     def __init__(self, data_dir: Path = DATASETS_DIR):
@@ -21,7 +23,7 @@ class DatasetManager:
 
     def _read_index(self) -> dict:
         try:
-            with open(self.index_file, "r") as f:
+            with open(self.index_file) as f:
                 return json.load(f)
         except Exception:
             return {}
@@ -40,20 +42,20 @@ class DatasetManager:
         try:
             label_dir = self.data_dir / label
             label_dir.mkdir(exist_ok=True)
-            
+
             # Read index to get the count
             index = self._read_index()
             count = index.get(label, 0)
-            
+
             # Save landmark array
             filename = f"sample_{count}.npy"
             filepath = label_dir / filename
             np.save(str(filepath), np.array(landmarks))
-            
+
             # Update index
             index[label] = count + 1
             self._write_index(index)
-            
+
             logger.info(f"Saved training sample for label '{label}' at {filepath}")
             return True
         except Exception as e:
@@ -86,16 +88,17 @@ class DatasetManager:
                 for f in label_dir.glob("*.npy"):
                     f.unlink()
                 label_dir.rmdir()
-            
+
             index = self._read_index()
             if label in index:
                 del index[label]
                 self._write_index(index)
-            
+
             logger.info(f"Cleared all dataset samples for label '{label}'")
             return True
         except Exception as e:
             logger.error(f"Failed to clear label samples: {e}")
             return False
+
 
 dataset_manager = DatasetManager()

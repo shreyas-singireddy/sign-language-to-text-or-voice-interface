@@ -2,6 +2,7 @@ from config.logger import setup_logger
 
 logger = setup_logger("ai_engine.translation")
 
+
 class TranslationEngine:
     def __init__(self):
         # Basic mapping rules for sign-to-speech mapping
@@ -16,7 +17,7 @@ class TranslationEngine:
             ("GOOD MORNING",): "Good morning!",
             ("GOOD NIGHT",): "Good night!",
             ("HELP",): "I need help.",
-            ("SORRY",): "Sorry."
+            ("SORRY",): "Sorry.",
         }
 
     def translate(self, gesture_sequence: list, language: str = "English") -> str:
@@ -33,7 +34,7 @@ class TranslationEngine:
                 clean_sequence.append(token)
 
         key = tuple(clean_sequence)
-        
+
         # Search direct matches in sign phrase book
         if key in self.phrase_dictionary:
             base_translation = self.phrase_dictionary[key]
@@ -45,7 +46,9 @@ class TranslationEngine:
         # For scaffolding, we provide mock multilingual variations
         return self._apply_multilingual_mapping(base_translation, language)
 
-    def _apply_multilingual_mapping(self, english_text: str, target_language: str) -> str:
+    def _apply_multilingual_mapping(
+        self, english_text: str, target_language: str
+    ) -> str:
         """
         Translates the English sentence into other supported languages.
         """
@@ -63,7 +66,7 @@ class TranslationEngine:
                 "I need help.": "Necesito ayuda.",
                 "Sorry.": "Lo siento.",
                 "Good morning!": "¡Buenos días!",
-                "Good night!": "¡Buenas noches!"
+                "Good night!": "¡Buenas noches!",
             },
             "Hindi": {
                 "Hello!": "नमस्ते!",
@@ -74,7 +77,7 @@ class TranslationEngine:
                 "I need help.": "मुझे मदद चाहिए।",
                 "Sorry.": "माफ़ कीजिये।",
                 "Good morning!": "शुभ प्रभात!",
-                "Good night!": "शुभ रात्रि!"
+                "Good night!": "शुभ रात्रि!",
             },
             "Telugu": {
                 "Hello!": "హలో!",
@@ -85,8 +88,8 @@ class TranslationEngine:
                 "I need help.": "నాకు సహాయం కావాలి.",
                 "Sorry.": "క్షమించండి.",
                 "Good morning!": "శుభోదయం!",
-                "Good night!": "శుభ రాత్రి!"
-            }
+                "Good night!": "శుభ రాత్రి!",
+            },
         }
 
         # Query the dictionary
@@ -95,7 +98,10 @@ class TranslationEngine:
             return lang_map[english_text]
 
         # General translator stub message for unsupported languages or complex phrases
-        logger.info(f"Target language '{target_language}' not fully mapped. Appending translation stub.")
+        logger.info(
+            f"Target language '{target_language}' not fully mapped. Appending translation stub."
+        )
         return f"[Translated to {target_language}]: {english_text}"
+
 
 translation_engine = TranslationEngine()

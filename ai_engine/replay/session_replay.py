@@ -1,16 +1,18 @@
 import json
 import time
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator, Optional, Dict
-from ai_engine.utils.logger import get_structured_logger
+
 from ai_engine.schemas.landmark_schema import FrameLandmarkData
+from ai_engine.utils.logger import get_structured_logger
 
 logger = get_structured_logger("replay.session")
 
+
 class SessionReplay:
     def __init__(self):
-        self.active_file: Optional[Path] = None
-        self.session_data: Optional[dict] = None
+        self.active_file: Path | None = None
+        self.session_data: dict | None = None
 
     def load_session(self, filepath: Path) -> bool:
         """
@@ -21,10 +23,12 @@ class SessionReplay:
             return False
 
         try:
-            with open(filepath, "r") as f:
+            with open(filepath) as f:
                 self.session_data = json.load(f)
             self.active_file = filepath
-            logger.info(f"Loaded session for replay: ID={self.session_data.get('session_id')}, Label={self.session_data.get('label')}")
+            logger.info(
+                f"Loaded session for replay: ID={self.session_data.get('session_id')}, Label={self.session_data.get('label')}"
+            )
             return True
         except Exception as e:
             logger.error(f"Failed to read session file: {e}")
@@ -40,12 +44,13 @@ class SessionReplay:
 
         frames = self.session_data.get("frames", [])
         logger.info(f"Starting replay stream of {len(frames)} frames...")
-        
+
         for frame in frames:
             # Reconstruct FrameLandmarkData model
             record = FrameLandmarkData(**frame)
             yield record
             # Yield at approx 30 fps (33ms sleep)
             time.sleep(0.033)
+
 
 session_replay = SessionReplay()
