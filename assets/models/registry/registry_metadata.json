@@ -1,7 +1,7 @@
 {
     "active_versions": {
         "alphabet": null,
-        "word": "v_word_1781174314",
+        "word": "v_word_1781250612",
         "sentence": null
     },
     "models": [
@@ -282,6 +282,21 @@
             "filename": "dummy.pt",
             "filepath": "v_word_1781174314\\dummy.pt",
             "timestamp": 1781174314,
+            "metrics": {
+                "acc": 0.9
+            },
+            "classes": [
+                "A",
+                "B"
+            ]
+        },
+        {
+            "version": "v_word_1781250612",
+            "model_type": "word",
+            "model_name": "LSTM",
+            "filename": "dummy.pt",
+            "filepath": "v_word_1781250612\\dummy.pt",
+            "timestamp": 1781250612,
             "metrics": {
                 "acc": 0.9
             },
