@@ -16,7 +16,9 @@ ignore = [
     "PLW2901",   # for loop variable overwritten
     "PLW0603",   # global statement
     "N803",      # Argument name should be lowercase (allow matrix X)
-    "E741"       # Ambiguous variable name 'l'
+    "E741",      # Ambiguous variable name 'l'
+    "PLC0415",   # Allow import outside top-level (used for dependency isolation/circular imports)
+    "UP042"      # Allow inheritance from (str, Enum) instead of StrEnum for compatibility
 ]
 
 [tool.mypy]
