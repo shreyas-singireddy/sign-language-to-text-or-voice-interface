@@ -56,9 +56,7 @@ class ScreenReaderHints:
         Returns:
             HTML with role="alert"
         """
-        return (
-            f'<div role="alert" aria-label="{label}" aria-atomic="true">{content}</div>'
-        )
+        return f'<div role="alert" aria-label="{label}" aria-atomic="true">{content}</div>'
 
     def status_badge(self, status_text: str, status_type: str = "info") -> str:
         """
@@ -137,9 +135,7 @@ class ScreenReaderHints:
         Returns:
             HTML with ARIA landmark
         """
-        return (
-            f'<div role="{role}" aria-label="{label}" id="main-content">{content}</div>'
-        )
+        return f'<div role="{role}" aria-label="{label}" id="main-content">{content}</div>'
 
     def image_description(self, alt_text: str, role: str = "img") -> str:
         """

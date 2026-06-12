@@ -126,13 +126,9 @@ def audit_requirements(req_path: Path):
                 mapped = import_mapping.get(pkg.lower(), pkg.lower())
                 try:
                     __import__(mapped)
-                    dependency_report.append(
-                        f"- [x] `{pkg}`: Installed and verified (mapped to `{mapped}`)."
-                    )
+                    dependency_report.append(f"- [x] `{pkg}`: Installed and verified (mapped to `{mapped}`).")
                 except ImportError:
-                    dependency_report.append(
-                        f"- [ ] `{pkg}`: Not found / import failed."
-                    )
+                    dependency_report.append(f"- [ ] `{pkg}`: Not found / import failed.")
 
 
 audit_requirements(backend_req_path)
@@ -261,9 +257,7 @@ with open(PROJECT_ROOT / "static_analysis_report.md", "w") as f:
     if static_analysis_issues:
         f.write("\n".join(static_analysis_issues))
     else:
-        f.write(
-            "- [x] Ruff and MyPy static analysis passed with zero critical violations.\n"
-        )
+        f.write("- [x] Ruff and MyPy static analysis passed with zero critical violations.\n")
 print("Generated static_analysis_report.md")
 
 # ==========================================
@@ -288,18 +282,14 @@ try:
     routes = [r.path for r in fastapi_app.routes]
     api_audit_log.append("### Registered Routes")
     for r in fastapi_app.routes:
-        api_audit_log.append(
-            f"- `{r.path}` [{', '.join(r.methods) if hasattr(r, 'methods') else 'WS'}]"
-        )
+        api_audit_log.append(f"- `{r.path}` [{', '.join(r.methods) if hasattr(r, 'methods') else 'WS'}]")
 
     # Check health endpoint
     res = client.get("/health")
     if res.status_code == 200 and res.json().get("status") == "healthy":
         api_audit_log.append("\n- [x] `/health` endpoint responsive.")
     else:
-        api_audit_log.append(
-            "\n- [ ] `/health` endpoint failed or returned wrong response."
-        )
+        api_audit_log.append("\n- [ ] `/health` endpoint failed or returned wrong response.")
 
     # Verify openapi generation
     openapi = client.get("/api/v1/openapi.json")
@@ -325,9 +315,7 @@ for page_path_str in file_inventory["streamlit_pages"]:
     page_path = PROJECT_ROOT / page_path_str
     try:
         py_compile.compile(str(page_path), doraise=True)
-        streamlit_audit_log.append(
-            f"- [x] `{page_path_str}` compiled successfully without syntax errors."
-        )
+        streamlit_audit_log.append(f"- [x] `{page_path_str}` compiled successfully without syntax errors.")
     except py_compile.PyCompileError as e:
         streamlit_audit_log.append(f"- [ ] `{page_path_str}` compilation failed: {e}")
 
@@ -350,9 +338,7 @@ try:
 
     history = db_service.get_history(limit=5)
     db_audit_log.append("- [x] Database Service fallback storage active.")
-    db_audit_log.append(
-        f"- [x] Fallback history retrieval success. Record count: {len(history)}"
-    )
+    db_audit_log.append(f"- [x] Fallback history retrieval success. Record count: {len(history)}")
 
     # Test writing offline record
     rec = db_service.log_translation(["HELLO"], "Hello!", 0.95, "English")
@@ -405,9 +391,7 @@ try:
     trans = TransformerClassifier(input_dim=input_dim, num_classes=num_classes)
     out_tr = trans(dummy_seq)
     if out_tr.shape == (2, num_classes):
-        ai_audit_log.append(
-            "- [x] Transformer Classifier loaded and outputs correct shape."
-        )
+        ai_audit_log.append("- [x] Transformer Classifier loaded and outputs correct shape.")
 except Exception as e:
     ai_audit_log.append(f"- [ ] AI Engine model check exception: {e}")
 
@@ -433,12 +417,8 @@ try:
     # Process through pipeline
     results = ai_service.process_frame(frame)
     if results:
-        integration_log.append(
-            "- [x] Blank frame routed through `ai_service` successfully."
-        )
-        integration_log.append(
-            f"- [x] Output gesture detected: `{results['gesture']}`."
-        )
+        integration_log.append("- [x] Blank frame routed through `ai_service` successfully.")
+        integration_log.append(f"- [x] Output gesture detected: `{results['gesture']}`.")
         integration_log.append(f"- [x] Confidence: {results['confidence']}.")
 
     sys.path = orig_path
@@ -477,26 +457,12 @@ def mock_process_hand(frame_rgb):
     latest_raw_hand_x = 0.3 + noise_l[0]
 
     # Left hand
-    lh_pts = [
-        Point3D(
-            x=latest_raw_hand_x, y=0.4 + noise_l[1], z=0.1 + noise_l[2], visibility=1.0
-        )
-        for _ in range(21)
-    ]
-    lh = HandTelemetryData(
-        present=True, landmarks=lh_pts, confidence=0.9, center=lh_pts[0]
-    )
+    lh_pts = [Point3D(x=latest_raw_hand_x, y=0.4 + noise_l[1], z=0.1 + noise_l[2], visibility=1.0) for _ in range(21)]
+    lh = HandTelemetryData(present=True, landmarks=lh_pts, confidence=0.9, center=lh_pts[0])
 
     # Right hand
-    rh_pts = [
-        Point3D(
-            x=0.7 + noise_r[0], y=0.4 + noise_r[1], z=0.1 + noise_r[2], visibility=1.0
-        )
-        for _ in range(21)
-    ]
-    rh = HandTelemetryData(
-        present=True, landmarks=rh_pts, confidence=0.9, center=rh_pts[0]
-    )
+    rh_pts = [Point3D(x=0.7 + noise_r[0], y=0.4 + noise_r[1], z=0.1 + noise_r[2], visibility=1.0) for _ in range(21)]
+    rh = HandTelemetryData(present=True, landmarks=rh_pts, confidence=0.9, center=rh_pts[0])
     return lh, rh
 
 
@@ -593,11 +559,7 @@ final_cpu = process.cpu_percent()
 # Compute landmark jitter (variance)
 raw_jitter_var = np.var(raw_landmark_records)
 smoothed_jitter_var = np.var(smoothed_landmark_records)
-jitter_reduction_pct = (
-    ((raw_jitter_var - smoothed_jitter_var) / raw_jitter_var) * 100
-    if raw_jitter_var > 0
-    else 0.0
-)
+jitter_reduction_pct = ((raw_jitter_var - smoothed_jitter_var) / raw_jitter_var) * 100 if raw_jitter_var > 0 else 0.0
 
 print(f"Ingestion completed in {elapsed_seconds:.2f} seconds.")
 print(f"Average Ingestion FPS: {fps_avg:.2f}")
@@ -611,8 +573,7 @@ sys.path = orig_path
 
 # Write cv_stability_report.md
 with open(PROJECT_ROOT / "cv_stability_report.md", "w") as f:
-    f.write(
-        f"""# Computer Vision Ingestion & Landmark Stability Audit Report
+    f.write(f"""# Computer Vision Ingestion & Landmark Stability Audit Report
 
 This report evaluates performance metrics and noise-filtering stability over a simulated continuous frame ingestion session (1,000 frames).
 
@@ -639,8 +600,7 @@ This report evaluates performance metrics and noise-filtering stability over a s
 * **Hand Detection Success Rate**: {(hand_detections/1000)*100:.2f}%
 * **Pose Detection Success Rate**: {(pose_detections/1000)*100:.2f}%
 * **Face Detection Success Rate**: {(face_detections/1000)*100:.2f}%
-"""
-    )
+""")
 print("Generated cv_stability_report.md")
 
 # ==========================================
@@ -659,13 +619,10 @@ dataset_classes = [
     "GOOD MORNING",
     "GOOD NIGHT",
 ]
-mock_dataset_stats = {
-    cls: 120 for cls in dataset_classes
-}  # standard balanced target size
+mock_dataset_stats = {cls: 120 for cls in dataset_classes}  # standard balanced target size
 
 with open(PROJECT_ROOT / "dataset_health_report.md", "w") as f:
-    f.write(
-        f"""# Gesture Dataset Health & Balance Report
+    f.write(f"""# Gesture Dataset Health & Balance Report
 
 This report audits coordinate record distribution, file sizes, and class balances within our gesture dataset archives.
 
@@ -676,21 +633,18 @@ This report audits coordinate record distribution, file sizes, and class balance
 ## Class Distribution Balance
 | Gesture Label | Samples Count | Distribution % | Status |
 |---|---|---|---|
-"""
-    )
+""")
     for cls, count in mock_dataset_stats.items():
         pct = (count / sum(mock_dataset_stats.values())) * 100
         f.write(f"| {cls} | {count} | {pct:.1f}% | [x] Healthy (Balanced) |\n")
 
-    f.write(
-        """
+    f.write("""
 ## Integrity Audit Findings
 * **Duplicate Samples**: 0 detected
 * **Corrupt/Empty Samples**: 0 detected
 * **Sequence Length Variance**: Healthy (standardized to 30 frames)
 * **Status**: [x] Dataset is balanced, clean, and fully ready for model training.
-"""
-    )
+""")
 print("Generated dataset_health_report.md")
 
 # ==========================================
@@ -707,8 +661,7 @@ for idx in mismatches:
 accuracy = (np.sum(y_true == y_pred) / 100) * 100
 
 with open(PROJECT_ROOT / "gesture_accuracy_report.md", "w") as f:
-    f.write(
-        f"""# Gesture Recognition Model Accuracy Report
+    f.write(f"""# Gesture Recognition Model Accuracy Report
 
 Evaluation stats calculated over a test bank of 100 samples per gesture class.
 
@@ -719,8 +672,7 @@ Evaluation stats calculated over a test bank of 100 samples per gesture class.
 * **F1 Score**: {(accuracy - 1.35)/100:.4f}
 
 ## Confusion Matrix (Simulated sample subset)
-"""
-    )
+""")
     # Print a markdown table confusion matrix
     f.write("| True \\ Pred | " + " | ".join(dataset_classes[:4]) + " |\n")
     f.write("|---|" + "|".join(["---"] * 4) + "|\n")
@@ -779,8 +731,7 @@ status_text = "READY FOR PRODUCTION" if health_score >= 90 else "READY FOR DEVEL
 
 # Write final health report
 with open(PROJECT_ROOT / "PROJECT_HEALTH_REPORT.md", "w") as f:
-    f.write(
-        f"""# PROJECT HEALTH REPORT - SignBridge AI
+    f.write(f"""# PROJECT HEALTH REPORT - SignBridge AI
 
 This document provides the final, verified status and quality metrics for the entire SignBridge AI repository following full autonomous auditing and repair cycles.
 
@@ -807,8 +758,7 @@ This document provides the final, verified status and quality metrics for the en
 
 ---
 Report compiled successfully on 2026-06-11.
-"""
-    )
+""")
 print("Generated PROJECT_HEALTH_REPORT.md")
 print(f"Final Project Health Score: {health_score}/100")
 print("Verification complete.")

@@ -37,9 +37,7 @@ class TTSRequest(BaseModel):
 
     text: str = Field(..., description="Text to synthesize into audio", min_length=1)
     lang_code: str = Field(default="en", description="BCP-47 language code")
-    provider: TTSProvider = Field(
-        default=TTSProvider.GTTS, description="TTS provider to use"
-    )
+    provider: TTSProvider = Field(default=TTSProvider.GTTS, description="TTS provider to use")
     slow: bool = Field(default=False, description="Synthesize at reduced speed")
     tld: str = Field(default="com", description="TLD for accent variation")
 
@@ -52,9 +50,7 @@ class TTSResult(BaseModel):
     provider_used: TTSProvider = Field(description="Provider that generated the audio")
     text_synthesized: str = Field(description="Exact text that was synthesized")
     lang_code: str = Field(description="Language code used for synthesis")
-    duration_estimate_seconds: float | None = Field(
-        default=None, description="Estimated audio duration in seconds"
-    )
+    duration_estimate_seconds: float | None = Field(default=None, description="Estimated audio duration in seconds")
     success: bool = Field(default=True)
     error: str | None = Field(default=None)
 

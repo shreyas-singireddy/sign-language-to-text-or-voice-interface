@@ -102,9 +102,7 @@ class GesturePredictor:
 
         name = model_details.get("model_name", "LSTM")
         num_classes = len(model_details.get("classes", self.classes[model_type]))
-        self.classes[model_type] = model_details.get(
-            "classes", self.classes[model_type]
-        )
+        self.classes[model_type] = model_details.get("classes", self.classes[model_type])
 
         if model_type == "alphabet":
             model = AlphabetMLP(num_classes=num_classes)
@@ -158,12 +156,7 @@ class GesturePredictor:
         """
         # Threshold bounds:
         # Visibility > 40%, quality_score > 35, occlusion < 40%, tracking stability > 30%
-        if (
-            visibility_score >= 40.0
-            and quality_score >= 35.0
-            and occlusion_score <= 40.0
-            and stability_score >= 30.0
-        ):
+        if visibility_score >= 40.0 and quality_score >= 35.0 and occlusion_score <= 40.0 and stability_score >= 30.0:
             return True
         return False
 
@@ -178,9 +171,7 @@ class GesturePredictor:
         """
         Predicts alphabet/number from a single frame landmark vector.
         """
-        if not self.check_readiness(
-            visibility_score, quality_score, occlusion_score, stability_score
-        ):
+        if not self.check_readiness(visibility_score, quality_score, occlusion_score, stability_score):
             return {
                 "prediction": "WAITING_FOR_CLEAR_GESTURE",
                 "confidence": 0.0,
@@ -190,16 +181,10 @@ class GesturePredictor:
         classes = self.classes["alphabet"]
 
         # 1. Try ONNX runtime
-        onnx_sess = self.onnx_sessions.get("alphabet") or self._load_onnx_model(
-            "alphabet"
-        )
+        onnx_sess = self.onnx_sessions.get("alphabet") or self._load_onnx_model("alphabet")
         if onnx_sess is not None:
             try:
-                inputs = {
-                    onnx_sess.get_inputs()[0].name: np.expand_dims(
-                        flat_landmarks.astype(np.float32), axis=0
-                    )
-                }
+                inputs = {onnx_sess.get_inputs()[0].name: np.expand_dims(flat_landmarks.astype(np.float32), axis=0)}
                 outputs = onnx_sess.run(None, inputs)[0][0]
                 # Softmax
                 probs = np.exp(outputs) / np.sum(np.exp(outputs))
@@ -210,9 +195,7 @@ class GesturePredictor:
 
         # 2. PyTorch fallback
         if probs is None:
-            model = self.active_models.get("alphabet") or self._load_pytorch_model(
-                "alphabet"
-            )
+            model = self.active_models.get("alphabet") or self._load_pytorch_model("alphabet")
             if model is not None:
                 model.eval()
                 with torch.no_grad():
@@ -256,9 +239,7 @@ class GesturePredictor:
         """
         Predicts word gesture from sequence buffer.
         """
-        if not self.check_readiness(
-            visibility_score, quality_score, occlusion_score, stability_score
-        ):
+        if not self.check_readiness(visibility_score, quality_score, occlusion_score, stability_score):
             return {"prediction": "WAITING_FOR_CLEAR_GESTURE", "confidence": 0.0}
 
         if len(sequence) < 10:
@@ -282,9 +263,7 @@ class GesturePredictor:
         onnx_sess = self.onnx_sessions.get("word") or self._load_onnx_model("word")
         if onnx_sess is not None:
             try:
-                inputs = {
-                    onnx_sess.get_inputs()[0].name: np.expand_dims(seq_arr, axis=0)
-                }
+                inputs = {onnx_sess.get_inputs()[0].name: np.expand_dims(seq_arr, axis=0)}
                 outputs = onnx_sess.run(None, inputs)[0][0]
                 probs = np.exp(outputs) / np.sum(np.exp(outputs))
             except Exception:

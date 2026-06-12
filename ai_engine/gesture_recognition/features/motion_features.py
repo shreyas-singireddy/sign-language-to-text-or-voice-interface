@@ -3,9 +3,7 @@ from typing import Any
 import numpy as np
 
 
-def compute_velocities(
-    current_landmarks: np.ndarray, previous_landmarks: np.ndarray
-) -> np.ndarray:
+def compute_velocities(current_landmarks: np.ndarray, previous_landmarks: np.ndarray) -> np.ndarray:
     """
     Computes coordinate-wise velocity (displacement) between two frames.
     Input shapes: (1662,)
@@ -15,9 +13,7 @@ def compute_velocities(
     return current_landmarks - previous_landmarks
 
 
-def compute_accelerations(
-    current_vel: np.ndarray, previous_vel: np.ndarray
-) -> np.ndarray:
+def compute_accelerations(current_vel: np.ndarray, previous_vel: np.ndarray) -> np.ndarray:
     """
     Computes coordinate-wise acceleration between consecutive velocity vectors.
     """
@@ -26,9 +22,7 @@ def compute_accelerations(
     return current_vel - previous_vel
 
 
-def compute_hand_direction(
-    lh_vel: np.ndarray, rh_vel: np.ndarray
-) -> tuple[float, float]:
+def compute_hand_direction(lh_vel: np.ndarray, rh_vel: np.ndarray) -> tuple[float, float]:
     """
     Computes the 2D direction angle (in degrees) of left and right hand centers based on velocity.
     lh_vel and rh_vel are 3D velocity vectors (dx, dy, dz) of the hand centers.
@@ -88,13 +82,9 @@ def extract_motion_telemetry(flat_history: list) -> dict[str, Any]:
 
         # Accelerations (difference in displacements)
         lh_disps_prev = np.linalg.norm(lh_prev - lh_prev_prev, axis=1)
-        metrics["left_hand_acceleration"] = float(
-            np.mean(np.abs(lh_disps - lh_disps_prev))
-        )
+        metrics["left_hand_acceleration"] = float(np.mean(np.abs(lh_disps - lh_disps_prev)))
 
         rh_disps_prev = np.linalg.norm(rh_prev - rh_prev_prev, axis=1)
-        metrics["right_hand_acceleration"] = float(
-            np.mean(np.abs(rh_disps - rh_disps_prev))
-        )
+        metrics["right_hand_acceleration"] = float(np.mean(np.abs(rh_disps - rh_disps_prev)))
 
     return metrics

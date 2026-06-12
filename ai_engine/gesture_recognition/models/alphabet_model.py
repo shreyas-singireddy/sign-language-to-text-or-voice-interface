@@ -6,9 +6,7 @@ from torch import nn
 
 
 class AlphabetMLP(nn.Module):
-    def __init__(
-        self, input_dim: int = 1662, hidden_dim: int = 256, num_classes: int = 36
-    ):
+    def __init__(self, input_dim: int = 1662, hidden_dim: int = 256, num_classes: int = 36):
         """
         PyTorch Multi-Layer Perceptron for static alphabet (A-Z, 0-9) gesture classification.
         """

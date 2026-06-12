@@ -151,9 +151,7 @@ with pie_col:
             go.Pie(
                 labels=emotion_data["labels"],
                 values=emotion_data["values"],
-                marker=dict(
-                    colors=emotion_data["colors"], line=dict(color="#121212", width=2)
-                ),
+                marker=dict(colors=emotion_data["colors"], line=dict(color="#121212", width=2)),
                 hole=0.4,
                 textfont=dict(family="Outfit", size=13, color="#FFFFFF"),
             )
@@ -231,9 +229,7 @@ else:
 
 # ─── METRICS RESET CONTROL ───────────────────────────────────────────────────────
 st.markdown("---")
-if st.button(
-    "🔄 Reset Live Session Metrics", key="btn_reset_metrics", use_container_width=True
-):
+if st.button("🔄 Reset Live Session Metrics", key="btn_reset_metrics", use_container_width=True):
     metrics_collector.reset()
     st.success("Live session metrics reset.")
     st.rerun()

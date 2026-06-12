@@ -67,9 +67,7 @@ class FeatureExtractor:
             v2 = l_wrist - l_elbow
 
             # Angle computation
-            cos_theta = np.dot(v1, v2) / (
-                np.linalg.norm(v1) * np.linalg.norm(v2) + 1e-6
-            )
+            cos_theta = np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2) + 1e-6)
             angle = np.arccos(np.clip(cos_theta, -1.0, 1.0))
             angles["left_elbow_angle"] = float(np.degrees(angle))
         else:
@@ -106,9 +104,7 @@ class FeatureExtractor:
         """
         distances = self.calculate_distances(landmarks)
         angles = self.calculate_angles(landmarks)
-        velocities, accelerations = self.calculate_velocities_and_accelerations(
-            landmarks
-        )
+        velocities, accelerations = self.calculate_velocities_and_accelerations(landmarks)
 
         return {
             "distances": distances,

@@ -104,13 +104,10 @@ class MetricsCollector:
             self._latency_samples.append(elapsed_ms)
 
         logger.debug(
-            f"Translation event recorded: {signs} → '{translated_text[:40]}' "
-            f"({language}, conf={confidence:.2f})"
+            f"Translation event recorded: {signs} → '{translated_text[:40]}' " f"({language}, conf={confidence:.2f})"
         )
 
-    def record_speech_synthesis(
-        self, text: str, language: str, provider: str, success: bool
-    ) -> None:
+    def record_speech_synthesis(self, text: str, language: str, provider: str, success: bool) -> None:
         """
         Record a TTS synthesis event.
 
@@ -148,9 +145,7 @@ class MetricsCollector:
 
     def get_gesture_frequency(self) -> dict[str, int]:
         """Return gesture token frequency map (descending order)."""
-        return dict(
-            sorted(self._gesture_frequency.items(), key=lambda x: x[1], reverse=True)
-        )
+        return dict(sorted(self._gesture_frequency.items(), key=lambda x: x[1], reverse=True))
 
     def get_language_distribution(self) -> dict[str, int]:
         """Return language usage counts."""

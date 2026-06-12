@@ -25,9 +25,7 @@ class BaseTTSProvider(ABC):
         """Audio format output: 'mp3' or 'wav'."""
 
     @abstractmethod
-    def synthesize(
-        self, text: str, lang_code: str = "en", slow: bool = False, tld: str = "com"
-    ) -> TTSResult:
+    def synthesize(self, text: str, lang_code: str = "en", slow: bool = False, tld: str = "com") -> TTSResult:
         """
         Synthesize text into audio bytes.
 

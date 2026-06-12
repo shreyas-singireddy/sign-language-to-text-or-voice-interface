@@ -12,9 +12,7 @@ class SampleValidator:
         self.max_sequence_len = max_sequence_len
         self.min_visibility = min_visibility
 
-    def validate_frame(
-        self, flat_landmarks: np.ndarray | list[float]
-    ) -> tuple[bool, str]:
+    def validate_frame(self, flat_landmarks: np.ndarray | list[float]) -> tuple[bool, str]:
         """
         Validates structure and value range of a single-frame flat landmark vector.
         """
@@ -34,9 +32,7 @@ class SampleValidator:
 
         return True, "Valid frame data"
 
-    def validate_sequence(
-        self, sequence: list[np.ndarray], min_vis_ratio: float = 0.5
-    ) -> tuple[bool, str]:
+    def validate_sequence(self, sequence: list[np.ndarray], min_vis_ratio: float = 0.5) -> tuple[bool, str]:
         """
         Validates a temporal sequence of frame landmark vectors.
         """

@@ -40,12 +40,8 @@ class Message(BaseModel):
     )
     text: str = Field(description="Final translated or typed text")
     language: str = Field(default="English", description="Language of the text")
-    emotion: EmotionTone = Field(
-        default=EmotionTone.NEUTRAL, description="Detected emotional tone"
-    )
-    confidence: float = Field(
-        default=1.0, ge=0.0, le=1.0, description="Translation confidence"
-    )
+    emotion: EmotionTone = Field(default=EmotionTone.NEUTRAL, description="Detected emotional tone")
+    confidence: float = Field(default=1.0, ge=0.0, le=1.0, description="Translation confidence")
     timestamp: datetime = Field(description="Message creation time")
     metadata: dict[str, Any] = Field(default_factory=dict, description="Extra metadata")
 
@@ -54,17 +50,11 @@ class ConversationThread(BaseModel):
     """Ordered sequence of messages in a conversation session."""
 
     session_id: str = Field(description="Unique session identifier")
-    messages: list[Message] = Field(
-        default_factory=list, description="All messages in order"
-    )
+    messages: list[Message] = Field(default_factory=list, description="All messages in order")
     started_at: datetime = Field(description="When this conversation began")
-    language: str = Field(
-        default="English", description="Primary conversation language"
-    )
+    language: str = Field(default="English", description="Primary conversation language")
     participant_count: int = Field(default=2, description="Number of participants")
-    is_active: bool = Field(
-        default=True, description="Whether the conversation is ongoing"
-    )
+    is_active: bool = Field(default=True, description="Whether the conversation is ongoing")
 
 
 class DialogueTurn(BaseModel):
@@ -77,9 +67,7 @@ class DialogueTurn(BaseModel):
     language: str = Field(description="Target language")
     emotion: EmotionTone = Field(description="Detected tone")
     confidence: float = Field(ge=0.0, le=1.0)
-    response_suggestion: str | None = Field(
-        default=None, description="Suggested response for the hearing participant"
-    )
+    response_suggestion: str | None = Field(default=None, description="Suggested response for the hearing participant")
     timestamp: datetime = Field(description="Turn timestamp")
 
 

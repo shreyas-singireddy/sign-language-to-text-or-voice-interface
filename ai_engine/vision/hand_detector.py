@@ -24,9 +24,7 @@ class HandDetector:
             min_tracking_confidence=sys_config.detectors.min_tracking_confidence,
         )
 
-    def process_frame(
-        self, frame_rgb: np.ndarray
-    ) -> tuple[HandTelemetryData, HandTelemetryData]:
+    def process_frame(self, frame_rgb: np.ndarray) -> tuple[HandTelemetryData, HandTelemetryData]:
         """
         Parses RGB frame matrix and returns (left_hand, right_hand) telemetry records.
         """
@@ -37,18 +35,13 @@ class HandDetector:
         right_hand = HandTelemetryData(present=False)
 
         if results.multi_hand_landmarks and results.multi_handedness:
-            for hand_landmarks, handedness in zip(
-                results.multi_hand_landmarks, results.multi_handedness
-            ):
+            for hand_landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
                 # MediaPipe classifies hands mirroring (Left vs Right)
                 label = handedness.classification[0].label  # "Left" or "Right"
                 score = float(handedness.classification[0].score)
 
                 # Format landmarks list
-                points = [
-                    Point3D(x=lm.x, y=lm.y, z=lm.z, visibility=1.0)
-                    for lm in hand_landmarks.landmark
-                ]
+                points = [Point3D(x=lm.x, y=lm.y, z=lm.z, visibility=1.0) for lm in hand_landmarks.landmark]
 
                 # Compute center and bounding bounds
                 center, bbox = self._calculate_bounding_geometry(points)
@@ -69,9 +62,7 @@ class HandDetector:
 
         return left_hand, right_hand
 
-    def _calculate_bounding_geometry(
-        self, points: list[Point3D]
-    ) -> tuple[Point3D, BoundingBox3D]:
+    def _calculate_bounding_geometry(self, points: list[Point3D]) -> tuple[Point3D, BoundingBox3D]:
         """
         Computes 3D bounding boundaries and center point coordinate.
         """
@@ -79,17 +70,11 @@ class HandDetector:
         ys = [p.y for p in points]
         zs = [p.z for p in points]
 
-        center = Point3D(
-            x=float(np.mean(xs)), y=float(np.mean(ys)), z=float(np.mean(zs))
-        )
+        center = Point3D(x=float(np.mean(xs)), y=float(np.mean(ys)), z=float(np.mean(zs)))
 
         bbox = BoundingBox3D(
-            min_point=Point3D(
-                x=float(np.min(xs)), y=float(np.min(ys)), z=float(np.min(zs))
-            ),
-            max_point=Point3D(
-                x=float(np.max(xs)), y=float(np.max(ys)), z=float(np.max(zs))
-            ),
+            min_point=Point3D(x=float(np.min(xs)), y=float(np.min(ys)), z=float(np.min(zs))),
+            max_point=Point3D(x=float(np.max(xs)), y=float(np.max(ys)), z=float(np.max(zs))),
         )
 
         return center, bbox

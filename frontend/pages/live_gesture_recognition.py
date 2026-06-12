@@ -104,26 +104,18 @@ with col_cam:
         )
 
         # Start camera manager
-        success = perception_service.camera.initialize_camera(
-            sys_config.camera.source_index
-        )
+        success = perception_service.camera.initialize_camera(sys_config.camera.source_index)
         if success:
             try:
                 while st.session_state["gesture_cam_active"]:
-                    read_success, frame, latency = (
-                        perception_service.camera.read_frame()
-                    )
+                    read_success, frame, latency = perception_service.camera.read_frame()
                     if not read_success:
                         st.error("Ingestion failed: Camera disconnected.")
                         break
 
                     # Run Perception Pipeline
-                    telemetry_data = perception_service.process_perception_frame(
-                        frame, latency
-                    )
-                    flat_lms = perception_service._flatten_landmarks(
-                        telemetry_data.landmarks
-                    )
+                    telemetry_data = perception_service.process_perception_frame(frame, latency)
+                    flat_lms = perception_service._flatten_landmarks(telemetry_data.landmarks)
 
                     # Compute indicators
                     readiness = telemetry_data.readiness.gesture_readiness
@@ -134,9 +126,7 @@ with col_cam:
 
                     # Handle Recording for Training Studio
                     if st.session_state["custom_rec_active"]:
-                        is_rec = gesture_service.record_frame(
-                            flat_lms, quality, visibility
-                        )
+                        is_rec = gesture_service.record_frame(flat_lms, quality, visibility)
                         if is_rec:
                             st.session_state["rec_frame_count"] += 1
                             if st.session_state["rec_frame_count"] >= 30:
@@ -144,9 +134,7 @@ with col_cam:
                                 st.session_state["custom_rec_active"] = False
                                 saved_path = gesture_service.stop_and_save_recording()
                                 if saved_path:
-                                    st.success(
-                                        f"Recorded 1 sample sequence successfully: {saved_path.name}"
-                                    )
+                                    st.success(f"Recorded 1 sample sequence successfully: {saved_path.name}")
                                 else:
                                     st.error("Recording failed validation filters.")
 
@@ -176,8 +164,7 @@ with col_cam:
                         # Append to history logs
                         if (
                             not st.session_state["predictions_log"]
-                            or st.session_state["predictions_log"][-1]["prediction"]
-                            != pred_label
+                            or st.session_state["predictions_log"][-1]["prediction"] != pred_label
                         ):
                             st.session_state["predictions_log"].append(
                                 {
@@ -192,10 +179,7 @@ with col_cam:
 
                             # Reconstruct phrase
                             st.session_state["gesture_sentence"] = " ".join(
-                                [
-                                    item["prediction"]
-                                    for item in st.session_state["predictions_log"]
-                                ]
+                                [item["prediction"] for item in st.session_state["predictions_log"]]
                             )
 
                     # Mirror and render frame
@@ -208,9 +192,7 @@ with col_cam:
                     video_view.image(display_rgb, use_column_width=True)
 
                     # Log performance values
-                    st.session_state["chart_latency"].append(
-                        telemetry_data.performance.total_pipeline_ms
-                    )
+                    st.session_state["chart_latency"].append(telemetry_data.performance.total_pipeline_ms)
                     st.session_state["chart_confidence"].append(pred_conf * 100.0)
 
                     # Cap chart buffers
@@ -226,9 +208,7 @@ with col_cam:
         else:
             st.error("Capture device initialization failed.")
     else:
-        video_view.info(
-            "Start the AI Predictor camera loop to initiate real-time gesture classification."
-        )
+        video_view.info("Start the AI Predictor camera loop to initiate real-time gesture classification.")
 
 # ----------------- RIGHT COLUMN: CONTROL PANELS & STUDIO -----------------
 with col_panels:
@@ -286,9 +266,7 @@ with col_panels:
 
     with tab_training:
         st.markdown("### Create Custom Gesture Label")
-        custom_label = st.text_input(
-            "Enter Gesture Name:", value="GREETING", key="input_custom_train_label"
-        )
+        custom_label = st.text_input("Enter Gesture Name:", value="GREETING", key="input_custom_train_label")
 
         # Recording controller
         st.markdown("#### Record Landmark Dataset")
@@ -315,9 +293,7 @@ with col_panels:
             "Trigger training using PyTorch. If no recorded samples exist, the system will auto-generate synthetic sequence features."
         )
 
-        train_epochs = st.slider(
-            "Epochs count", min_value=5, max_value=50, value=15, step=5
-        )
+        train_epochs = st.slider("Epochs count", min_value=5, max_value=50, value=15, step=5)
         train_batch = st.select_slider("Batch Size", options=[8, 16, 32], value=16)
         train_lr = st.selectbox("Learning Rate", [0.01, 0.001, 0.0001], index=1)
 
@@ -334,9 +310,7 @@ with col_panels:
                     batch_size=train_batch,
                     lr=train_lr,
                 )
-                st.success(
-                    f"Model successfully trained and saved! Version: **{version}**"
-                )
+                st.success(f"Model successfully trained and saved! Version: **{version}**")
                 st.markdown(
                     f"""
                     <div style="background-color:#FFFFFF; border:3px solid #121212; padding:15px; color:#121212 !important;">
@@ -352,9 +326,7 @@ with col_panels:
         st.markdown("#### Dataset Inventory Counts")
         stats = gesture_service.get_dataset_stats()
         if stats:
-            df_stats = pd.DataFrame(
-                list(stats.items()), columns=["Label", "Repetitions"]
-            )
+            df_stats = pd.DataFrame(list(stats.items()), columns=["Label", "Repetitions"])
             st.dataframe(df_stats, use_container_width=True, hide_index=True)
 
             label_to_delete = st.selectbox(
@@ -406,9 +378,7 @@ with col_panels:
             )
 
             # Find selected model metadata
-            selected_meta = next(
-                m for m in all_models if m["version"] == rollback_target
-            )
+            selected_meta = next(m for m in all_models if m["version"] == rollback_target)
             st.write(
                 f"- Type: `{selected_meta['model_type']}` | Accuracy: `{round(selected_meta['metrics']['test_accuracy'] * 100, 2)}%`"
             )
@@ -418,13 +388,9 @@ with col_panels:
                 key="btn_rollback_model",
                 use_container_width=True,
             ):
-                success = gesture_service.rollback_model(
-                    selected_meta["model_type"], rollback_target
-                )
+                success = gesture_service.rollback_model(selected_meta["model_type"], rollback_target)
                 if success:
-                    st.success(
-                        f"Rollback successful! Active model set to {rollback_target}"
-                    )
+                    st.success(f"Rollback successful! Active model set to {rollback_target}")
                     st.rerun()
                 else:
                     st.error("Failed to restore target version.")

@@ -28,19 +28,12 @@ class FaceDetector:
             return FaceTelemetryData(present=False)
 
         face_landmarks = results.multi_face_landmarks[0]
-        points = [
-            Point3D(x=lm.x, y=lm.y, z=lm.z, visibility=1.0)
-            for lm in face_landmarks.landmark
-        ]
+        points = [Point3D(x=lm.x, y=lm.y, z=lm.z, visibility=1.0) for lm in face_landmarks.landmark]
 
         # Calculate mouth openness: vertical lips gap vs lip width
         # Vertical center points: 13, 14. Horizontal corners: 78, 308
-        gap = np.linalg.norm(
-            np.array([points[13].x - points[14].x, points[13].y - points[14].y])
-        )
-        width = np.linalg.norm(
-            np.array([points[78].x - points[308].x, points[78].y - points[308].y])
-        )
+        gap = np.linalg.norm(np.array([points[13].x - points[14].x, points[13].y - points[14].y]))
+        width = np.linalg.norm(np.array([points[78].x - points[308].x, points[78].y - points[308].y]))
         mouth_open = float(gap / (width + 1e-6))
 
         # Head Rotation estimation using Perspective-n-Point (PnP)

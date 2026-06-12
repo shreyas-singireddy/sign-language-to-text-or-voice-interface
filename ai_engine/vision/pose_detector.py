@@ -27,20 +27,13 @@ class PoseDetector:
 
         # Convert all landmarks
         points = [
-            Point3D(x=lm.x, y=lm.y, z=lm.z, visibility=float(lm.visibility))
-            for lm in results.pose_landmarks.landmark
+            Point3D(x=lm.x, y=lm.y, z=lm.z, visibility=float(lm.visibility)) for lm in results.pose_landmarks.landmark
         ]
 
         # Calculate joint telemetry angles
-        left_arm = self._calculate_angle(
-            points[11], points[13], points[15]
-        )  # Shoulder-Elbow-Wrist (L)
-        right_arm = self._calculate_angle(
-            points[12], points[14], points[16]
-        )  # Shoulder-Elbow-Wrist (R)
-        shoulder_ang = self._calculate_angle(
-            points[13], points[11], points[12]
-        )  # Elbow-Shoulder-Shoulder
+        left_arm = self._calculate_angle(points[11], points[13], points[15])  # Shoulder-Elbow-Wrist (L)
+        right_arm = self._calculate_angle(points[12], points[14], points[16])  # Shoulder-Elbow-Wrist (R)
+        shoulder_ang = self._calculate_angle(points[13], points[11], points[12])  # Elbow-Shoulder-Shoulder
 
         # Torso rotation yaw estimation (Left shoulder vs Right shoulder z depth differential)
         torso_rot = self._calculate_torso_rotation(points[11], points[12])

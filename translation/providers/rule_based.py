@@ -371,9 +371,7 @@ class RuleBasedProvider(BaseTranslationProvider):
     def supports_multilingual(self) -> bool:
         return True
 
-    def signs_to_english(
-        self, tokens: list[str], context: list[str] | None = None
-    ) -> str:
+    def signs_to_english(self, tokens: list[str], context: list[str] | None = None) -> str:
         """
         Convert sign tokens to English using grammar rules and phrase dictionary.
         Applies subject inference, verb conjugation, and context-aware corrections.
@@ -419,9 +417,7 @@ class RuleBasedProvider(BaseTranslationProvider):
         # Step 5: Grammar-rule fallback construction
         return self._construct_grammatically(deduped, context)
 
-    def _construct_grammatically(
-        self, tokens: list[str], context: list[str] | None
-    ) -> str:
+    def _construct_grammatically(self, tokens: list[str], context: list[str] | None) -> str:
         """
         Construct a natural English sentence from tokens using grammar rules.
         Infers subject, selects verb form, and builds object phrase.
@@ -468,9 +464,7 @@ class RuleBasedProvider(BaseTranslationProvider):
             remaining.pop(0)
         else:
             # Unknown verb — treat as noun
-            verb_phrase = (
-                "is associated with" if not negated else "is not associated with"
-            )
+            verb_phrase = "is associated with" if not negated else "is not associated with"
 
         # Remaining tokens become the object/complement
         object_phrase = " ".join(w.lower() for w in remaining) if remaining else ""
@@ -505,7 +499,5 @@ class RuleBasedProvider(BaseTranslationProvider):
                 return translated
 
         # Final fallback: return English with language label
-        logger.info(
-            f"No translation found for '{english_text}' in {target_language}. Returning labeled fallback."
-        )
+        logger.info(f"No translation found for '{english_text}' in {target_language}. Returning labeled fallback.")
         return f"[{target_language}] {english_text}"

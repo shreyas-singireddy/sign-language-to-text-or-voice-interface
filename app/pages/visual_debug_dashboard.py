@@ -70,9 +70,7 @@ with col_telemetry:
 
 # Run Real-Time Frame loop if active
 if st.session_state["debug_active"]:
-    success = perception_service.camera.initialize_camera(
-        sys_config.camera.source_index
-    )
+    success = perception_service.camera.initialize_camera(sys_config.camera.source_index)
     if success:
         try:
             # We initialize standard drawing models locally to ensure overlay draws correctly
@@ -177,21 +175,9 @@ if st.session_state["debug_active"]:
                 )
 
                 # Head Pose yaw/pitch/roll widget
-                pitch = (
-                    telemetry.landmarks.face.head_rotation_pitch
-                    if telemetry.landmarks.face.present
-                    else 0.0
-                )
-                yaw = (
-                    telemetry.landmarks.face.head_rotation_yaw
-                    if telemetry.landmarks.face.present
-                    else 0.0
-                )
-                roll = (
-                    telemetry.landmarks.face.head_rotation_roll
-                    if telemetry.landmarks.face.present
-                    else 0.0
-                )
+                pitch = telemetry.landmarks.face.head_rotation_pitch if telemetry.landmarks.face.present else 0.0
+                yaw = telemetry.landmarks.face.head_rotation_yaw if telemetry.landmarks.face.present else 0.0
+                roll = telemetry.landmarks.face.head_rotation_roll if telemetry.landmarks.face.present else 0.0
                 slot_head_pose.markdown(
                     f"""
                     <div class="bauhaus-card" style="padding:15px; margin-bottom:12px; border-left:12px solid #1040C0;">
@@ -238,10 +224,6 @@ if st.session_state["debug_active"]:
             perception_service.camera.release()
             video_placeholder.empty()
     else:
-        st.error(
-            "Capture device initialization failed. Confirm webcam index is correct in settings."
-        )
+        st.error("Capture device initialization failed. Confirm webcam index is correct in settings.")
 else:
-    video_placeholder.info(
-        "Activate the visual debug loop to view live joint tracking overlays."
-    )
+    video_placeholder.info("Activate the visual debug loop to view live joint tracking overlays.")

@@ -72,9 +72,7 @@ class InferencePipeline:
             "detector_model_loaded": self.detector.model_loaded,
             "sequence_model_loaded": self.seq_model.model_loaded,
             "sequence_buffer_size": len(self.seq_model.buffer),
-            "supported_gestures_count": len(
-                self.detector.predict.__globals__.get("SUPPORTED_GESTURES", [])
-            ),
+            "supported_gestures_count": len(self.detector.predict.__globals__.get("SUPPORTED_GESTURES", [])),
         }
 
     def reset_sequence(self):

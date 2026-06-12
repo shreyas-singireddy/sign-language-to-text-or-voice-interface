@@ -26,9 +26,7 @@ class Evaluator:
         """
         # Overall metrics
         acc = float(accuracy_score(y_true, y_pred))
-        precision, recall, f1, _ = precision_recall_fscore_support(
-            y_true, y_pred, average="macro", zero_division=0
-        )
+        precision, recall, f1, _ = precision_recall_fscore_support(y_true, y_pred, average="macro", zero_division=0)
 
         # Confusion matrix
         cm = confusion_matrix(y_true, y_pred, labels=range(len(classes)))
@@ -52,9 +50,7 @@ class Evaluator:
         for idx, name in enumerate(classes):
             # Calculate class accuracy: (true positives) / total samples in class
             class_mask = y_true == idx
-            class_acc = (
-                float(np.mean(y_pred[class_mask] == idx)) if np.any(class_mask) else 0.0
-            )
+            class_acc = float(np.mean(y_pred[class_mask] == idx)) if np.any(class_mask) else 0.0
 
             class_stats[name] = {
                 "accuracy": class_acc,

@@ -46,9 +46,7 @@ from ai_engine.gesture_recognition.training.evaluator import evaluator
 # ==========================================
 def test_prediction_schemas():
     """Verify that pydantic schemas validate types correctly."""
-    p_alpha = AlphabetPredictionResponse(
-        prediction="A", confidence=0.97, alternatives=["S", "E"]
-    )
+    p_alpha = AlphabetPredictionResponse(prediction="A", confidence=0.97, alternatives=["S", "E"])
     assert p_alpha.prediction == "A"
     assert len(p_alpha.alternatives) == 2
 
@@ -145,9 +143,7 @@ def test_evaluator_metrics():
     """Verify F1, Accuracy, and confusion matrices calculations."""
     y_true = np.array([0, 1, 2, 0])
     y_pred = np.array([0, 1, 1, 0])
-    y_prob = np.array(
-        [[0.8, 0.1, 0.1], [0.1, 0.8, 0.1], [0.1, 0.8, 0.1], [0.9, 0.05, 0.05]]
-    )
+    y_prob = np.array([[0.8, 0.1, 0.1], [0.1, 0.8, 0.1], [0.1, 0.8, 0.1], [0.9, 0.05, 0.05]])
     classes = ["HELLO", "YES", "NO"]
 
     metrics = evaluator.evaluate_predictions(y_true, y_pred, y_prob, classes)

@@ -20,22 +20,14 @@ class CameraSettings(BaseModel):
 
 
 class DetectorSettings(BaseModel):
-    min_detection_confidence: float = Field(
-        default=0.5, description="Min detection threshold"
-    )
-    min_tracking_confidence: float = Field(
-        default=0.5, description="Min tracking threshold"
-    )
+    min_detection_confidence: float = Field(default=0.5, description="Min detection threshold")
+    min_tracking_confidence: float = Field(default=0.5, description="Min tracking threshold")
 
 
 class TelemetrySettings(BaseModel):
-    history_size: int = Field(
-        default=120, description="Temporal tracker history frame count"
-    )
+    history_size: int = Field(default=120, description="Temporal tracker history frame count")
     stability_window: int = Field(default=15, description="Jitter calculations window")
-    readiness_threshold: int = Field(
-        default=75, description="Gesture readiness percentage check"
-    )
+    readiness_threshold: int = Field(default=75, description="Gesture readiness percentage check")
 
 
 class SystemConfig(BaseModel):

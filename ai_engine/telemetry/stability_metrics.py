@@ -7,9 +7,7 @@ class StabilityMetricsCalculator:
     def __init__(self):
         self.prev_landmarks = None
 
-    def calculate(
-        self, raw_coords: np.ndarray, smoothed_coords: np.ndarray
-    ) -> StabilityTelemetryData:
+    def calculate(self, raw_coords: np.ndarray, smoothed_coords: np.ndarray) -> StabilityTelemetryData:
         """
         Evaluates jitter and consistency.
         """

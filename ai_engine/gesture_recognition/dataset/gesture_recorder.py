@@ -34,9 +34,7 @@ class GestureRecorder:
         self.visibility_scores.clear()
         return self.current_session_id
 
-    def record_frame(
-        self, flat_landmarks: np.ndarray, quality_score: float, visibility_score: float
-    ) -> bool:
+    def record_frame(self, flat_landmarks: np.ndarray, quality_score: float, visibility_score: float) -> bool:
         """
         Appends a frame of landmarks to the session buffer.
         """
@@ -96,15 +94,9 @@ class GestureRecorder:
                 "label": self.current_label,
                 "timestamp": time.time(),
                 "frame_count": len(self.frame_buffer),
-                "average_quality_score": (
-                    float(np.mean(self.quality_scores))
-                    if self.quality_scores
-                    else 100.0
-                ),
+                "average_quality_score": (float(np.mean(self.quality_scores)) if self.quality_scores else 100.0),
                 "average_visibility_score": (
-                    float(np.mean(self.visibility_scores))
-                    if self.visibility_scores
-                    else 100.0
+                    float(np.mean(self.visibility_scores)) if self.visibility_scores else 100.0
                 ),
             }
 

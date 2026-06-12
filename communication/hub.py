@@ -23,9 +23,7 @@ class CommunicationHub:
         logger.info(f"Created communication session {session_id} for user {user_id}")
         return session_id
 
-    def post_message(
-        self, session_id: str, sender: str, text: str, voice_bytes: bytes = None
-    ) -> bool:
+    def post_message(self, session_id: str, sender: str, text: str, voice_bytes: bytes = None) -> bool:
         """
         Appends a translated sign/message to a session transcript.
         """

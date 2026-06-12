@@ -63,9 +63,7 @@ class VisionPipeline:
         # 5. Motion Analyser (Tremor, Occlusion, Activity, Health)
         motion_telemetry = {}
         if self.analyser is not None:
-            motion_telemetry = self.analyser.evaluate(
-                processed_coords, features["mean_velocity"], mp_results
-            )
+            motion_telemetry = self.analyser.evaluate(processed_coords, features["mean_velocity"], mp_results)
         else:
             motion_telemetry = {
                 "stability_index": 1.0,
@@ -75,9 +73,7 @@ class VisionPipeline:
             }
 
         # 6. Assess AI Readiness
-        readiness = self.prep.assess_data_readiness(
-            processed_coords, motion_telemetry["tracking_health"]
-        )
+        readiness = self.prep.assess_data_readiness(processed_coords, motion_telemetry["tracking_health"])
 
         # Draw overlays
         annotated_frame = self.holistic.draw_landmarks(frame_bgr, mp_results)

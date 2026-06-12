@@ -19,6 +19,7 @@ def test_build_alphabet_heatmap():
     assert res["z"][0][0] == 5
     assert res["text"][0][0] == "A: 5"
 
+
 def test_build_word_heatmap():
     freq = {"HELLO": 8, "EMERGENCY": 15, "WATER": 3, "RANDOM_UNKNOWN": 20}
     res = heatmap_builder.build_word_heatmap(freq, top_n=3)
@@ -34,6 +35,7 @@ def test_build_word_heatmap():
     assert res["gestures"][1] == "EMERGENCY"
     assert res["counts"][1] == 15
 
+
 def test_build_emotion_pie_data():
     dist = {"Neutral": 10, "Urgent": 2, "Friendly": 5}
     res = heatmap_builder.build_emotion_pie_data(dist)
@@ -44,6 +46,7 @@ def test_build_emotion_pie_data():
     assert len(res["colors"]) == 3
     # Neutral should map to "#888888" (case-insensitive)
     assert res["colors"][0] == "#888888"
+
 
 def test_build_confidence_trend():
     hist = {"80-90%": 12, "90-100%": 25}

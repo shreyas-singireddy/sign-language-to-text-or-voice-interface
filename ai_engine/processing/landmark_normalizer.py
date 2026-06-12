@@ -34,9 +34,7 @@ class LandmarkNormalizer:
         mid_z = (l_sh.z + r_sh.z) / 2.0
 
         # Calculate Shoulder width scale factor
-        width = np.linalg.norm(
-            np.array([l_sh.x - r_sh.x, l_sh.y - r_sh.y, l_sh.z - r_sh.z])
-        )
+        width = np.linalg.norm(np.array([l_sh.x - r_sh.x, l_sh.y - r_sh.y, l_sh.z - r_sh.z]))
         scale = width if width > 1e-4 else 1.0
 
         # Normalization helper
@@ -64,12 +62,8 @@ class LandmarkNormalizer:
                 )[0]
 
         if frame_data.right_hand.present:
-            frame_data.right_hand.landmarks = norm_points(
-                frame_data.right_hand.landmarks
-            )
-            frame_data.right_hand.center = norm_points([frame_data.right_hand.center])[
-                0
-            ]
+            frame_data.right_hand.landmarks = norm_points(frame_data.right_hand.landmarks)
+            frame_data.right_hand.center = norm_points([frame_data.right_hand.center])[0]
             if frame_data.right_hand.bounding_box:
                 frame_data.right_hand.bounding_box.min_point = norm_points(
                     [frame_data.right_hand.bounding_box.min_point]

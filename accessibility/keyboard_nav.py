@@ -82,9 +82,7 @@ class KeyboardNavRegistry:
             else:
                 condition = f"!e.altKey && !e.ctrlKey && e.key === '{key}'"
 
-            shortcuts_js.append(
-                f"if ({condition}) {{ handleAction('{action}'); e.preventDefault(); }}"
-            )
+            shortcuts_js.append(f"if ({condition}) {{ handleAction('{action}'); e.preventDefault(); }}")
 
         shortcuts_block = "\n".join(f"            {s}" for s in shortcuts_js)
 

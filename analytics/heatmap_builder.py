@@ -53,9 +53,7 @@ class HeatmapBuilder:
     Outputs Plotly-compatible z-values, x-labels, and y-labels.
     """
 
-    def build_alphabet_heatmap(
-        self, gesture_frequency: dict[str, int]
-    ) -> dict[str, Any]:
+    def build_alphabet_heatmap(self, gesture_frequency: dict[str, int]) -> dict[str, Any]:
         """
         Build a 6x6 alphabet heatmap from gesture frequency data.
 
@@ -92,9 +90,7 @@ class HeatmapBuilder:
             "title": "ASL Alphabet Gesture Frequency Heatmap",
         }
 
-    def build_word_heatmap(
-        self, gesture_frequency: dict[str, int], top_n: int = 20
-    ) -> dict[str, Any]:
+    def build_word_heatmap(self, gesture_frequency: dict[str, int], top_n: int = 20) -> dict[str, Any]:
         """
         Build a bar-chart-ready frequency list for word gestures.
 
@@ -106,9 +102,7 @@ class HeatmapBuilder:
             Dict with 'gestures' list and 'counts' list (parallel arrays)
         """
         # Filter to known word gestures or take top-n from all gestures
-        word_gestures = {
-            k: v for k, v in gesture_frequency.items() if k in WORD_GESTURE_LIST
-        }
+        word_gestures = {k: v for k, v in gesture_frequency.items() if k in WORD_GESTURE_LIST}
 
         # Merge in any additional high-frequency gestures not in list
         for gesture, count in gesture_frequency.items():
@@ -116,18 +110,14 @@ class HeatmapBuilder:
                 word_gestures[gesture] = count
 
         # Sort descending, take top_n
-        sorted_gestures = sorted(
-            word_gestures.items(), key=lambda x: x[1], reverse=True
-        )[:top_n]
+        sorted_gestures = sorted(word_gestures.items(), key=lambda x: x[1], reverse=True)[:top_n]
 
         gestures = [g[0] for g in sorted_gestures]
         counts = [g[1] for g in sorted_gestures]
 
         return {"gestures": gestures, "counts": counts}
 
-    def build_emotion_pie_data(
-        self, emotion_distribution: dict[str, int]
-    ) -> dict[str, Any]:
+    def build_emotion_pie_data(self, emotion_distribution: dict[str, int]) -> dict[str, Any]:
         """
         Build pie chart data from emotion distribution.
 
@@ -152,9 +142,7 @@ class HeatmapBuilder:
 
         return {"labels": labels, "values": values, "colors": colors}
 
-    def build_confidence_trend(
-        self, confidence_histogram: dict[str, int]
-    ) -> dict[str, Any]:
+    def build_confidence_trend(self, confidence_histogram: dict[str, int]) -> dict[str, Any]:
         """
         Build confidence distribution bar chart data.
 

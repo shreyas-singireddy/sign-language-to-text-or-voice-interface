@@ -96,9 +96,7 @@ class TransformerClassifier(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # x shape: (batch_size, seq_len, input_dim)
         projected = self.input_projection(x)  # shape: (batch_size, seq_len, hidden_dim)
-        transformer_out = self.transformer(
-            projected
-        )  # shape: (batch_size, seq_len, hidden_dim)
+        transformer_out = self.transformer(projected)  # shape: (batch_size, seq_len, hidden_dim)
 
         # Average pooling over seq_len
         pooled = torch.mean(transformer_out, dim=1)  # shape: (batch_size, hidden_dim)
@@ -147,14 +145,8 @@ class ChinnedResidualBlock(nn.Module):
         self.relu2 = nn.ReLU()
         self.dropout2 = nn.Dropout(dropout)
 
-        self.net = nn.Sequential(
-            self.conv1, self.relu1, self.dropout1, self.conv2, self.relu2, self.dropout2
-        )
-        self.downsample = (
-            nn.Conv1d(in_channels, out_channels, 1)
-            if in_channels != out_channels
-            else None
-        )
+        self.net = nn.Sequential(self.conv1, self.relu1, self.dropout1, self.conv2, self.relu2, self.dropout2)
+        self.downsample = nn.Conv1d(in_channels, out_channels, 1) if in_channels != out_channels else None
         self.relu = nn.ReLU()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -207,9 +199,7 @@ class TCNClassifier(nn.Module):
         # Conv1d expects shape: (batch_size, channels, seq_len)
         # Input x shape: (batch_size, seq_len, input_dim)
         x_transposed = x.transpose(1, 2)
-        tcn_out = self.tcn(
-            x_transposed
-        )  # shape: (batch_size, out_channels, seq_len_dilated)
+        tcn_out = self.tcn(x_transposed)  # shape: (batch_size, out_channels, seq_len_dilated)
 
         # Pool across temporal dimension
         pooled = torch.mean(tcn_out, dim=2)  # shape: (batch_size, out_channels)
@@ -250,9 +240,7 @@ def export_word_model_onnx(model: nn.Module, filepath: Path, seq_len: int = 30) 
 # ==========================================
 # BENCHMARK ENGINE
 # ==========================================
-def benchmark_model(
-    model: nn.Module, seq_len: int = 30, runs: int = 100
-) -> dict[str, Any]:
+def benchmark_model(model: nn.Module, seq_len: int = 30, runs: int = 100) -> dict[str, Any]:
     """
     Benchmarks model inference latency and memory requirements.
     """

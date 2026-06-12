@@ -37,16 +37,10 @@ class ReportGenerator:
         if db_analytics:
             merged_gesture_freq = {**db_analytics.get("gesture_frequency", {})}
             for gesture, count in live["gesture_frequency"].items():
-                merged_gesture_freq[gesture] = (
-                    merged_gesture_freq.get(gesture, 0) + count
-                )
+                merged_gesture_freq[gesture] = merged_gesture_freq.get(gesture, 0) + count
 
-            total_translations = (
-                db_analytics.get("total_translations", 0) + live["total_translations"]
-            )
-            avg_confidence = db_analytics.get(
-                "average_confidence", live["average_confidence"]
-            )
+            total_translations = db_analytics.get("total_translations", 0) + live["total_translations"]
+            avg_confidence = db_analytics.get("average_confidence", live["average_confidence"])
 
             language_dist = {**db_analytics.get("language_distribution", {})}
             for lang, count in live["language_distribution"].items():
@@ -65,12 +59,8 @@ class ReportGenerator:
         # Build chart data
         gesture_bar = self._build_gesture_bar(merged_gesture_freq)
         alphabet_heatmap = heatmap_builder.build_alphabet_heatmap(merged_gesture_freq)
-        emotion_pie = heatmap_builder.build_emotion_pie_data(
-            live["emotion_distribution"]
-        )
-        confidence_bars = heatmap_builder.build_confidence_trend(
-            live["confidence_histogram"]
-        )
+        emotion_pie = heatmap_builder.build_emotion_pie_data(live["emotion_distribution"])
+        confidence_bars = heatmap_builder.build_confidence_trend(live["confidence_histogram"])
         language_bar = self._build_language_bar(language_dist)
         daily_line = self._build_daily_line(daily_activity)
         hourly_bar = self._build_hourly_bar(live["hourly_activity"])
@@ -95,9 +85,7 @@ class ReportGenerator:
 
     def _build_gesture_bar(self, gesture_frequency: dict[str, int]) -> dict[str, Any]:
         """Bar chart of top gesture frequencies."""
-        sorted_g = sorted(gesture_frequency.items(), key=lambda x: x[1], reverse=True)[
-            :15
-        ]
+        sorted_g = sorted(gesture_frequency.items(), key=lambda x: x[1], reverse=True)[:15]
         return {
             "x": [g[0] for g in sorted_g],
             "y": [g[1] for g in sorted_g],
@@ -106,13 +94,9 @@ class ReportGenerator:
             "title": "Top 15 Gesture Frequencies",
         }
 
-    def _build_language_bar(
-        self, language_distribution: dict[str, int]
-    ) -> dict[str, Any]:
+    def _build_language_bar(self, language_distribution: dict[str, int]) -> dict[str, Any]:
         """Bar chart of language usage distribution."""
-        sorted_l = sorted(
-            language_distribution.items(), key=lambda x: x[1], reverse=True
-        )
+        sorted_l = sorted(language_distribution.items(), key=lambda x: x[1], reverse=True)
         return {
             "x": [l[0] for l in sorted_l],
             "y": [l[1] for l in sorted_l],

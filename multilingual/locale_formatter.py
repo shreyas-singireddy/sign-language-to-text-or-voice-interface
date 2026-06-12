@@ -18,9 +18,7 @@ class LocaleFormatter:
     Uses the Language Registry to apply correct separators and formats.
     """
 
-    def format_number(
-        self, value: float, language_name: str, decimal_places: int = 2
-    ) -> str:
+    def format_number(self, value: float, language_name: str, decimal_places: int = 2) -> str:
         """
         Format a number according to the locale conventions of a language.
 

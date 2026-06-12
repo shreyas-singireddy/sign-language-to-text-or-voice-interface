@@ -21,9 +21,7 @@ class LandmarkProcessor:
         if self.smoothed_coordinates is None:
             self.smoothed_coordinates = raw_coords.copy()
         else:
-            self.smoothed_coordinates = (
-                self.alpha * raw_coords + (1.0 - self.alpha) * self.smoothed_coordinates
-            )
+            self.smoothed_coordinates = self.alpha * raw_coords + (1.0 - self.alpha) * self.smoothed_coordinates
 
         # Keep history buffer for compatibility
         self.history.append(raw_coords)
@@ -44,9 +42,7 @@ class LandmarkProcessor:
         if is_empty and self.last_valid_coordinates is not None:
             # Reconstruct from last valid state (simple recovery)
             coords_copy = self.last_valid_coordinates.copy()
-            logger.info(
-                "Occlusion detected: Recovered coordinates from previous frame."
-            )
+            logger.info("Occlusion detected: Recovered coordinates from previous frame.")
         elif not is_empty:
             # Save as last valid
             self.last_valid_coordinates = coords_copy.copy()

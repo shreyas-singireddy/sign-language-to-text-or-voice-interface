@@ -29,16 +29,10 @@ with col_control:
     )
 
     # Form input for label
-    selected_label = st.selectbox(
-        "Target Gesture Label", options=SUPPORTED_GESTURES, key="select_training_label"
-    )
+    selected_label = st.selectbox("Target Gesture Label", options=SUPPORTED_GESTURES, key="select_training_label")
 
-    custom_label = st.text_input(
-        "Or Define Custom Label:", value="", key="input_custom_label"
-    )
-    label_to_record = (
-        custom_label.strip().upper() if custom_label.strip() else selected_label
-    )
+    custom_label = st.text_input("Or Define Custom Label:", value="", key="input_custom_label")
+    label_to_record = custom_label.strip().upper() if custom_label.strip() else selected_label
 
     frames_to_record = st.slider(
         "Sequence Length (Number of Frames)",
@@ -49,9 +43,7 @@ with col_control:
     )
 
     # Capture control buttons
-    st.markdown(
-        "Before recording, make sure your webcam is clear and your hand is in view."
-    )
+    st.markdown("Before recording, make sure your webcam is clear and your hand is in view.")
 
     record_button = st.button(
         "🔴 Start Recording Repetition",
@@ -98,9 +90,7 @@ with col_control:
                     time.sleep(0.05)  # ~20 FPS capture rate
 
                 # Save sequence
-                success = ai_service.record_sample(
-                    label_to_record, sample_landmarks_seq
-                )
+                success = ai_service.record_sample(label_to_record, sample_landmarks_seq)
                 if success:
                     status_box.success(
                         f"Successfully recorded 1 repetition ({frames_to_record} frames) for '{label_to_record}'!"
@@ -128,9 +118,7 @@ with col_dataset:
         # Render a clean table of recorded samples
         import pandas as pd
 
-        df = pd.DataFrame(
-            list(stats.items()), columns=["Gesture Label", "Recorded Repetitions"]
-        )
+        df = pd.DataFrame(list(stats.items()), columns=["Gesture Label", "Recorded Repetitions"])
         st.dataframe(df, use_container_width=True, hide_index=True)
 
         # Clear specific label dataset
@@ -156,6 +144,4 @@ with col_dataset:
             else:
                 st.error("Failed to clear dataset.")
     else:
-        st.info(
-            "No landmark datasets recorded yet. Start by capturing sign samples above."
-        )
+        st.info("No landmark datasets recorded yet. Start by capturing sign samples above.")

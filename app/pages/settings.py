@@ -82,9 +82,7 @@ with col_settings:
         ai_service.pipeline.holistic_manager._initialized = False
         ai_service.pipeline.holistic_manager.initialize()
 
-        st.success(
-            "Configuration settings updated successfully and pipeline reinitialized!"
-        )
+        st.success("Configuration settings updated successfully and pipeline reinitialized!")
 
 with col_info:
     st.markdown(

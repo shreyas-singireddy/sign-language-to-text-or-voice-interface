@@ -17,9 +17,11 @@ def test_format_number():
     res_neg = locale_formatter.format_number(-50.5, "English", 1)
     assert "-50.5" in res_neg
 
+
 def test_format_confidence():
     res = locale_formatter.format_confidence(0.9256, "English")
     assert "92.6%" in res or "92.6" in res
+
 
 def test_format_date():
     dt = datetime(2026, 6, 11, 12, 0, 0)
@@ -29,12 +31,14 @@ def test_format_date():
     res_en = locale_formatter.format_date(dt, "English")
     assert len(res_en) > 0
 
+
 def test_format_duration():
     res1 = locale_formatter.format_duration(125, "English")
     assert res1 == "2m 5s"
 
     res2 = locale_formatter.format_duration(45, "English")
     assert res2 == "45s"
+
 
 def test_get_ui_strings():
     res_en = locale_formatter.get_ui_strings("English")

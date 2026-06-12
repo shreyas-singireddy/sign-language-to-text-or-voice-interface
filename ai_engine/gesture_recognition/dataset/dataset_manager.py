@@ -35,7 +35,6 @@ class DatasetManager:
         except Exception:  # nosec
             pass
 
-
     def load_dataset(self) -> tuple[np.ndarray, np.ndarray, list[str]]:
         """
         Loads all valid recorded npy sequences.
@@ -73,7 +72,6 @@ class DatasetManager:
                             y.append(class_idx)
                     except Exception:  # nosec
                         continue
-
 
         if not X:
             # Fallback to generating synthetic data to guarantee models can train/run immediately

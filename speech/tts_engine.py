@@ -62,9 +62,7 @@ class TTSEngine:
             return self._cache[cache_key]
 
         # Select provider
-        provider = self._providers.get(
-            request.provider, self._providers[self._default_provider]
-        )
+        provider = self._providers.get(request.provider, self._providers[self._default_provider])
 
         # Execute synthesis
         result = provider.synthesize(
@@ -131,15 +129,11 @@ class TTSEngine:
             tld="com",
         )
         provider = self._providers[TTSProvider.GTTS]
-        result = provider.synthesize(
-            text=text, lang_code="en-US", slow=False, tld="com"
-        )
+        result = provider.synthesize(text=text, lang_code="en-US", slow=False, tld="com")
         logger.warning(f"Emergency TTS synthesized: '{text[:80]}'")
         return result.audio_bytes
 
-    def get_browser_js(
-        self, text: str, lang_code: str = "en-US", slow: bool = False
-    ) -> str:
+    def get_browser_js(self, text: str, lang_code: str = "en-US", slow: bool = False) -> str:
         """
         Get JavaScript snippet for browser-native TTS playback.
         Use with: st.components.v1.html(tts_engine.get_browser_js(text))
@@ -165,10 +159,7 @@ class TTSEngine:
 
     def get_provider_health(self) -> dict[str, bool]:
         """Return health status for all providers."""
-        return {
-            name.value: provider.health_check()
-            for name, provider in self._providers.items()
-        }
+        return {name.value: provider.health_check() for name, provider in self._providers.items()}
 
     def clear_cache(self) -> int:
         """Clear the audio cache. Returns number of entries cleared."""

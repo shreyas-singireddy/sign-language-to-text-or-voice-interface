@@ -26,9 +26,7 @@ class DatasetRecorder:
         self.captured_frames_count = 0
         self.export_status = "Recording Active"
         self.in_memory_records = []
-        logger.info(
-            f"Dataset recording session started: ID={self.session_id}, Label={self.current_label}"
-        )
+        logger.info(f"Dataset recording session started: ID={self.session_id}, Label={self.current_label}")
         return self.session_id
 
     def pause_session(self):

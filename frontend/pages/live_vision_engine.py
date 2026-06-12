@@ -104,23 +104,17 @@ with col_cam:
             )
 
             # Start camera manager
-            success = perception_service.camera.initialize_camera(
-                sys_config.camera.source_index
-            )
+            success = perception_service.camera.initialize_camera(sys_config.camera.source_index)
             if success:
                 try:
                     while st.session_state["cam_active"]:
-                        read_success, frame, latency = (
-                            perception_service.camera.read_frame()
-                        )
+                        read_success, frame, latency = perception_service.camera.read_frame()
                         if not read_success:
                             st.error("Ingestion failed: Camera disconnect.")
                             break
 
                         # Run Perception Service orchestrator
-                        telemetry_data = perception_service.process_perception_frame(
-                            frame, latency
-                        )
+                        telemetry_data = perception_service.process_perception_frame(frame, latency)
 
                         # Handle Storage recording
                         if st.session_state["rec_active"]:
@@ -140,18 +134,12 @@ with col_cam:
                         video_view.image(display_rgb, use_column_width=True)
 
                         # Buffer chart statistics
-                        st.session_state["chart_data_fps"].append(
-                            telemetry_data.camera.fps
-                        )
+                        st.session_state["chart_data_fps"].append(telemetry_data.camera.fps)
                         st.session_state["chart_data_velocity"].append(
                             telemetry_data.motion.right_hand.average_velocity
                         )
-                        st.session_state["chart_data_confidence"].append(
-                            telemetry_data.face.confidence
-                        )
-                        st.session_state["chart_data_visibility"].append(
-                            telemetry_data.visibility.overall_visibility
-                        )
+                        st.session_state["chart_data_confidence"].append(telemetry_data.face.confidence)
+                        st.session_state["chart_data_visibility"].append(telemetry_data.visibility.overall_visibility)
 
                         # Cap buffers at 50 frames
                         for key in (
@@ -265,18 +253,10 @@ with col_panels:
         )
 
         # Panel 2: Hand Tracking
-        lh_conf = (
-            telemetry_data.landmarks.left_hand.confidence if telemetry_data else 0.0
-        )
-        rh_conf = (
-            telemetry_data.landmarks.right_hand.confidence if telemetry_data else 0.0
-        )
-        lh_vel = (
-            telemetry_data.motion.left_hand.average_velocity if telemetry_data else 0.0
-        )
-        rh_vel = (
-            telemetry_data.motion.right_hand.average_velocity if telemetry_data else 0.0
-        )
+        lh_conf = telemetry_data.landmarks.left_hand.confidence if telemetry_data else 0.0
+        rh_conf = telemetry_data.landmarks.right_hand.confidence if telemetry_data else 0.0
+        lh_vel = telemetry_data.motion.left_hand.average_velocity if telemetry_data else 0.0
+        rh_vel = telemetry_data.motion.right_hand.average_velocity if telemetry_data else 0.0
 
         st.markdown(
             f"""
@@ -292,16 +272,10 @@ with col_panels:
         )
 
         # Panel 3: Pose Tracking
-        l_arm = (
-            telemetry_data.landmarks.pose.left_arm_angle if telemetry_data else 180.0
-        )
-        r_arm = (
-            telemetry_data.landmarks.pose.right_arm_angle if telemetry_data else 180.0
-        )
+        l_arm = telemetry_data.landmarks.pose.left_arm_angle if telemetry_data else 180.0
+        r_arm = telemetry_data.landmarks.pose.right_arm_angle if telemetry_data else 180.0
         sh_ang = telemetry_data.landmarks.pose.shoulder_angle if telemetry_data else 0.0
-        tor_rot = (
-            telemetry_data.landmarks.pose.torso_rotation if telemetry_data else 0.0
-        )
+        tor_rot = telemetry_data.landmarks.pose.torso_rotation if telemetry_data else 0.0
 
         st.markdown(
             f"""
@@ -317,18 +291,10 @@ with col_panels:
         )
 
         # Panel 4: Face Tracking
-        f_pitch = (
-            telemetry_data.landmarks.face.head_rotation_pitch if telemetry_data else 0.0
-        )
-        f_yaw = (
-            telemetry_data.landmarks.face.head_rotation_yaw if telemetry_data else 0.0
-        )
-        f_roll = (
-            telemetry_data.landmarks.face.head_rotation_roll if telemetry_data else 0.0
-        )
-        mouth_open = (
-            telemetry_data.landmarks.face.mouth_openness if telemetry_data else 0.0
-        )
+        f_pitch = telemetry_data.landmarks.face.head_rotation_pitch if telemetry_data else 0.0
+        f_yaw = telemetry_data.landmarks.face.head_rotation_yaw if telemetry_data else 0.0
+        f_roll = telemetry_data.landmarks.face.head_rotation_roll if telemetry_data else 0.0
+        mouth_open = telemetry_data.landmarks.face.mouth_openness if telemetry_data else 0.0
         f_conf = telemetry_data.landmarks.face.confidence if telemetry_data else 0.0
 
         st.markdown(
@@ -346,36 +312,20 @@ with col_panels:
 
     with tab_health:
         # Panel 5: Quality & Health
-        occ_val = (
-            telemetry_data.occlusion.occlusion_percentage if telemetry_data else 0.0
-        )
-        stab_val = (
-            telemetry_data.stability.tracking_stability if telemetry_data else 100.0
-        )
-        vis_val = (
-            telemetry_data.visibility.overall_visibility if telemetry_data else 100.0
-        )
+        occ_val = telemetry_data.occlusion.occlusion_percentage if telemetry_data else 0.0
+        stab_val = telemetry_data.stability.tracking_stability if telemetry_data else 100.0
+        vis_val = telemetry_data.visibility.overall_visibility if telemetry_data else 100.0
 
-        bright_val = (
-            telemetry_data.readiness.brightness_score if telemetry_data else 0.0
-        )
+        bright_val = telemetry_data.readiness.brightness_score if telemetry_data else 0.0
         blur_val = telemetry_data.readiness.blur_score if telemetry_data else 0.0
-        qual_val = (
-            telemetry_data.readiness.frame_quality_score if telemetry_data else 100.0
-        )
-        readiness_val = (
-            telemetry_data.readiness.gesture_readiness if telemetry_data else 0.0
-        )
+        qual_val = telemetry_data.readiness.frame_quality_score if telemetry_data else 100.0
+        readiness_val = telemetry_data.readiness.gesture_readiness if telemetry_data else 0.0
 
-        det_lat = (
-            telemetry_data.performance.detector_latency_ms if telemetry_data else 0.0
-        )
+        det_lat = telemetry_data.performance.detector_latency_ms if telemetry_data else 0.0
         h_lat = telemetry_data.performance.hand_inference_ms if telemetry_data else 0.0
         p_lat = telemetry_data.performance.pose_inference_ms if telemetry_data else 0.0
         f_lat = telemetry_data.performance.face_inference_ms if telemetry_data else 0.0
-        pipe_lat = (
-            telemetry_data.performance.total_pipeline_ms if telemetry_data else 0.0
-        )
+        pipe_lat = telemetry_data.performance.total_pipeline_ms if telemetry_data else 0.0
 
         st.markdown(
             f"""
@@ -446,9 +396,7 @@ with col_panels:
                 disabled=not st.session_state["rec_active"],
             ):
                 st.session_state["rec_active"] = False
-                saved_path = landmark_recorder.save_session(
-                    st.session_state["rec_label"]
-                )
+                saved_path = landmark_recorder.save_session(st.session_state["rec_label"])
                 session_manager.end_session()
                 if saved_path:
                     st.success(f"Saved session raw JSON to: {saved_path.name}")
@@ -483,9 +431,7 @@ with col_panels:
                 exported = parquet_exporter.export(last_saved)
 
             if exported:
-                st.success(
-                    f"Dataset compiled and successfully exported to: {exported.name}"
-                )
+                st.success(f"Dataset compiled and successfully exported to: {exported.name}")
             else:
                 st.error("Failed to export sequence.")
 
