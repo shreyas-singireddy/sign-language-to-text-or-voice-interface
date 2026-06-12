@@ -31,6 +31,13 @@ GOOGLE_LANG_CODES = {
     "Bengali": "bn",
     "Tamil": "ta",
     "Urdu": "ur",
+    "Kannada": "kn",
+    "Malayalam": "ml",
+    "Marathi": "mr",
+    "Gujarati": "gu",
+    "Punjabi": "pa",
+    "Odia": "or",
+    "Assamese": "as",
 }
 
 
