@@ -4,6 +4,7 @@ from database.mongodb import MongoDBConnection, db_conn
 from app.services.database_service import DatabaseService, db_service
 from bson import ObjectId
 import datetime
+from pymongo.errors import ConnectionFailure
 
 def test_mongodb_connection_singleton():
     conn1 = MongoDBConnection()
@@ -27,7 +28,7 @@ def test_mongodb_connect_success(mock_client_class):
 
 @patch("pymongo.MongoClient")
 def test_mongodb_connect_failure(mock_client_class):
-    mock_client_class.side_effect = Exception("Connection error")
+    mock_client_class.side_effect = ConnectionFailure("Connection error")
     
     conn = MongoDBConnection()
     with patch("database.mongodb.MONGO_URI", "mongodb://localhost:27017"):
@@ -43,7 +44,7 @@ def test_mongodb_get_db_offline():
         db = conn.get_db()
         assert db is None
 
-@patch("database.mongodb.db_conn")
+@patch("app.services.database_service.db_conn")
 def test_database_service_mongodb_log_success(mock_db_conn):
     mock_col = MagicMock()
     mock_db_conn.get_collection.return_value = mock_col
@@ -64,7 +65,7 @@ def test_database_service_mongodb_log_success(mock_db_conn):
     assert record["is_offline"] is False
     mock_col.insert_one.assert_called_once()
 
-@patch("database.mongodb.db_conn")
+@patch("app.services.database_service.db_conn")
 def test_database_service_mongodb_get_history_success(mock_db_conn):
     mock_col = MagicMock()
     mock_db_conn.get_collection.return_value = mock_col
@@ -83,7 +84,7 @@ def test_database_service_mongodb_get_history_success(mock_db_conn):
     assert history[0]["id"] == str(dummy_id)
     assert history[0]["translatedText"] == "Yes"
 
-@patch("database.mongodb.db_conn")
+@patch("app.services.database_service.db_conn")
 def test_database_service_mongodb_delete_success(mock_db_conn):
     mock_col = MagicMock()
     mock_db_conn.get_collection.return_value = mock_col
