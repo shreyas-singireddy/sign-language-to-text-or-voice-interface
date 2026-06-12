@@ -19,6 +19,11 @@ class DatabaseService:
         if not OFFLINE_HISTORY_FILE.exists():
             OFFLINE_HISTORY_FILE.write_text(json.dumps([]))
 
+        # Ensure offline preferences file exists
+        self.OFFLINE_PREFS_FILE = DATASETS_DIR / "offline_user_preferences.json"
+        if not self.OFFLINE_PREFS_FILE.exists():
+            self.OFFLINE_PREFS_FILE.write_text(json.dumps({}))
+
     def _get_history_collection(self):
         return db_conn.get_collection("translation_history")
 
@@ -173,6 +178,64 @@ class DatabaseService:
             "daily_activity": daily_counts,
             "db_status": "Online" if db_conn.is_connected() else "Offline",
         }
+
+    def _get_preferences_collection(self):
+        return db_conn.get_collection("user_preferences")
+
+    def save_user_language(self, phone: str, language: str) -> bool:
+        """
+        Saves or updates the user's preferred language.
+        Works online (MongoDB) or offline (local JSON).
+        """
+        col = self._get_preferences_collection()
+        if col is not None:
+            try:
+                col.update_one(
+                    {"phone": phone},
+                    {"$set": {"phone": phone, "language": language}},
+                    upsert=True
+                )
+                logger.info(f"Saved language preference '{language}' for phone {phone} in MongoDB.")
+                return True
+            except Exception as e:
+                logger.error(f"Error saving language preference to MongoDB: {e}. Falling back to offline.")
+
+        # Offline fallback
+        try:
+            with open(self.OFFLINE_PREFS_FILE, "r") as f:
+                prefs = json.load(f)
+            prefs[phone] = language
+            with open(self.OFFLINE_PREFS_FILE, "w") as f:
+                json.dump(prefs, f, indent=4)
+            logger.info(f"Saved language preference '{language}' for phone {phone} offline.")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to save offline preference: {e}")
+            return False
+
+    def get_user_language(self, phone: str) -> str | None:
+        """
+        Retrieves the user's preferred language.
+        Works online (MongoDB) or offline (local JSON).
+        """
+        col = self._get_preferences_collection()
+        if col is not None:
+            try:
+                doc = col.find_one({"phone": phone})
+                if doc:
+                    logger.info(f"Loaded language preference '{doc.get('language')}' for phone {phone} from MongoDB.")
+                    return doc.get("language")
+            except Exception as e:
+                logger.error(f"Error reading language preference from MongoDB: {e}. Falling back to offline.")
+
+        # Offline fallback
+        try:
+            with open(self.OFFLINE_PREFS_FILE, "r") as f:
+                prefs = json.load(f)
+            return prefs.get(phone)
+        except Exception as e:
+            logger.error(f"Failed to read offline preference: {e}")
+            return None
 
 
 db_service = DatabaseService()
