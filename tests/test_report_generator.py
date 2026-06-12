@@ -1,6 +1,6 @@
-import pytest
-from analytics.report_generator import report_generator
 from analytics.metrics_collector import metrics_collector
+from analytics.report_generator import report_generator
+
 
 def test_generate_full_report_no_db():
     # Reset collector and register some dummy metrics
@@ -62,7 +62,7 @@ def test_generate_performance_report():
         language="English",
         emotion="Neutral"
     )
-    
+
     perf = report_generator.generate_performance_report()
     assert perf["average_latency_ms"] == 100.0
     assert perf["average_confidence"] == 0.9

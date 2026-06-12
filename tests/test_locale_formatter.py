@@ -1,6 +1,7 @@
-import pytest
 from datetime import datetime
+
 from multilingual.locale_formatter import locale_formatter
+
 
 def test_format_number():
     # Test fallback

@@ -1,7 +1,8 @@
-import pytest
 import numpy as np
+
 from ai_engine.landmark_extraction.extractor import landmark_extractor
 from ai_engine.vision.face_detector import FaceDetector
+
 
 def test_face_landmarks_placeholder_fallback():
     # Face mesh index maps to specific landmarks. Check default fallback structure.

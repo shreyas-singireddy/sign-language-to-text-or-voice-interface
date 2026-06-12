@@ -1,7 +1,7 @@
 import os
-import pytest
 
 import numpy as np
+import pytest
 
 from ai_engine.landmark_extraction.extractor import landmark_extractor
 from app.services.ai_service import ai_service
