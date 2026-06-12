@@ -1,7 +1,7 @@
 node_modules
 dist
 .env
-.env.local # For local environment variables, if you choose to use python-dotenv
+.env.local
 .env.*
 __pycache__
 *.py[cod]
@@ -11,9 +11,11 @@ __pycache__
 *.sqlite3
 frontend/node_modules
 backend/.venv
-.vscode
-.idea
-backend/config.py # Add this to ignore local configuration with API keys
+.vscode # Keep existing
+.idea # Keep existing
+backend/config.py # This file is now merged into backend/app/core/config.py, so this line can be removed if config.py is deleted.
+translations/*.mo # Ignore compiled translation files
+translations/*.pot # Ignore translation template file
 .DS_Store
 .vscode
 .idea

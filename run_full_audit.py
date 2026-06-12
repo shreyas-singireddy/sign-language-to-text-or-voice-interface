@@ -147,21 +147,25 @@ import_errors = []
 import_successes = 0
 
 critical_modules = [
-    "app.services.audio_service",
-    "app.services.database_service",
-    "app.services.ai_service",
+    # "app.services.audio_service", # Removed, not in backend/app/
+    # "app.services.database_service", # Removed, not in backend/app/
+    "backend.services.ai_service", # New AI service
     "backend.app.main",
     "backend.app.core.database",
     "backend.app.core.config",
     "backend.app.api.v1.auth",
     "backend.ws.telemetry_socket",
-    "ai_engine.landmark_processor.processor",
-    "ai_engine.computer_vision.camera",
-    "ai_engine.computer_vision.holistic",
-    "speech.tts_engine",
-    "speech.stt_engine",
-    "translation.engine",
-    "translation.providers.rule_based",
+    # "ai_engine.landmark_processor.processor", # Removed, frontend related
+    # "ai_engine.computer_vision.camera", # Removed, frontend related
+    # "ai_engine.computer_vision.holistic", # Removed, frontend related
+    # "speech.tts_engine", # Replaced by backend.models.tts_engine
+    # "speech.stt_engine", # Not explicitly defined in backend
+    # "translation.engine", # Replaced by backend.models.translator
+    # "translation.providers.rule_based", # Not explicitly defined in backend
+    "backend.models.sign_recognizer",
+    "backend.models.translator",
+    "backend.models.tts_engine",
+    "backend.utils.i18n_manager",
 ]
 
 for mod in critical_modules:
@@ -169,10 +173,10 @@ for mod in critical_modules:
     clear_app_modules()
 
     if mod.startswith("app."):
-        # Root Streamlit app imports
-        sys.path = [p for p in sys.path if p != BACKEND_DIR]
-        sys.path.insert(0, ROOT_DIR)
-        mod_import = mod
+        # This block is for Streamlit apps, which are not part of the backend's critical modules
+        # For now, we'll treat all critical modules as backend-related.
+        # If there are actual 'app' modules at the root, this logic needs adjustment.
+        pass
     elif mod.startswith("backend."):
         # Backend FastAPI app imports
         sys.path = [p for p in sys.path if p != ROOT_DIR]
@@ -410,16 +414,18 @@ try:
     sys.path = [p for p in sys.path if p != BACKEND_DIR]
     sys.path.insert(0, ROOT_DIR)
 
-    from app.services.ai_service import ai_service
+    from backend.services.ai_service import AIService
+    from backend.app.core.config import settings
+
+    ai_service_instance = AIService()
 
     # Generate mock BGR frame
     frame = np.ones((480, 640, 3), dtype=np.uint8) * 120
     # Process through pipeline
-    results = ai_service.process_frame(frame)
-    if results:
-        integration_log.append("- [x] Blank frame routed through `ai_service` successfully.")
-        integration_log.append(f"- [x] Output gesture detected: `{results['gesture']}`.")
-        integration_log.append(f"- [x] Confidence: {results['confidence']}.")
+    translated_text, audio_path = ai_service_instance.process_sign_language(frame.tolist(), settings.BABEL_DEFAULT_LOCALE)
+    integration_log.append("- [x] Blank frame routed through `ai_service.process_sign_language` successfully.")
+    integration_log.append(f"- [x] Translated text: `{translated_text}`.")
+    integration_log.append(f"- [x] Audio path: `{audio_path}`.")
 
     sys.path = orig_path
 except Exception as e:

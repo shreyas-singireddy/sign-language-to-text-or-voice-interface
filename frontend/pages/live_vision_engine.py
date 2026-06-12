@@ -135,15 +135,10 @@ with col_cam:
 
                         # Buffer chart statistics
                         st.session_state["chart_data_fps"].append(telemetry_data.camera.fps)
-<<<<<<< HEAD
-                        st.session_state["chart_data_velocity"].append(telemetry_data.motion.right_hand.average_velocity)
-                        st.session_state["chart_data_confidence"].append(telemetry_data.landmarks.face.confidence)
-=======
                         st.session_state["chart_data_velocity"].append(
                             telemetry_data.motion.right_hand.average_velocity
                         )
                         st.session_state["chart_data_confidence"].append(telemetry_data.face.confidence)
->>>>>>> 45bc9bb047bc86d69529e4c7845cba1a6b4d8f82
                         st.session_state["chart_data_visibility"].append(telemetry_data.visibility.overall_visibility)
 
                         # Cap buffers at 50 frames

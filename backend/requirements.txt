@@ -15,3 +15,6 @@ scikit-learn
 pandas
 pytest==8.3.2
 httpx
+gTTS # For cloud TTS
+google-cloud-translate # For Google Cloud Translation API
+python-gettext # For i18n in FastAPI
