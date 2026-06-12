@@ -1,20 +1,27 @@
-# Spec-Kit: [Module/Subsystem Name]
+# [Feature Name] Specification
 
-## 1. Overview & Objectives
-Provide a brief summary of the component, its main purpose, and the problem it solves.
+## Overview
+Briefly describe the feature and what it solves.
 
-## 2. Requirements & Traceability
-Define concrete, numbered requirements for this module:
-- **REQ-001**: [Requirement description]
-- **REQ-002**: [Requirement description]
+## Requirements
+- **Must Have**: 
+- **Nice to Have**: 
+- **Non-goals**: 
 
-## 3. Interface Definitions
-Define input/output models, functions, classes, and REST endpoints:
-```python
-# Insert API signature or Class design signatures
-```
+## User Experience
+- Target User:
+- Expected workflow/interactions.
 
-## 4. Verification Plan
-Outline how these requirements are verified programmatically:
-- **Test-001**: Verification command/script matching REQ-001.
-- **Test-002**: Verification command/script matching REQ-002.
+## Architecture
+- Components affected.
+- Data models updated.
+- Third-party APIs/Dependencies.
+
+## Security & Privacy
+- Are there any privacy concerns?
+- How is data stored?
+
+## Testing Strategy
+- Unit test targets.
+- Integration test targets.
+- Manual verification steps.
