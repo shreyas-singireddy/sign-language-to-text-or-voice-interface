@@ -2,13 +2,13 @@
 SignBridge AI — Layer 5 Translation Engine Test Suite
 Tests: provider abstraction, grammar fixer, context manager, engine pipeline.
 """
-import pytest
-from translation.providers.rule_based import RuleBasedProvider
-from translation.providers.google_adapter import GoogleTranslateAdapter
-from translation.grammar_fixer import GrammarFixer, grammar_fixer
+
 from translation.context_manager import TranslationContextManager
 from translation.engine import TranslationEngine
-from translation.schemas import TranslationRequest, TranslationProvider
+from translation.grammar_fixer import GrammarFixer
+from translation.providers.google_adapter import GoogleTranslateAdapter
+from translation.providers.rule_based import RuleBasedProvider
+from translation.schemas import TranslationProvider, TranslationRequest
 
 
 class TestRuleBasedProvider:

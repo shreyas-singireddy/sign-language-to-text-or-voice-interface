@@ -1,30 +1,31 @@
-import cv2
 import time
+
+import cv2
 import numpy as np
-from ai_engine.utils.logger import get_structured_logger
-from ai_engine.vision.camera_manager import CameraManager
-from ai_engine.vision.hand_detector import HandDetector
-from ai_engine.vision.pose_detector import PoseDetector
-from ai_engine.vision.face_detector import FaceDetector
+
 from ai_engine.processing.landmark_normalizer import landmark_normalizer
 from ai_engine.processing.temporal_tracker import TemporalTracker
-from ai_engine.telemetry.motion_metrics import motion_metrics_calc
-from ai_engine.telemetry.stability_metrics import stability_metrics_calc
-from ai_engine.telemetry.visibility_metrics import visibility_metrics_calc
-from ai_engine.telemetry.occlusion_metrics import occlusion_metrics_calc
-from ai_engine.telemetry.performance_metrics import performance_profiler
 from ai_engine.schemas.landmark_schema import FrameLandmarkData
 from ai_engine.schemas.telemetry_schema import (
-    TelemetryResponse, 
-    CameraStatusData, 
+    CameraStatusData,
     StabilityTelemetryData,
-    VisibilityTelemetryData, 
-    OcclusionTelemetryData, 
     SystemReadinessData,
-    PerformanceProfilerData
+    TelemetryResponse,
+    VisibilityTelemetryData,
 )
+from ai_engine.telemetry.motion_metrics import motion_metrics_calc
+from ai_engine.telemetry.occlusion_metrics import occlusion_metrics_calc
+from ai_engine.telemetry.performance_metrics import performance_profiler
+from ai_engine.telemetry.stability_metrics import stability_metrics_calc
+from ai_engine.telemetry.visibility_metrics import visibility_metrics_calc
+from ai_engine.utils.logger import get_structured_logger
+from ai_engine.vision.camera_manager import CameraManager
+from ai_engine.vision.face_detector import FaceDetector
+from ai_engine.vision.hand_detector import HandDetector
+from ai_engine.vision.pose_detector import PoseDetector
 
 logger = get_structured_logger("services.perception")
+
 
 class PerceptionService:
     def __init__(self):
@@ -33,7 +34,7 @@ class PerceptionService:
         self.pose_det = PoseDetector()
         self.face_det = FaceDetector()
         self.normalizer = landmark_normalizer
-        
+
         # Build individual trackers for each component
         self.lh_tracker = TemporalTracker()
         self.rh_tracker = TemporalTracker()
@@ -47,11 +48,11 @@ class PerceptionService:
         Runs complete perception pipeline over the input frame and returns Pydantic record.
         """
         t_pipeline_start = time.perf_counter()
-        
+
         # 1. Performance timing of CV parsing
         with performance_profiler.time_stage("detector"):
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            
+
             with performance_profiler.time_stage("hand"):
                 lh_data, rh_data = self.hand_det.process_frame(frame_rgb)
             with performance_profiler.time_stage("pose"):
@@ -65,7 +66,7 @@ class PerceptionService:
             left_hand=lh_data,
             right_hand=rh_data,
             pose=pose_data,
-            face=face_data
+            face=face_data,
         )
 
         # 3. Landmark Normalization
@@ -73,6 +74,7 @@ class PerceptionService:
 
         # Apply Exponential Moving Average (EMA) smoothing for stability and jitter reduction
         from ai_engine.landmark_processor.processor import landmark_processor
+
         norm_lms = self._flatten_landmarks(frame_normalized)
         smoothed_norm_lms = landmark_processor.clean_coordinates(norm_lms)
         self._update_from_flat_landmarks(frame_normalized, smoothed_norm_lms)
@@ -112,7 +114,7 @@ class PerceptionService:
             resolution_width=frame.shape[1],
             resolution_height=frame.shape[0],
             camera_status=self.camera.status,
-            frame_count=self.camera.frame_count
+            frame_count=self.camera.frame_count,
         )
 
         return TelemetryResponse(
@@ -123,37 +125,37 @@ class PerceptionService:
             visibility=visibility_metrics,
             occlusion=occlusion_metrics,
             performance=performance_metrics,
-            readiness=quality_metrics
+            readiness=quality_metrics,
         )
 
     def _flatten_landmarks(self, frame: FrameLandmarkData) -> np.ndarray:
         """Flattens all landmarks into a single numpy vector of size 1662."""
         coords = np.zeros(1662)
-        
+
         # Fill pose
         if frame.pose.present:
             for idx, lm in enumerate(frame.pose.landmarks[:33]):
                 offset = idx * 4
-                coords[offset:offset+4] = [lm.x, lm.y, lm.z, lm.visibility]
-                
+                coords[offset : offset + 4] = [lm.x, lm.y, lm.z, lm.visibility]
+
         # Fill face
         if frame.face.present:
             for idx, lm in enumerate(frame.face.landmarks[:468]):
                 offset = 132 + (idx * 3)
-                coords[offset:offset+3] = [lm.x, lm.y, lm.z]
-                
+                coords[offset : offset + 3] = [lm.x, lm.y, lm.z]
+
         # Fill left hand
         if frame.left_hand.present:
             for idx, lm in enumerate(frame.left_hand.landmarks[:21]):
-                offset = 1404 + (idx * 3)
-                coords[offset:offset+3] = [lm.x, lm.y, lm.z]
-                
+                offset = 1536 + (idx * 3)
+                coords[offset : offset + 3] = [lm.x, lm.y, lm.z]
+
         # Fill right hand
         if frame.right_hand.present:
             for idx, lm in enumerate(frame.right_hand.landmarks[:21]):
-                offset = 1467 + (idx * 3)
-                coords[offset:offset+3] = [lm.x, lm.y, lm.z]
-                
+                offset = 1599 + (idx * 3)
+                coords[offset : offset + 3] = [lm.x, lm.y, lm.z]
+
         return coords
 
     def _update_from_flat_landmarks(self, frame: FrameLandmarkData, coords: np.ndarray) -> None:
@@ -164,28 +166,28 @@ class PerceptionService:
                 if idx < 33:
                     offset = idx * 4
                     frame.pose.landmarks[idx].x = coords[offset]
-                    frame.pose.landmarks[idx].y = coords[offset+1]
-                    frame.pose.landmarks[idx].z = coords[offset+2]
-                    frame.pose.landmarks[idx].visibility = coords[offset+3]
-                    
+                    frame.pose.landmarks[idx].y = coords[offset + 1]
+                    frame.pose.landmarks[idx].z = coords[offset + 2]
+                    frame.pose.landmarks[idx].visibility = coords[offset + 3]
+
         # Update face
         if frame.face.present:
             for idx in range(len(frame.face.landmarks)):
                 if idx < 468:
                     offset = 132 + (idx * 3)
                     frame.face.landmarks[idx].x = coords[offset]
-                    frame.face.landmarks[idx].y = coords[offset+1]
-                    frame.face.landmarks[idx].z = coords[offset+2]
-                    
+                    frame.face.landmarks[idx].y = coords[offset + 1]
+                    frame.face.landmarks[idx].z = coords[offset + 2]
+
         # Update left hand
         if frame.left_hand.present and len(frame.left_hand.landmarks) > 0:
             for idx in range(len(frame.left_hand.landmarks)):
                 if idx < 21:
-                    offset = 1404 + (idx * 3)
+                    offset = 1536 + (idx * 3)
                     frame.left_hand.landmarks[idx].x = coords[offset]
-                    frame.left_hand.landmarks[idx].y = coords[offset+1]
-                    frame.left_hand.landmarks[idx].z = coords[offset+2]
-            
+                    frame.left_hand.landmarks[idx].y = coords[offset + 1]
+                    frame.left_hand.landmarks[idx].z = coords[offset + 2]
+
             # Recalculate center
             xs = [p.x for p in frame.left_hand.landmarks]
             ys = [p.y for p in frame.left_hand.landmarks]
@@ -194,16 +196,16 @@ class PerceptionService:
                 frame.left_hand.center.x = float(np.mean(xs))
                 frame.left_hand.center.y = float(np.mean(ys))
                 frame.left_hand.center.z = float(np.mean(zs))
-                    
+
         # Update right hand
         if frame.right_hand.present and len(frame.right_hand.landmarks) > 0:
             for idx in range(len(frame.right_hand.landmarks)):
                 if idx < 21:
-                    offset = 1467 + (idx * 3)
+                    offset = 1599 + (idx * 3)
                     frame.right_hand.landmarks[idx].x = coords[offset]
-                    frame.right_hand.landmarks[idx].y = coords[offset+1]
-                    frame.right_hand.landmarks[idx].z = coords[offset+2]
-                    
+                    frame.right_hand.landmarks[idx].y = coords[offset + 1]
+                    frame.right_hand.landmarks[idx].z = coords[offset + 2]
+
             # Recalculate center
             xs = [p.x for p in frame.right_hand.landmarks]
             ys = [p.y for p in frame.right_hand.landmarks]
@@ -213,41 +215,50 @@ class PerceptionService:
                 frame.right_hand.center.y = float(np.mean(ys))
                 frame.right_hand.center.z = float(np.mean(zs))
 
-    def _calculate_frame_quality(self, frame: np.ndarray, vis: VisibilityTelemetryData, stab: StabilityTelemetryData) -> SystemReadinessData:
+    def _calculate_frame_quality(
+        self,
+        frame: np.ndarray,
+        vis: VisibilityTelemetryData,
+        stab: StabilityTelemetryData,
+    ) -> SystemReadinessData:
         """
         Estimates brightness, blur variance, overall frame quality, and gesture readiness scores.
         """
         # Convert BGR to Grayscale for quality calculations
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        
+
         # Brightness (average pixel intensity [0 - 255])
         brightness = float(np.mean(gray))
-        
+
         # Blur (Laplacian variance: larger is sharper)
         blur_val = float(cv2.Laplacian(gray, cv2.CV_64F).var())
-        
+
         # Brightness Score (ideal is centered between 100 and 190)
         brightness_score = 100.0 - min(100.0, abs(brightness - 145.0) * 0.9)
-        
+
         # Blur Score (ideal is above 100, scale 0 to 100)
         blur_score_scaled = min(100.0, (blur_val / 200.0) * 100.0)
-        
+
         # Combined quality score
         quality = (brightness_score * 0.4) + (blur_score_scaled * 0.4) + (stab.tracking_stability * 0.2)
-        
+
         # Gesture readiness calculations
         # Checks if hands are present and shoulders are visible in pose index 11 and 12
         pose_vis = vis.pose_visibility
         lh_present = vis.left_hand_visibility > 0.5
         rh_present = vis.right_hand_visibility > 0.5
         face_present = vis.face_visibility > 0.5
-        
+
         readiness_score = 0.0
-        if face_present: readiness_score += 20.0
-        if pose_vis > 0.7: readiness_score += 20.0
-        if lh_present: readiness_score += 30.0
-        if rh_present: readiness_score += 30.0
-        
+        if face_present:
+            readiness_score += 20.0
+        if pose_vis > 0.7:
+            readiness_score += 20.0
+        if lh_present:
+            readiness_score += 30.0
+        if rh_present:
+            readiness_score += 30.0
+
         # Penalize if blur is high
         if blur_val < 50.0:
             readiness_score *= 0.5
@@ -256,7 +267,7 @@ class PerceptionService:
             frame_quality_score=round(quality, 2),
             blur_score=round(blur_val, 2),
             brightness_score=round(brightness, 2),
-            gesture_readiness=round(readiness_score, 2)
+            gesture_readiness=round(readiness_score, 2),
         )
 
     def close(self):
@@ -264,6 +275,7 @@ class PerceptionService:
         self.hand_det.close()
         self.pose_det.close()
         self.face_det.close()
+
 
 # Singleton service accessor
 perception_service = PerceptionService()

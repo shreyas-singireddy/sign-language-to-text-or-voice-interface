@@ -1,7 +1,11 @@
-import numpy as np
-from typing import Dict, Tuple, List, Any
+from typing import Any
 
-def unpack_landmarks(flat_landmarks: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+import numpy as np
+
+
+def unpack_landmarks(
+    flat_landmarks: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Unpacks a 1662 flat landmark array into structural sub-arrays:
     Returns:
@@ -15,41 +19,28 @@ def unpack_landmarks(flat_landmarks: np.ndarray) -> Tuple[np.ndarray, np.ndarray
     face = np.zeros((468, 3))
     left_hand = np.zeros((21, 3))
     right_hand = np.zeros((21, 3))
-    
-    if len(flat_landmarks) < 1530:
+
+    if len(flat_landmarks) < 1662:
         return pose, face, left_hand, right_hand
-        
+
     # Pose: 33 points * 4 elements = 132
     pose_flat = flat_landmarks[0:132]
     pose = pose_flat.reshape((33, 4))
-    
+
     # Face: 468 points * 3 elements = 1404. Offset starts at 132. Ends at 132 + 1404 = 1536.
-    # Wait, the flat array packing index is: 132 + 468*3 = 132 + 1404 = 1536.
-    # But left hand starts at 1404 in _flatten_landmarks!
-    # Let's check: in _flatten_landmarks:
-    #   pose is 0 to 132
-    #   face is 132 to 132 + 468*3? Wait, the code says:
-    #     offset = 132 + (idx * 3) -> since idx goes up to 468: 132 + 468*3 = 132 + 1404 = 1536.
-    #   Wait, but left_hand starts at 1404! 1404 + 21*3 = 1404 + 63 = 1467.
-    #   Right hand starts at 1467! 1467 + 21*3 = 1467 + 63 = 1530.
-    #   Oh! In _flatten_landmarks, face_landmarks[:468] only goes up to the limit of left_hand index (1404).
-    #   Specifically, 1404 - 132 = 1272 elements. 1272 / 3 = 424 face landmarks!
-    #   Let's check the unpacking based on this exact _flatten_landmarks index mapping:
-    #   - Left Hand: 1404 to 1467 (63 elements -> 21 points)
-    #   - Right Hand: 1467 to 1530 (63 elements -> 21 points)
-    #   - Pose: 0 to 132 (132 elements -> 33 points)
-    #   - Face: 132 to 1404 (1272 elements -> 424 points)
-    
-    face_flat = flat_landmarks[132:1404]
+    face_flat = flat_landmarks[132:1536]
     face = face_flat.reshape((-1, 3))
-    
-    lh_flat = flat_landmarks[1404:1467]
+
+    # Left hand: 21 points * 3 elements = 63. Offset starts at 1536. Ends at 1536 + 63 = 1599.
+    lh_flat = flat_landmarks[1536:1599]
     left_hand = lh_flat.reshape((21, 3))
-    
-    rh_flat = flat_landmarks[1467:1530]
+
+    # Right hand: 21 points * 3 elements = 63. Offset starts at 1599. Ends at 1599 + 63 = 1662.
+    rh_flat = flat_landmarks[1599:1662]
     right_hand = rh_flat.reshape((21, 3))
-    
+
     return pose, face, left_hand, right_hand
+
 
 def compute_angle(p1: np.ndarray, p2: np.ndarray, p3: np.ndarray) -> float:
     """Computes angle (in degrees) at vertex p2 between p1-p2 and p3-p2."""
@@ -63,7 +54,8 @@ def compute_angle(p1: np.ndarray, p2: np.ndarray, p3: np.ndarray) -> float:
     angle = np.arccos(np.clip(cos_theta, -1.0, 1.0))
     return float(np.degrees(angle))
 
-def extract_hand_features(hand: np.ndarray) -> Dict[str, Any]:
+
+def extract_hand_features(hand: np.ndarray) -> dict[str, Any]:
     """
     Computes finger curls and angles for a hand.
     Hand shape is (21, 3). Wrist is index 0.
@@ -94,7 +86,7 @@ def extract_hand_features(hand: np.ndarray) -> Dict[str, Any]:
             curls.append(float(dist_tip_wrist / (dist_mcp_wrist + 1e-6)))
         else:
             curls.append(1.0)
-            
+
     features["curls"] = curls
 
     # Joint angles (MCP-PIP-DIP angles)
@@ -109,21 +101,22 @@ def extract_hand_features(hand: np.ndarray) -> Dict[str, Any]:
         compute_angle(hand[5], hand[6], hand[7]),
         compute_angle(hand[9], hand[10], hand[11]),
         compute_angle(hand[13], hand[14], hand[15]),
-        compute_angle(hand[17], hand[18], hand[19])
+        compute_angle(hand[17], hand[18], hand[19]),
     ]
     features["joint_angles"] = joint_angles
 
     # Pairwise fingertip distances (10 combinations)
     pairwise = []
     for i in range(len(tips)):
-        for j in range(i+1, len(tips)):
+        for j in range(i + 1, len(tips)):
             d = np.linalg.norm(hand[tips[i]] - hand[tips[j]])
             pairwise.append(float(d))
     features["pairwise_distances"] = pairwise
 
     return features
 
-def extract_pose_features(pose: np.ndarray) -> Dict[str, Any]:
+
+def extract_pose_features(pose: np.ndarray) -> dict[str, Any]:
     """
     Computes joint angles for elbows and shoulders.
     Pose landmarks:
@@ -142,12 +135,12 @@ def extract_pose_features(pose: np.ndarray) -> Dict[str, Any]:
 
     # Extract 3D coordinates (first 3 columns)
     p3d = pose[:, :3]
-    
+
     # Left Elbow Angle (11-13-15)
     features["left_elbow_angle"] = compute_angle(p3d[11], p3d[13], p3d[15])
     # Right Elbow Angle (12-14-16)
     features["right_elbow_angle"] = compute_angle(p3d[12], p3d[14], p3d[16])
-    
+
     # Shoulder angle relative to horizontal
     shoulder_vector = p3d[12] - p3d[11]
     dx, dy = shoulder_vector[0], shoulder_vector[1]
@@ -160,7 +153,8 @@ def extract_pose_features(pose: np.ndarray) -> Dict[str, Any]:
 
     return features
 
-def extract_face_features(face: np.ndarray) -> Dict[str, Any]:
+
+def extract_face_features(face: np.ndarray) -> dict[str, Any]:
     """
     Computes mouth openness and eyebrows alignment.
     Using landmark indexes:
@@ -184,38 +178,39 @@ def extract_face_features(face: np.ndarray) -> Dict[str, Any]:
 
     return features
 
+
 def compile_geometric_features(flat_landmarks: np.ndarray) -> np.ndarray:
     """
     Extracts and concatenates all landmark features into a single engineered feature vector.
     """
     pose, face, lh, rh = unpack_landmarks(flat_landmarks)
-    
+
     lh_feats = extract_hand_features(lh)
     rh_feats = extract_hand_features(rh)
     pose_feats = extract_pose_features(pose)
     face_feats = extract_face_features(face)
-    
+
     # Concatenate features
     feature_list = []
-    
+
     # Hand features
     feature_list.extend(lh_feats["curls"])
     feature_list.extend(lh_feats["joint_angles"])
     feature_list.extend(lh_feats["pairwise_distances"])
-    
+
     feature_list.extend(rh_feats["curls"])
     feature_list.extend(rh_feats["joint_angles"])
     feature_list.extend(rh_feats["pairwise_distances"])
-    
+
     # Pose features
     feature_list.append(pose_feats["left_elbow_angle"])
     feature_list.append(pose_feats["right_elbow_angle"])
     feature_list.append(pose_feats["shoulder_angle"])
     feature_list.append(pose_feats["arm_extension_left"])
     feature_list.append(pose_feats["arm_extension_right"])
-    
+
     # Face features
     feature_list.append(face_feats["mouth_openness"])
     feature_list.append(face_feats["eyebrow_tilt"])
-    
+
     return np.array(feature_list, dtype=np.float32)

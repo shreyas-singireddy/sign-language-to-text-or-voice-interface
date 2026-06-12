@@ -4,14 +4,15 @@ Post-processes raw English output from providers to apply additional
 grammar correction rules: punctuation, capitalization, contraction
 normalization, and sentence completeness checks.
 """
+
 import re
-from typing import List
+
 from config.logger import setup_logger
 
 logger = setup_logger("translation.grammar_fixer")
 
 # Pairs of (regex pattern, replacement) applied in order
-GRAMMAR_RULES: List[tuple] = [
+GRAMMAR_RULES: list[tuple] = [
     # Fix double spaces
     (r" {2,}", " "),
     # Capitalize first character of sentence
@@ -21,8 +22,10 @@ GRAMMAR_RULES: List[tuple] = [
     # Fix "i " → "I " (standalone pronoun)
     (r"\bi\b", "I"),
     # Fix spaced contractions (do n't → don't)
-    (r"\b(do|does|did|is|are|was|were|have|has|had|will|would|should|could|can|might|must|shall) n'?t\b",
-     lambda m: m.group(0).replace(" n't", "n't").replace(" nt", "n't")),
+    (
+        r"\b(do|does|did|is|are|was|were|have|has|had|will|would|should|could|can|might|must|shall) n'?t\b",
+        lambda m: m.group(0).replace(" n't", "n't").replace(" nt", "n't"),
+    ),
     # Remove leading/trailing whitespace
     (r"^\s+|\s+$", ""),
     # Fix multiple punctuation (e.g. "!!!" → "!")
@@ -37,16 +40,34 @@ GRAMMAR_RULES: List[tuple] = [
 ]
 
 # Known filler tokens that should be silently removed from the sentence
-FILLER_TOKENS = {
-    "UM", "UH", "AH", "ERR", "HMHM", "MMM", "HMM", "EH"
-}
+FILLER_TOKENS = {"UM", "UH", "AH", "ERR", "HMHM", "MMM", "HMM", "EH"}
 
 # Words that should always be title-case
 PROPER_NOUNS = {
-    "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
-    "january", "february", "march", "april", "may", "june",
-    "july", "august", "september", "october", "november", "december",
-    "english", "hindi", "spanish", "french", "german",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
+    "english",
+    "hindi",
+    "spanish",
+    "french",
+    "german",
     "signbridge",
 }
 
@@ -87,7 +108,12 @@ class GrammarFixer:
             if callable(replacement):
                 text = re.sub(pattern, replacement, text)
             else:
-                text = re.sub(pattern, replacement, text, flags=re.IGNORECASE if r"\b" in pattern else 0)
+                text = re.sub(
+                    pattern,
+                    replacement,
+                    text,
+                    flags=re.IGNORECASE if r"\b" in pattern else 0,
+                )
 
         # Title-case proper nouns
         words = text.split()
@@ -114,7 +140,7 @@ class GrammarFixer:
             text += "."
         return text
 
-    def remove_filler_tokens(self, tokens: List[str]) -> List[str]:
+    def remove_filler_tokens(self, tokens: list[str]) -> list[str]:
         """
         Remove filler/noise tokens from a sign sequence before translation.
 
@@ -126,7 +152,7 @@ class GrammarFixer:
         """
         return [t for t in tokens if t.upper() not in FILLER_TOKENS]
 
-    def normalize_token_sequence(self, tokens: List[str]) -> List[str]:
+    def normalize_token_sequence(self, tokens: list[str]) -> list[str]:
         """
         Normalize a token sequence: uppercase, strip, deduplicate consecutives,
         remove fillers.

@@ -9,11 +9,10 @@ in a browser context, STT is implemented as:
 
 The engine also provides a text-input fallback for environments without mic access.
 """
-import streamlit.components.v1 as components
-from typing import Optional
-from speech.schemas import STTResult, STTProvider
-from speech.providers.browser_provider import BROWSER_LANG_MAP
+
 from config.logger import setup_logger
+from speech.providers.browser_provider import BROWSER_LANG_MAP
+from speech.schemas import STTProvider, STTResult
 
 logger = setup_logger("speech.stt_engine")
 

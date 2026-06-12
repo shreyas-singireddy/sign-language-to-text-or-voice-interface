@@ -1,7 +1,9 @@
 import numpy as np
+
 from config.logger import setup_logger
 
 logger = setup_logger("ai_engine.inference_preparation")
+
 
 class InferencePreprocessor:
     def __init__(self, sequence_length: int = 30, feature_size: int = 1662):
@@ -15,13 +17,13 @@ class InferencePreprocessor:
         Output: numpy array of shape (1, 30, 1662) for LSTM/Transformer input.
         """
         seq_len = len(raw_sequence)
-        
+
         if seq_len == 0:
             return np.zeros((1, self.sequence_length, self.feature_size))
 
         if seq_len >= self.sequence_length:
             # Truncate to the last N frames
-            formatted = np.array(raw_sequence[-self.sequence_length:])
+            formatted = np.array(raw_sequence[-self.sequence_length :])
         else:
             # Zero-pad at the beginning
             padding = np.zeros((self.sequence_length - seq_len, self.feature_size))
@@ -49,7 +51,8 @@ class InferencePreprocessor:
             "feature_quality_score": round(feature_quality, 2),
             "tracking_stability_score": round(tracking_health, 2),
             "is_training_ready": readiness_score > 0.7,
-            "readiness_grade": "EXCELLENT" if readiness_score > 0.8 else "GOOD" if readiness_score > 0.6 else "POOR"
+            "readiness_grade": ("EXCELLENT" if readiness_score > 0.8 else "GOOD" if readiness_score > 0.6 else "POOR"),
         }
+
 
 inference_preprocessor = InferencePreprocessor()

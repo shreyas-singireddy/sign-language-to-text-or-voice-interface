@@ -4,14 +4,17 @@ Life-critical communication interface for deaf and mute users in emergencies.
 Features: SOS broadcast, quick-access phrases, emergency contacts,
 multilingual emergency alerts, and protocol activation.
 """
+
+from datetime import UTC
+
 import streamlit as st
-import streamlit.components.v1 as components
-from emergency.sos_detector import sos_detector, LEVEL_CRITICAL, LEVEL_URGENT
-from emergency.alert_dispatcher import alert_dispatcher
-from emergency.panic_protocol import panic_protocol
-from emergency.emergency_phrases import EMERGENCY_CATEGORIES, get_all_phrases_for_language
-from speech.tts_engine import tts_engine
+
 from config.config import SUPPORTED_LANGUAGES
+from emergency.alert_dispatcher import alert_dispatcher
+from emergency.emergency_phrases import EMERGENCY_CATEGORIES
+from emergency.panic_protocol import panic_protocol
+from emergency.sos_detector import LEVEL_CRITICAL, sos_detector
+from speech.tts_engine import tts_engine
 
 # ─── Page Header ───────────────────────────────────────────────────────────────
 st.markdown(
@@ -25,7 +28,7 @@ st.markdown(
         Instant SOS broadcast, multilingual emergency phrases, and alert dispatch.
     </p>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 st.markdown("---")
 
@@ -65,10 +68,14 @@ if st.session_state.get("emergency_active", False):
         @keyframes pulse-alert { 0%,100%{opacity:1} 50%{opacity:0.75} }
         </style>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
-    if st.button("✅ Emergency Resolved — Deactivate Protocol", key="btn_deactivate_emergency", use_container_width=True):
+    if st.button(
+        "✅ Emergency Resolved — Deactivate Protocol",
+        key="btn_deactivate_emergency",
+        use_container_width=True,
+    ):
         st.session_state["emergency_active"] = False
         panic_protocol.deactivate()
         sos_detector.reset_session()
@@ -91,7 +98,7 @@ with col_sos:
             </p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # Primary SOS Button
@@ -117,20 +124,26 @@ with col_sos:
             ">SOS</div>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     user_name = st.session_state.get("user_name", "SignBridge User")
 
-    if st.button("🚨 ACTIVATE FULL SOS PROTOCOL", key="btn_sos_activate", use_container_width=True):
-        from emergency.sos_detector import SOSEvent, LEVEL_CRITICAL
-        from datetime import datetime, timezone
+    if st.button(
+        "🚨 ACTIVATE FULL SOS PROTOCOL",
+        key="btn_sos_activate",
+        use_container_width=True,
+    ):
+        from datetime import datetime
+
+        from emergency.sos_detector import LEVEL_CRITICAL, SOSEvent
+
         critical_event = SOSEvent(
             severity=LEVEL_CRITICAL,
             triggered_tokens=["SOS"],
             matching_pattern=["SOS"],
             confidence=1.0,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             message="Manual SOS activated by user.",
         )
         result = panic_protocol.activate(critical_event, user_name=user_name)
@@ -152,7 +165,7 @@ with col_sos:
     test_tokens = st.text_input(
         "Enter sign tokens (comma-separated):",
         value="CHEST, PAIN",
-        key="input_sos_test_tokens"
+        key="input_sos_test_tokens",
     )
     if st.button("🔍 Check SOS Pattern", key="btn_check_sos", use_container_width=True):
         token_list = [t.strip().upper() for t in test_tokens.split(",") if t.strip()]
@@ -167,7 +180,7 @@ with col_sos:
                     Confidence: <code>{event.confidence:.0%}</code>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
         else:
             st.success("✅ No emergency patterns detected in this sequence.")
@@ -182,7 +195,7 @@ with col_sos:
             <div style="font-size: 0.75rem; color: #555;">Dispatched This Session</div>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 # ── RIGHT: EMERGENCY PHRASE BANK ──────────────────────────────────────────────
@@ -196,7 +209,7 @@ with col_phrases:
             </p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # Language selector
@@ -204,7 +217,7 @@ with col_phrases:
         "Emergency Language:",
         options=list(SUPPORTED_LANGUAGES.keys()),
         index=0,
-        key="sel_emergency_lang"
+        key="sel_emergency_lang",
     )
     st.session_state["emergency_language"] = em_lang
 
@@ -221,17 +234,20 @@ with col_phrases:
                             <span style="font-size: 0.95rem; font-weight: 700;">{phrase}</span>
                         </div>
                         """,
-                        unsafe_allow_html=True
+                        unsafe_allow_html=True,
                     )
                 with ph_col2:
-                    if st.button("🔊", key=f"btn_em_phrase_{category}_{idx}", use_container_width=True, help="Play this phrase"):
+                    if st.button(
+                        "🔊",
+                        key=f"btn_em_phrase_{category}_{idx}",
+                        use_container_width=True,
+                        help="Play this phrase",
+                    ):
                         lang_code = SUPPORTED_LANGUAGES.get(em_lang, "en-US")
                         audio_bytes = tts_engine.speak(phrase, language_name=em_lang)
                         if audio_bytes:
                             st.audio(audio_bytes, format="audio/mp3")
-                            st.session_state["emergency_log"].append({
-                                "phrase": phrase, "language": em_lang
-                            })
+                            st.session_state["emergency_log"].append({"phrase": phrase, "language": em_lang})
 
 # ─── EMERGENCY CONTACT MANAGER ─────────────────────────────────────────────────
 st.markdown("---")
@@ -241,7 +257,7 @@ st.markdown(
         <h3 style="margin-top: 0;">EMERGENCY CONTACTS</h3>
     </div>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 contact_col1, contact_col2, contact_col3 = st.columns(3)
@@ -280,7 +296,7 @@ if history:
                 <div style="font-size: 0.8rem; color: #555;">Channels: {', '.join(alert['channels'])}</div>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 else:
     st.info("No emergency alerts dispatched in this session.")

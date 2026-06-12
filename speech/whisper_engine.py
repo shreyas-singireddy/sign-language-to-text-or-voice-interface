@@ -1,7 +1,9 @@
 import os
+
 from config.logger import setup_logger
 
 logger = setup_logger("speech.whisper")
+
 
 class WhisperEngine:
     def __init__(self):

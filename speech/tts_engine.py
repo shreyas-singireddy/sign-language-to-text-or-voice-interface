@@ -7,14 +7,14 @@ Fallback: Mock WAV sine wave (always available offline)
 
 Caches audio bytes per text+language key to avoid redundant synthesis.
 """
-import hashlib
-from typing import Dict, Optional, List
 
-from speech.schemas import TTSRequest, TTSResult, TTSProvider, AvailableVoice
-from speech.providers.gtts_provider import GTTSProvider
-from speech.providers.browser_provider import BrowserTTSProvider
-from speech.voice_profile import get_profile_for_language, LANGUAGE_TO_PROFILE
+import hashlib
+
 from config.logger import setup_logger
+from speech.providers.browser_provider import BrowserTTSProvider
+from speech.providers.gtts_provider import GTTSProvider
+from speech.schemas import AvailableVoice, TTSProvider, TTSRequest, TTSResult
+from speech.voice_profile import get_profile_for_language
 
 logger = setup_logger("speech.tts_engine")
 
@@ -36,11 +36,11 @@ class TTSEngine:
     """
 
     def __init__(self):
-        self._providers: Dict[TTSProvider, object] = {
+        self._providers: dict[TTSProvider, object] = {
             TTSProvider.GTTS: GTTSProvider(),
             TTSProvider.BROWSER: BrowserTTSProvider(),
         }
-        self._cache: Dict[str, TTSResult] = {}
+        self._cache: dict[str, TTSResult] = {}
         self._default_provider = TTSProvider.GTTS
         logger.info("TTSEngine initialized with providers: gtts, browser")
 
@@ -83,7 +83,7 @@ class TTSEngine:
         text: str,
         language_name: str = "English",
         slow: bool = False,
-        provider: TTSProvider = TTSProvider.GTTS
+        provider: TTSProvider = TTSProvider.GTTS,
     ) -> bytes:
         """
         Simplified interface — returns raw audio bytes directly.
@@ -121,7 +121,7 @@ class TTSEngine:
         Returns:
             Raw MP3/WAV audio bytes
         """
-        request = TTSRequest(
+        TTSRequest(
             text=text,
             lang_code="en-US",
             provider=TTSProvider.GTTS,
@@ -129,12 +129,7 @@ class TTSEngine:
             tld="com",
         )
         provider = self._providers[TTSProvider.GTTS]
-        result = provider.synthesize(
-            text=text,
-            lang_code="en-US",
-            slow=False,
-            tld="com"
-        )
+        result = provider.synthesize(text=text, lang_code="en-US", slow=False, tld="com")
         logger.warning(f"Emergency TTS synthesized: '{text[:80]}'")
         return result.audio_bytes
 
@@ -154,7 +149,7 @@ class TTSEngine:
         browser_provider: BrowserTTSProvider = self._providers[TTSProvider.BROWSER]
         return browser_provider.get_javascript_snippet(text, lang_code, slow)
 
-    def get_all_voices(self) -> List[AvailableVoice]:
+    def get_all_voices(self) -> list[AvailableVoice]:
         """Return combined voice list from all providers."""
         voices = []
         for provider in self._providers.values():
@@ -162,12 +157,9 @@ class TTSEngine:
                 voices.extend(provider.get_available_voices())
         return voices
 
-    def get_provider_health(self) -> Dict[str, bool]:
+    def get_provider_health(self) -> dict[str, bool]:
         """Return health status for all providers."""
-        return {
-            name.value: provider.health_check()
-            for name, provider in self._providers.items()
-        }
+        return {name.value: provider.health_check() for name, provider in self._providers.items()}
 
     def clear_cache(self) -> int:
         """Clear the audio cache. Returns number of entries cleared."""
@@ -179,7 +171,7 @@ class TTSEngine:
     def _make_cache_key(self, text: str, lang_code: str, slow: bool) -> str:
         """Generate a deterministic cache key from synthesis parameters."""
         content = f"{text}|{lang_code}|{slow}"
-        return hashlib.md5(content.encode()).hexdigest()
+        return hashlib.md5(content.encode()).hexdigest()  # nosec
 
     def _store_cache(self, key: str, result: TTSResult) -> None:
         """Store result in cache with LRU eviction if full."""

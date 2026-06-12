@@ -3,12 +3,12 @@ SignBridge AI — Layer 7: Message Thread
 Manages the ordered sequence of messages in a conversation session.
 Provides insertion, retrieval, search, and export functionality.
 """
-import uuid
-from datetime import datetime, timezone
-from typing import List, Optional
 
-from conversation.schemas import Message, MessageRole, EmotionTone, ConversationThread
+import uuid
+from datetime import UTC, datetime
+
 from config.logger import setup_logger
+from conversation.schemas import ConversationThread, EmotionTone, Message, MessageRole
 
 logger = setup_logger("conversation.message_thread")
 
@@ -24,7 +24,7 @@ class MessageThread:
         self._thread = ConversationThread(
             session_id=session_id,
             messages=[],
-            started_at=datetime.now(timezone.utc),
+            started_at=datetime.now(UTC),
             language=language,
             participant_count=2,
             is_active=True,
@@ -33,7 +33,7 @@ class MessageThread:
 
     def add_signer_message(
         self,
-        signs: List[str],
+        signs: list[str],
         text: str,
         language: str = "English",
         confidence: float = 1.0,
@@ -60,7 +60,7 @@ class MessageThread:
             language=language,
             emotion=emotion,
             confidence=confidence,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         self._thread.messages.append(message)
         logger.debug(f"Signer message added: '{text[:60]}'")
@@ -89,7 +89,7 @@ class MessageThread:
             language=language,
             emotion=EmotionTone.NEUTRAL,
             confidence=1.0,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         self._thread.messages.append(message)
         logger.debug(f"Listener message added: '{text[:60]}'")
@@ -113,20 +113,20 @@ class MessageThread:
             language="English",
             emotion=EmotionTone.NEUTRAL,
             confidence=1.0,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         self._thread.messages.append(message)
         return message
 
-    def get_all_messages(self) -> List[Message]:
+    def get_all_messages(self) -> list[Message]:
         """Return all messages in chronological order."""
         return list(self._thread.messages)
 
-    def get_last_n_messages(self, n: int) -> List[Message]:
+    def get_last_n_messages(self, n: int) -> list[Message]:
         """Return the last N messages."""
         return self._thread.messages[-n:] if n > 0 else []
 
-    def get_signer_messages(self) -> List[Message]:
+    def get_signer_messages(self) -> list[Message]:
         """Return only messages from the signer."""
         return [m for m in self._thread.messages if m.role == MessageRole.SIGNER]
 
@@ -163,7 +163,7 @@ class MessageThread:
                     "timestamp": m.timestamp.isoformat(),
                 }
                 for m in self._thread.messages
-            ]
+            ],
         }
 
     def clear(self) -> None:

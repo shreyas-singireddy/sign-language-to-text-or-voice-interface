@@ -3,11 +3,18 @@ SignBridge AI — Layer 10: Accessibility Settings Page
 Full accessibility control center: themes, font scaling, keyboard shortcuts,
 screen reader settings, and motion preferences.
 """
+
 import streamlit as st
 import streamlit.components.v1 as components
-from accessibility.theme_manager import theme_manager, AccessibilityTheme, THEME_LABELS, THEME_DESCRIPTIONS
+
 from accessibility.keyboard_nav import keyboard_nav
 from accessibility.screen_reader_hints import screen_reader_hints
+from accessibility.theme_manager import (
+    THEME_DESCRIPTIONS,
+    THEME_LABELS,
+    AccessibilityTheme,
+    theme_manager,
+)
 
 # ─── Page Header ───────────────────────────────────────────────────────────────
 st.markdown(
@@ -19,7 +26,7 @@ st.markdown(
         Universal access settings — themes, motion, keyboard navigation, and screen reader support.
     </p>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 st.markdown("---")
 
@@ -49,7 +56,7 @@ with col_themes:
             </p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     theme_options = {v: k for k, v in THEME_LABELS.items()}
@@ -66,7 +73,7 @@ with col_themes:
         with col_desc:
             st.markdown(
                 f"<span style='font-size: 0.85rem; color: #555; font-style: italic;'>{description}</span>",
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
         if checked:
             selected_themes.append(theme_enum.value)
@@ -83,7 +90,7 @@ with col_themes:
     st.markdown("---")
     st.markdown("### Theme Preview")
     st.markdown(
-        f"""
+        """
         <div class="bauhaus-card card-blue" style="padding: 20px;">
             <h4 style="margin-top: 0;">Sample Card</h4>
             <p style="margin: 0;">This card reflects your active theme settings.</p>
@@ -95,7 +102,7 @@ with col_themes:
             <strong>METRIC: 92.4%</strong>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 with col_controls:
@@ -105,7 +112,7 @@ with col_controls:
             <h3 style="margin-top: 0px;">ACCESSIBILITY CONTROLS</h3>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # Font size control
@@ -115,7 +122,7 @@ with col_controls:
         max_value=150,
         value=st.session_state["font_scale"],
         step=10,
-        key="slider_font_scale"
+        key="slider_font_scale",
     )
     if font_scale != st.session_state["font_scale"]:
         st.session_state["font_scale"] = font_scale
@@ -131,16 +138,16 @@ with col_controls:
         "Screen Reader Mode",
         value=st.session_state["screen_reader_mode"],
         key="toggle_sr_mode",
-        help="Adds ARIA live regions and additional screen reader hints."
+        help="Adds ARIA live regions and additional screen reader hints.",
     )
     st.session_state["screen_reader_mode"] = sr_mode
     if sr_mode:
         st.markdown(
             screen_reader_hints.live_region(
                 content="<span>Screen reader mode active. Navigation landmarks enabled.</span>",
-                aria_label="Screen reader status"
+                aria_label="Screen reader status",
             ),
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
         st.success("Screen reader enhancements active.")
 
@@ -164,7 +171,7 @@ with col_controls:
             <div style="font-size: 0.75rem; color: #555;">{active_count} theme(s) active</div>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 # ─── Keyboard Shortcuts Reference ───────────────────────────────────────────────
@@ -179,13 +186,10 @@ st.markdown(
         </p>
     </div>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
-st.markdown(
-    keyboard_nav.generate_shortcut_reference_html(),
-    unsafe_allow_html=True
-)
+st.markdown(keyboard_nav.generate_shortcut_reference_html(), unsafe_allow_html=True)
 
 # Inject keyboard listener
 components.html(keyboard_nav.generate_keyboard_listener_html(), height=0)
@@ -198,7 +202,7 @@ with test_col1:
     test_message = st.text_input(
         "Type a message to test screen reader live region:",
         value="",
-        key="sr_test_input"
+        key="sr_test_input",
     )
 with test_col2:
     if st.button("📢 Announce", key="btn_announce_sr", use_container_width=True):
@@ -206,9 +210,9 @@ with test_col2:
             st.markdown(
                 screen_reader_hints.alert_region(
                     content=f"<strong>{test_message}</strong>",
-                    label="User announcement"
+                    label="User announcement",
                 ),
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
             st.success(f"Announced: '{test_message}'")
 
@@ -222,5 +226,5 @@ st.markdown(
         </p>
     </div>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )

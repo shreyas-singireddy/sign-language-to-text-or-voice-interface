@@ -4,7 +4,7 @@ Generates ARIA-compliant HTML hints for screen reader accessibility.
 Provides helper functions for wrapping UI elements with appropriate
 ARIA attributes, live regions, and role descriptors.
 """
-from typing import Optional
+
 from config.logger import setup_logger
 
 logger = setup_logger("accessibility.screen_reader_hints")
@@ -17,7 +17,12 @@ class ScreenReaderHints:
     WCAG 2.1 AA compliance.
     """
 
-    def live_region(self, content: str, aria_label: str = "Live translation output", politeness: str = "polite") -> str:
+    def live_region(
+        self,
+        content: str,
+        aria_label: str = "Live translation output",
+        politeness: str = "polite",
+    ) -> str:
         """
         Wrap content in an ARIA live region for dynamic content announcements.
 

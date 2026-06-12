@@ -3,7 +3,9 @@ SignBridge AI — Layer 9: Heatmap Builder
 Generates gesture frequency heatmap data for Plotly visualization.
 Produces both grid-format (2D heatmap) and list-format data.
 """
-from typing import List, Dict, Any, Optional
+
+from typing import Any
+
 from config.logger import setup_logger
 
 logger = setup_logger("analytics.heatmap_builder")
@@ -20,10 +22,28 @@ ASL_ALPHABET_GRID = [
 
 # Common word gestures for word-level heatmap
 WORD_GESTURE_LIST = [
-    "HELLO", "THANK", "PLEASE", "HELP", "SORRY", "YES", "NO",
-    "WATER", "FOOD", "MEDICINE", "PAIN", "DOCTOR", "EMERGENCY",
-    "GOOD MORNING", "GOOD NIGHT", "UNDERSTAND", "BATHROOM",
-    "HOME", "HOSPITAL", "LOST", "WAIT", "HURRY",
+    "HELLO",
+    "THANK",
+    "PLEASE",
+    "HELP",
+    "SORRY",
+    "YES",
+    "NO",
+    "WATER",
+    "FOOD",
+    "MEDICINE",
+    "PAIN",
+    "DOCTOR",
+    "EMERGENCY",
+    "GOOD MORNING",
+    "GOOD NIGHT",
+    "UNDERSTAND",
+    "BATHROOM",
+    "HOME",
+    "HOSPITAL",
+    "LOST",
+    "WAIT",
+    "HURRY",
 ]
 
 
@@ -33,10 +53,7 @@ class HeatmapBuilder:
     Outputs Plotly-compatible z-values, x-labels, and y-labels.
     """
 
-    def build_alphabet_heatmap(
-        self,
-        gesture_frequency: Dict[str, int]
-    ) -> Dict[str, Any]:
+    def build_alphabet_heatmap(self, gesture_frequency: dict[str, int]) -> dict[str, Any]:
         """
         Build a 6x6 alphabet heatmap from gesture frequency data.
 
@@ -73,11 +90,7 @@ class HeatmapBuilder:
             "title": "ASL Alphabet Gesture Frequency Heatmap",
         }
 
-    def build_word_heatmap(
-        self,
-        gesture_frequency: Dict[str, int],
-        top_n: int = 20
-    ) -> Dict[str, Any]:
+    def build_word_heatmap(self, gesture_frequency: dict[str, int], top_n: int = 20) -> dict[str, Any]:
         """
         Build a bar-chart-ready frequency list for word gestures.
 
@@ -104,7 +117,7 @@ class HeatmapBuilder:
 
         return {"gestures": gestures, "counts": counts}
 
-    def build_emotion_pie_data(self, emotion_distribution: Dict[str, int]) -> Dict[str, Any]:
+    def build_emotion_pie_data(self, emotion_distribution: dict[str, int]) -> dict[str, Any]:
         """
         Build pie chart data from emotion distribution.
 
@@ -115,12 +128,12 @@ class HeatmapBuilder:
             Dict with 'labels' and 'values' for Plotly pie chart
         """
         emotion_colors = {
-            "neutral":    "#888888",
-            "urgent":     "#D02020",
+            "neutral": "#888888",
+            "urgent": "#D02020",
             "distressed": "#1040C0",
-            "grateful":   "#F0C020",
-            "friendly":   "#20A040",
-            "confused":   "#E07000",
+            "grateful": "#F0C020",
+            "friendly": "#20A040",
+            "confused": "#E07000",
         }
 
         labels = list(emotion_distribution.keys())
@@ -129,7 +142,7 @@ class HeatmapBuilder:
 
         return {"labels": labels, "values": values, "colors": colors}
 
-    def build_confidence_trend(self, confidence_histogram: Dict[str, int]) -> Dict[str, Any]:
+    def build_confidence_trend(self, confidence_histogram: dict[str, int]) -> dict[str, Any]:
         """
         Build confidence distribution bar chart data.
 

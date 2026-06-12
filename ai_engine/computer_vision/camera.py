@@ -1,8 +1,10 @@
 import cv2
+
 from config.config import WEBCAM_SOURCE
 from config.logger import setup_logger
 
 logger = setup_logger("ai_engine.cv.camera")
+
 
 class CameraManager:
     def __init__(self, source: int = WEBCAM_SOURCE):
@@ -18,7 +20,7 @@ class CameraManager:
 
         logger.info(f"Opening camera stream source: {self.source}")
         self.cap = cv2.VideoCapture(self.source)
-        
+
         # Test if camera was successfully opened
         if not self.cap.isOpened():
             logger.error(f"Failed to open video source {self.source}.")

@@ -4,32 +4,33 @@ HTTP-based adapter for Google Translate's unofficial endpoint.
 Uses httpx (already installed) with no API key requirement.
 Falls back gracefully on network errors.
 """
-from typing import List, Optional
+
 import httpx
+
+from config.logger import setup_logger
 from translation.providers.base import BaseTranslationProvider
 from translation.providers.rule_based import RuleBasedProvider
-from config.logger import setup_logger
 
 logger = setup_logger("translation.providers.google_adapter")
 
 # Language name → Google Translate BCP-47 code
 GOOGLE_LANG_CODES = {
-    "English":    "en",
-    "Hindi":      "hi",
-    "Telugu":     "te",
-    "Spanish":    "es",
-    "French":     "fr",
-    "German":     "de",
-    "Chinese":    "zh-CN",
-    "Japanese":   "ja",
-    "Arabic":     "ar",
+    "English": "en",
+    "Hindi": "hi",
+    "Telugu": "te",
+    "Spanish": "es",
+    "French": "fr",
+    "German": "de",
+    "Chinese": "zh-CN",
+    "Japanese": "ja",
+    "Arabic": "ar",
     "Portuguese": "pt",
-    "Russian":    "ru",
-    "Italian":    "it",
-    "Korean":     "ko",
-    "Bengali":    "bn",
-    "Tamil":      "ta",
-    "Urdu":       "ur",
+    "Russian": "ru",
+    "Italian": "it",
+    "Korean": "ko",
+    "Bengali": "bn",
+    "Tamil": "ta",
+    "Urdu": "ur",
 }
 
 
@@ -45,7 +46,7 @@ class GoogleTranslateAdapter(BaseTranslationProvider):
     def __init__(self, timeout_seconds: float = 5.0):
         self._timeout = timeout_seconds
         self._fallback = RuleBasedProvider()
-        self._available: Optional[bool] = None
+        self._available: bool | None = None
 
     @property
     def provider_name(self) -> str:
@@ -65,16 +66,16 @@ class GoogleTranslateAdapter(BaseTranslationProvider):
                     "sl": "en",
                     "tl": "es",
                     "dt": "t",
-                    "q": "hello"
+                    "q": "hello",
                 },
-                timeout=3.0
+                timeout=3.0,
             )
             self._available = resp.status_code == 200
         except Exception:
             self._available = False
         return self._available
 
-    def signs_to_english(self, tokens: List[str], context: Optional[List[str]] = None) -> str:
+    def signs_to_english(self, tokens: list[str], context: list[str] | None = None) -> str:
         """
         Convert sign tokens to English.
         Delegates to RuleBasedProvider for the grammar construction phase,
@@ -104,9 +105,9 @@ class GoogleTranslateAdapter(BaseTranslationProvider):
                     "sl": "en",
                     "tl": lang_code,
                     "dt": "t",
-                    "q": english_text
+                    "q": english_text,
                 },
-                timeout=self._timeout
+                timeout=self._timeout,
             )
             resp.raise_for_status()
             data = resp.json()
@@ -125,7 +126,7 @@ class GoogleTranslateAdapter(BaseTranslationProvider):
         except httpx.TimeoutException:
             logger.warning(f"Google Translate timeout for '{english_text}' → {target_language}. Using fallback.")
         except httpx.NetworkError:
-            logger.warning(f"Google Translate network error. Using fallback.")
+            logger.warning("Google Translate network error. Using fallback.")
         except (KeyError, IndexError, ValueError) as parse_err:
             logger.error(f"Google Translate parse error: {parse_err}. Using fallback.")
         except Exception as exc:

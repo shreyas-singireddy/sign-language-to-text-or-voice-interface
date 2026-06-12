@@ -1,27 +1,29 @@
-import cv2
-import time
 import threading
-from typing import Tuple, Optional
+import time
+
+import cv2
 import numpy as np
-from ai_engine.utils.logger import get_structured_logger
+
 from ai_engine.utils.config import sys_config
+from ai_engine.utils.logger import get_structured_logger
 
 logger = get_structured_logger("vision.camera")
+
 
 class CameraManager:
     def __init__(self):
         self.lock = threading.Lock()
-        self.cap: Optional[cv2.VideoCapture] = None
+        self.cap: cv2.VideoCapture | None = None
         self.camera_index: int = sys_config.camera.source_index
         self.width: int = sys_config.camera.width
         self.height: int = sys_config.camera.height
-        
+
         # Performance parameters
         self.frame_count: int = 0
         self.fps: float = 0.0
         self.latency_ms: float = 0.0
         self.status: str = "Uninitialized"
-        
+
         self.prev_time: float = time.time()
 
     def initialize_camera(self, index: int, width: int = 640, height: int = 480) -> bool:
@@ -33,17 +35,17 @@ class CameraManager:
             self.camera_index = index
             self.width = width
             self.height = height
-            
+
             logger.info(f"Initializing camera source={index} ({width}x{height})")
-            
+
             # Use DirectShow on Windows if possible to speed up initialization
             # cv2.CAP_DSHOW can sometimes resolve slow starts
             self.cap = cv2.VideoCapture(index, cv2.CAP_DSHOW) if os_check() else cv2.VideoCapture(index)
-            
+
             if not self.cap.isOpened():
                 # Fallback to standard index
                 self.cap = cv2.VideoCapture(index)
-                
+
             if not self.cap.isOpened():
                 logger.error(f"Failed to open camera index: {index}")
                 self.status = "Failed"
@@ -53,7 +55,7 @@ class CameraManager:
             # Set resolution parameters
             self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
             self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-            
+
             # Read a test frame
             success, _ = self.cap.read()
             if not success:
@@ -67,31 +69,36 @@ class CameraManager:
             logger.info(f"Camera index {index} initialized successfully.")
             return True
 
-    def read_frame(self) -> Tuple[bool, Optional[np.ndarray], float]:
+    def read_frame(self) -> tuple[bool, np.ndarray | None, float]:
         """
-        Reads frame, calculates FPS and latency, and handles automatic recovery.
+        Reads frame, calculates FPS and latency.
         Returns:
             success (bool): capture success
             frame (ndarray): BGR image matrix
             latency_ms (float): elapsed read duration
+
+        BUG-007 FIX: recover_connection() must NOT be called inside the lock
+        block — that caused a deadlock because release() also acquires self.lock.
+        We now return False from within the lock, and callers can call
+        recover_connection() externally if desired.
         """
         t_start = time.time()
-        
+
         with self.lock:
             if self.cap is None or not self.cap.isOpened():
                 self.status = "Failed"
                 return False, None, 0.0
 
             success, frame = self.cap.read()
-            
+
             if not success:
                 logger.warning("Frame acquisition failed. Attempting camera recovery...")
                 self.status = "Recovery Active"
-                self.recover_connection()
+                # Return False — do NOT call recover_connection() inside the lock
                 return False, None, 0.0
 
             self.frame_count += 1
-            
+
             # Calculate live FPS
             curr_time = time.time()
             time_diff = curr_time - self.prev_time
@@ -130,7 +137,9 @@ class CameraManager:
             self.status = "Released"
             logger.info("Camera resources released.")
 
+
 # Helper to check platform
 def os_check() -> bool:
     import platform
+
     return platform.system() == "Windows"

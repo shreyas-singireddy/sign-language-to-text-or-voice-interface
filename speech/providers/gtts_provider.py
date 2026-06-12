@@ -4,20 +4,22 @@ Uses Google Text-to-Speech (gTTS) library for high-quality multilingual TTS.
 gTTS produces MP3 audio streamed from Google's TTS API.
 Falls back to WAV mock synthesis if gTTS is not installed or offline.
 """
+
 import io
-import wave
 import math
+import wave
+
 import numpy as np
-from typing import List
-from speech.providers.base import BaseTTSProvider
-from speech.schemas import TTSResult, TTSProvider, AvailableVoice
+
 from config.logger import setup_logger
+from speech.providers.base import BaseTTSProvider
+from speech.schemas import AvailableVoice, TTSProvider, TTSResult
 
 logger = setup_logger("speech.providers.gtts")
 
 # Language name → gTTS lang code + TLD for accent variation
 GTTS_LANGUAGE_MAP = {
-    "en": ("en", "com"),        # English (US)
+    "en": ("en", "com"),  # English (US)
     "en-US": ("en", "com"),
     "en-GB": ("en", "co.uk"),
     "en-AU": ("en", "com.au"),
@@ -39,25 +41,136 @@ GTTS_LANGUAGE_MAP = {
 }
 
 # Pre-defined voice catalog for the UI
-VOICE_CATALOG: List[AvailableVoice] = [
-    AvailableVoice(id="gtts_en_us",    name="American English",   language="English",    lang_code="en-US",  provider=TTSProvider.GTTS, accent="US"),
-    AvailableVoice(id="gtts_en_gb",    name="British English",    language="English",    lang_code="en-GB",  provider=TTSProvider.GTTS, accent="UK"),
-    AvailableVoice(id="gtts_en_au",    name="Australian English", language="English",    lang_code="en-AU",  provider=TTSProvider.GTTS, accent="AU"),
-    AvailableVoice(id="gtts_hi",       name="Hindi",              language="Hindi",      lang_code="hi-IN",  provider=TTSProvider.GTTS),
-    AvailableVoice(id="gtts_te",       name="Telugu",             language="Telugu",     lang_code="te-IN",  provider=TTSProvider.GTTS),
-    AvailableVoice(id="gtts_es",       name="Spanish",            language="Spanish",    lang_code="es-ES",  provider=TTSProvider.GTTS),
-    AvailableVoice(id="gtts_fr",       name="French",             language="French",     lang_code="fr-FR",  provider=TTSProvider.GTTS),
-    AvailableVoice(id="gtts_de",       name="German",             language="German",     lang_code="de-DE",  provider=TTSProvider.GTTS),
-    AvailableVoice(id="gtts_zh",       name="Chinese Mandarin",   language="Chinese",    lang_code="zh-CN",  provider=TTSProvider.GTTS),
-    AvailableVoice(id="gtts_ja",       name="Japanese",           language="Japanese",   lang_code="ja-JP",  provider=TTSProvider.GTTS),
-    AvailableVoice(id="gtts_ar",       name="Arabic",             language="Arabic",     lang_code="ar-SA",  provider=TTSProvider.GTTS),
-    AvailableVoice(id="gtts_pt",       name="Portuguese",         language="Portuguese", lang_code="pt-PT",  provider=TTSProvider.GTTS),
-    AvailableVoice(id="gtts_ru",       name="Russian",            language="Russian",    lang_code="ru-RU",  provider=TTSProvider.GTTS),
-    AvailableVoice(id="gtts_it",       name="Italian",            language="Italian",    lang_code="it-IT",  provider=TTSProvider.GTTS),
-    AvailableVoice(id="gtts_ko",       name="Korean",             language="Korean",     lang_code="ko-KR",  provider=TTSProvider.GTTS),
-    AvailableVoice(id="gtts_bn",       name="Bengali",            language="Bengali",    lang_code="bn-IN",  provider=TTSProvider.GTTS),
-    AvailableVoice(id="gtts_ta",       name="Tamil",              language="Tamil",      lang_code="ta-IN",  provider=TTSProvider.GTTS),
-    AvailableVoice(id="gtts_ur",       name="Urdu",               language="Urdu",       lang_code="ur-PK",  provider=TTSProvider.GTTS),
+VOICE_CATALOG: list[AvailableVoice] = [
+    AvailableVoice(
+        id="gtts_en_us",
+        name="American English",
+        language="English",
+        lang_code="en-US",
+        provider=TTSProvider.GTTS,
+        accent="US",
+    ),
+    AvailableVoice(
+        id="gtts_en_gb",
+        name="British English",
+        language="English",
+        lang_code="en-GB",
+        provider=TTSProvider.GTTS,
+        accent="UK",
+    ),
+    AvailableVoice(
+        id="gtts_en_au",
+        name="Australian English",
+        language="English",
+        lang_code="en-AU",
+        provider=TTSProvider.GTTS,
+        accent="AU",
+    ),
+    AvailableVoice(
+        id="gtts_hi",
+        name="Hindi",
+        language="Hindi",
+        lang_code="hi-IN",
+        provider=TTSProvider.GTTS,
+    ),
+    AvailableVoice(
+        id="gtts_te",
+        name="Telugu",
+        language="Telugu",
+        lang_code="te-IN",
+        provider=TTSProvider.GTTS,
+    ),
+    AvailableVoice(
+        id="gtts_es",
+        name="Spanish",
+        language="Spanish",
+        lang_code="es-ES",
+        provider=TTSProvider.GTTS,
+    ),
+    AvailableVoice(
+        id="gtts_fr",
+        name="French",
+        language="French",
+        lang_code="fr-FR",
+        provider=TTSProvider.GTTS,
+    ),
+    AvailableVoice(
+        id="gtts_de",
+        name="German",
+        language="German",
+        lang_code="de-DE",
+        provider=TTSProvider.GTTS,
+    ),
+    AvailableVoice(
+        id="gtts_zh",
+        name="Chinese Mandarin",
+        language="Chinese",
+        lang_code="zh-CN",
+        provider=TTSProvider.GTTS,
+    ),
+    AvailableVoice(
+        id="gtts_ja",
+        name="Japanese",
+        language="Japanese",
+        lang_code="ja-JP",
+        provider=TTSProvider.GTTS,
+    ),
+    AvailableVoice(
+        id="gtts_ar",
+        name="Arabic",
+        language="Arabic",
+        lang_code="ar-SA",
+        provider=TTSProvider.GTTS,
+    ),
+    AvailableVoice(
+        id="gtts_pt",
+        name="Portuguese",
+        language="Portuguese",
+        lang_code="pt-PT",
+        provider=TTSProvider.GTTS,
+    ),
+    AvailableVoice(
+        id="gtts_ru",
+        name="Russian",
+        language="Russian",
+        lang_code="ru-RU",
+        provider=TTSProvider.GTTS,
+    ),
+    AvailableVoice(
+        id="gtts_it",
+        name="Italian",
+        language="Italian",
+        lang_code="it-IT",
+        provider=TTSProvider.GTTS,
+    ),
+    AvailableVoice(
+        id="gtts_ko",
+        name="Korean",
+        language="Korean",
+        lang_code="ko-KR",
+        provider=TTSProvider.GTTS,
+    ),
+    AvailableVoice(
+        id="gtts_bn",
+        name="Bengali",
+        language="Bengali",
+        lang_code="bn-IN",
+        provider=TTSProvider.GTTS,
+    ),
+    AvailableVoice(
+        id="gtts_ta",
+        name="Tamil",
+        language="Tamil",
+        lang_code="ta-IN",
+        provider=TTSProvider.GTTS,
+    ),
+    AvailableVoice(
+        id="gtts_ur",
+        name="Urdu",
+        language="Urdu",
+        lang_code="ur-PK",
+        provider=TTSProvider.GTTS,
+    ),
 ]
 
 
@@ -75,6 +188,7 @@ class GTTSProvider(BaseTTSProvider):
         """Check if gTTS library is installed and importable."""
         try:
             import gtts  # noqa: F401
+
             logger.info("gTTS library detected and available.")
             return True
         except ImportError:
@@ -104,7 +218,7 @@ class GTTSProvider(BaseTTSProvider):
                 text_synthesized=text,
                 lang_code=lang_code,
                 success=False,
-                error="Empty text provided"
+                error="Empty text provided",
             )
 
         # Resolve language code
@@ -121,6 +235,7 @@ class GTTSProvider(BaseTTSProvider):
         """Use gTTS to produce real MP3 audio."""
         try:
             from gtts import gTTS
+
             tts = gTTS(text=text, lang=lang, slow=slow, tld=tld)
             buffer = io.BytesIO()
             tts.write_to_fp(buffer)
@@ -159,9 +274,9 @@ class GTTSProvider(BaseTTSProvider):
         # Generate a triad chord (tonic, major third, perfect fifth)
         base_freq = 261.63  # Middle C
         wave_data = (
-            0.5 * np.sin(2 * math.pi * base_freq * t) +
-            0.3 * np.sin(2 * math.pi * base_freq * 1.25 * t) +
-            0.2 * np.sin(2 * math.pi * base_freq * 1.5 * t)
+            0.5 * np.sin(2 * math.pi * base_freq * t)
+            + 0.3 * np.sin(2 * math.pi * base_freq * 1.25 * t)
+            + 0.2 * np.sin(2 * math.pi * base_freq * 1.5 * t)
         )
 
         # Apply envelope (fade in + fade out)
@@ -190,5 +305,5 @@ class GTTSProvider(BaseTTSProvider):
             success=True,
         )
 
-    def get_available_voices(self) -> List[AvailableVoice]:
+    def get_available_voices(self) -> list[AvailableVoice]:
         return VOICE_CATALOG

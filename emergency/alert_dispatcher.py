@@ -7,11 +7,13 @@ On emergency detection, dispatches alerts to:
   3. Webhook (optional external endpoint via httpx)
   4. Database (MongoDB alert record)
 """
+
 import json
-from datetime import datetime, timezone
-from typing import Optional, List, Dict, Any
-from emergency.sos_detector import SOSEvent
+from datetime import UTC, datetime
+from typing import Any
+
 from config.logger import setup_logger
+from emergency.sos_detector import SOSEvent
 
 logger = setup_logger("emergency.alert_dispatcher")
 
@@ -19,10 +21,10 @@ logger = setup_logger("emergency.alert_dispatcher")
 class AlertRecord:
     """Immutable record of a dispatched alert."""
 
-    def __init__(self, event: SOSEvent, channels_notified: List[str]):
+    def __init__(self, event: SOSEvent, channels_notified: list[str]):
         self.event = event
         self.channels_notified = channels_notified
-        self.dispatched_at = datetime.now(timezone.utc)
+        self.dispatched_at = datetime.now(UTC)
         self.alert_id = f"ALT_{int(self.dispatched_at.timestamp())}"
 
     def to_dict(self) -> dict:
@@ -45,9 +47,9 @@ class AlertDispatcher:
     Logs, records, and optionally webhooks emergency events.
     """
 
-    def __init__(self, webhook_url: Optional[str] = None):
+    def __init__(self, webhook_url: str | None = None):
         self._webhook_url = webhook_url
-        self._alert_log: List[AlertRecord] = []
+        self._alert_log: list[AlertRecord] = []
         logger.info(f"AlertDispatcher initialized (webhook={'enabled' if webhook_url else 'disabled'})")
 
     def dispatch(self, event: SOSEvent, user_name: str = "Unknown User") -> AlertRecord:
@@ -78,10 +80,7 @@ class AlertDispatcher:
         self._alert_log.append(record)
         channels_notified.append("in_memory")
 
-        logger.warning(
-            f"EMERGENCY DISPATCHED [{event.severity}]: {event.message} "
-            f"| Channels: {channels_notified}"
-        )
+        logger.warning(f"EMERGENCY DISPATCHED [{event.severity}]: {event.message} " f"| Channels: {channels_notified}")
         return record
 
     def _log_alert(self, event: SOSEvent, user_name: str) -> None:
@@ -102,6 +101,7 @@ class AlertDispatcher:
         """Send emergency data to a webhook endpoint."""
         try:
             import httpx
+
             payload = {
                 "type": "signbridge_emergency",
                 "severity": event.severity,
@@ -115,7 +115,10 @@ class AlertDispatcher:
                 self._webhook_url,
                 json=payload,
                 timeout=3.0,
-                headers={"Content-Type": "application/json", "X-SignBridge-Alert": event.severity},
+                headers={
+                    "Content-Type": "application/json",
+                    "X-SignBridge-Alert": event.severity,
+                },
             )
             logger.info(f"Webhook dispatched: {response.status_code}")
             return response.status_code < 400
@@ -123,7 +126,7 @@ class AlertDispatcher:
             logger.error(f"Webhook dispatch failed: {exc}")
             return False
 
-    def get_alert_history(self) -> List[Dict[str, Any]]:
+    def get_alert_history(self) -> list[dict[str, Any]]:
         """Return all dispatched alerts as serializable dicts."""
         return [record.to_dict() for record in self._alert_log]
 
@@ -131,7 +134,7 @@ class AlertDispatcher:
         """Return total number of dispatched alerts."""
         return len(self._alert_log)
 
-    def get_recent_alerts(self, n: int = 5) -> List[Dict[str, Any]]:
+    def get_recent_alerts(self, n: int = 5) -> list[dict[str, Any]]:
         """Return the N most recent alert records."""
         return [r.to_dict() for r in self._alert_log[-n:]]
 

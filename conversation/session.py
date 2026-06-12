@@ -3,16 +3,14 @@ SignBridge AI — Layer 7: Conversation Session
 Manages a complete conversation session combining message threading,
 context tracking, and emotion monitoring.
 """
-import uuid
-from datetime import datetime, timezone
-from typing import List, Optional, Dict
 
-from conversation.message_thread import MessageThread
-from conversation.emotion_tone import emotion_detector
-from conversation.schemas import (
-    Message, MessageRole, EmotionTone, DialogueTurn, SessionSummary
-)
+import uuid
+from datetime import UTC, datetime
+
 from config.logger import setup_logger
+from conversation.emotion_tone import emotion_detector
+from conversation.message_thread import MessageThread
+from conversation.schemas import DialogueTurn, EmotionTone, Message, SessionSummary
 
 logger = setup_logger("conversation.session")
 
@@ -31,17 +29,17 @@ class ConversationSession:
     def __init__(self, language: str = "English"):
         self.session_id = str(uuid.uuid4())
         self.language = language
-        self.started_at = datetime.now(timezone.utc)
+        self.started_at = datetime.now(UTC)
         self._thread = MessageThread(session_id=self.session_id, language=language)
-        self._turns: List[DialogueTurn] = []
-        self._emotion_history: List[EmotionTone] = []
+        self._turns: list[DialogueTurn] = []
+        self._emotion_history: list[EmotionTone] = []
         self._languages_used: set = {language}
         self._turn_index = 0
         logger.info(f"ConversationSession started: {self.session_id} ({language})")
 
     def process_signer_input(
         self,
-        signs: List[str],
+        signs: list[str],
         translated_text: str,
         language: str = "English",
         confidence: float = 1.0,
@@ -87,7 +85,7 @@ class ConversationSession:
             emotion=emotion,
             confidence=confidence,
             response_suggestion=suggestion,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         self._turns.append(turn)
         self._turn_index += 1
@@ -112,11 +110,11 @@ class ConversationSession:
         self._languages_used.add(language)
         return self._thread.add_listener_message(text=text, language=language)
 
-    def get_all_messages(self) -> List[Message]:
+    def get_all_messages(self) -> list[Message]:
         """Return all messages in chronological order."""
         return self._thread.get_all_messages()
 
-    def get_recent_context(self, n: int = 5) -> List[str]:
+    def get_recent_context(self, n: int = 5) -> list[str]:
         """
         Return the last N signer translation strings for context injection.
 
@@ -136,11 +134,11 @@ class ConversationSession:
         Returns:
             SessionSummary with aggregated statistics
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         elapsed = (now - self.started_at).total_seconds()
 
         # Dominant emotion: most frequent non-neutral
-        emotion_counts: Dict[EmotionTone, int] = {}
+        emotion_counts: dict[EmotionTone, int] = {}
         for e in self._emotion_history:
             emotion_counts[e] = emotion_counts.get(e, 0) + 1
 
@@ -171,7 +169,7 @@ class ConversationSession:
                 "languages_used": summary.languages_used,
                 "duration_seconds": summary.duration_seconds,
                 "sign_tokens_processed": summary.sign_tokens_processed,
-            }
+            },
         }
 
     def reset(self) -> None:

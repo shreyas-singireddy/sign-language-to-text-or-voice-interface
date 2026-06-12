@@ -1,7 +1,9 @@
 import numpy as np
+
 from config.logger import setup_logger
 
 logger = setup_logger("ai_engine.motion_analysis")
+
 
 class MotionAnalyser:
     def __init__(self, buffer_size: int = 10):
@@ -23,7 +25,7 @@ class MotionAnalyser:
         # Calculate standard deviation along temporal axis
         std_dev = np.std(self.coordinate_history, axis=0)
         mean_std = float(np.mean(std_dev))
-        
+
         # Stability = 1 / (1 + mean_std)
         stability = 1.0 / (1.0 + (mean_std * 10.0))
         return round(stability, 4)
@@ -34,7 +36,7 @@ class MotionAnalyser:
         Pose has 33 landmarks with visibility attributes.
         """
         if mp_results is None or not hasattr(mp_results, "pose_landmarks") or mp_results.pose_landmarks is None:
-            return 1.0 # 100% occluded / missing
+            return 1.0  # 100% occluded / missing
 
         low_visibility_count = 0
         total_points = len(mp_results.pose_landmarks.landmark)
@@ -68,7 +70,8 @@ class MotionAnalyser:
             "stability_index": stability,
             "occlusion_score": occlusion,
             "activity_index": activity,
-            "tracking_health": tracking_health
+            "tracking_health": tracking_health,
         }
+
 
 motion_analyser = MotionAnalyser()

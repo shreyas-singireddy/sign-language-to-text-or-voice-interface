@@ -2,13 +2,13 @@
 SignBridge AI — Layer 6 Speech Engine Test Suite
 Tests: TTS engine, gTTS provider, browser provider, voice profiles, STT engine.
 """
-import pytest
-from speech.tts_engine import TTSEngine, tts_engine
-from speech.stt_engine import STTEngine, stt_engine
-from speech.providers.gtts_provider import GTTSProvider
+
 from speech.providers.browser_provider import BrowserTTSProvider
-from speech.voice_profile import get_profile_for_language, VOICE_PROFILES, LANGUAGE_TO_PROFILE
-from speech.schemas import TTSRequest, TTSProvider, STTProvider
+from speech.providers.gtts_provider import GTTSProvider
+from speech.schemas import STTProvider, TTSProvider, TTSRequest
+from speech.stt_engine import STTEngine
+from speech.tts_engine import TTSEngine
+from speech.voice_profile import VOICE_PROFILES, get_profile_for_language
 
 
 class TestGTTSProvider:
@@ -97,6 +97,7 @@ class TestVoiceProfiles:
 
     def test_all_16_languages_have_profile(self):
         from config.config import SUPPORTED_LANGUAGES
+
         for language in SUPPORTED_LANGUAGES.keys():
             profile = get_profile_for_language(language)
             assert profile is not None
@@ -148,6 +149,7 @@ class TestTTSEngine:
 
     def test_caching_second_call_faster(self):
         import time
+
         text = "Cached test phrase for SignBridge."
         self.engine.speak(text, language_name="English")
         start = time.perf_counter()

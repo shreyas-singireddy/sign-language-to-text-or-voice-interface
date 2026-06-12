@@ -11,21 +11,21 @@ Orchestrates the full sign-to-text translation pipeline:
 This engine is the sole public API for Layer 5.
 All other layers call translation_engine.translate().
 """
-import time
-from datetime import datetime, timezone
-from typing import List, Optional
 
+import time
+from datetime import UTC, datetime
+
+from config.logger import setup_logger
+from translation.context_manager import context_manager
+from translation.grammar_fixer import grammar_fixer
+from translation.providers.google_adapter import GoogleTranslateAdapter
+from translation.providers.rule_based import RuleBasedProvider
 from translation.schemas import (
+    GrammarAnalysis,
+    TranslationProvider,
     TranslationRequest,
     TranslationResult,
-    TranslationProvider,
-    GrammarAnalysis,
 )
-from translation.grammar_fixer import grammar_fixer
-from translation.context_manager import context_manager
-from translation.providers.rule_based import RuleBasedProvider
-from translation.providers.google_adapter import GoogleTranslateAdapter
-from config.logger import setup_logger
 
 logger = setup_logger("translation.engine")
 
@@ -106,7 +106,7 @@ class TranslationEngine:
             session_id=session_id,
             signs=normalized_tokens,
             translation=english_corrected,
-            language=request.target_language
+            language=request.target_language,
         )
 
         elapsed_ms = round((time.perf_counter() - start_time) * 1000, 2)
@@ -129,15 +129,15 @@ class TranslationEngine:
                 "elapsed_ms": elapsed_ms,
                 "normalized_tokens": normalized_tokens,
                 "session_id": session_id,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+                "timestamp": datetime.now(UTC).isoformat(),
+            },
         )
 
     def translate_simple(
         self,
-        signs: List[str],
+        signs: list[str],
         target_language: str = "English",
-        confidence: float = 1.0
+        confidence: float = 1.0,
     ) -> str:
         """
         Simplified translation interface returning just the final text string.
@@ -159,7 +159,7 @@ class TranslationEngine:
         result = self.translate(request)
         return result.final_translation
 
-    def _analyze_grammar(self, raw_tokens: List[str], normalized: List[str]) -> GrammarAnalysis:
+    def _analyze_grammar(self, raw_tokens: list[str], normalized: list[str]) -> GrammarAnalysis:
         """Build a GrammarAnalysis object for diagnostic reporting."""
         subject_detected = any(t in {"I", "YOU", "HE", "SHE", "WE", "THEY"} for t in normalized)
 
@@ -176,9 +176,29 @@ class TranslationEngine:
             tense = "present"
 
         # Sentence type inference
-        question_markers = {"WHAT", "WHERE", "WHO", "WHEN", "WHY", "HOW", "CAN", "DO", "IS", "ARE"}
+        question_markers = {
+            "WHAT",
+            "WHERE",
+            "WHO",
+            "WHEN",
+            "WHY",
+            "HOW",
+            "CAN",
+            "DO",
+            "IS",
+            "ARE",
+        }
         exclamation_markers = {"EMERGENCY", "SOS", "DANGER", "HELP", "FIRE"}
-        imperative_markers = {"PLEASE", "CALL", "GIVE", "BRING", "TAKE", "GO", "STOP", "COME"}
+        imperative_markers = {
+            "PLEASE",
+            "CALL",
+            "GIVE",
+            "BRING",
+            "TAKE",
+            "GO",
+            "STOP",
+            "COME",
+        }
 
         if token_set & exclamation_markers:
             sentence_type = "exclamatory"
@@ -201,12 +221,7 @@ class TranslationEngine:
             complexity_score=min(complexity, 1.0),
         )
 
-    def _generate_alternatives(
-        self,
-        tokens: List[str],
-        english_base: str,
-        target_language: str
-    ) -> List[str]:
+    def _generate_alternatives(self, tokens: list[str], english_base: str, target_language: str) -> list[str]:
         """
         Generate 1-2 alternative phrasings for the translation.
         Used in the UI to offer the user phrasing choices.
@@ -248,7 +263,7 @@ class TranslationEngine:
             ),
             context_applied=False,
             alternatives=[],
-            metadata={"error": "empty_token_sequence"}
+            metadata={"error": "empty_token_sequence"},
         )
 
     def set_default_provider(self, provider: TranslationProvider) -> None:
@@ -258,10 +273,7 @@ class TranslationEngine:
 
     def get_provider_status(self) -> dict:
         """Return health status of all registered providers."""
-        return {
-            name.value: provider.health_check()
-            for name, provider in self._providers.items()
-        }
+        return {name.value: provider.health_check() for name, provider in self._providers.items()}
 
 
 # Global singleton instance — all layers import this

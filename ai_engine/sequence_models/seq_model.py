@@ -1,9 +1,12 @@
 import collections
+
 import numpy as np
+
 from config.config import MODELS_DIR, SEQUENCE_BUFFER_SIZE
 from config.logger import setup_logger
 
 logger = setup_logger("ai_engine.sequence.model")
+
 
 class SequenceModel:
     def __init__(self):
@@ -45,8 +48,10 @@ class SequenceModel:
         if len(self.buffer) < 5:
             return []
 
+        from ai_engine.gesture_recognition.inference.post_processor import (
+            post_processor,
+        )
         from ai_engine.gesture_recognition.inference.predictor import gesture_predictor
-        from ai_engine.gesture_recognition.inference.post_processor import post_processor
 
         try:
             # Prepare sequence of landmark vectors from buffer
@@ -55,7 +60,7 @@ class SequenceModel:
             res = gesture_predictor.predict_word(seq_lms)
             word = res["prediction"]
             conf = res["confidence"]
-            
+
             # Enforce validation threshold
             if word != "WAITING_FOR_CLEAR_GESTURE" and conf >= 0.35:
                 # Add to translation list if it's not a duplicate of the last element in buffer
@@ -72,14 +77,17 @@ class SequenceModel:
         assembled = []
         last_label = None
         consecutive_count = 0
-        min_consecutive_frames = 10  # Must be held stable for 10 frames to registers
+        # BUG-006 FIX: reduced from 10 to 5 frames.
+        # At Streamlit's effective 5-10 FPS, 10 frames requires 1-2 seconds of
+        # motionless holding, making gesture registration near-impossible.
+        min_consecutive_frames = 5
 
         for _, label in self.buffer:
             if label == "IDLE":
                 last_label = None
                 consecutive_count = 0
                 continue
-                
+
             if label == last_label:
                 consecutive_count += 1
             else:
@@ -90,11 +98,12 @@ class SequenceModel:
                 # Add to translation list if it's not a direct duplicate of the last registered gesture
                 if not assembled or assembled[-1] != label:
                     assembled.append(label)
-                    
+
         return assembled
 
     def clear_buffer(self):
         """Clears the temporal frame cache."""
         self.buffer.clear()
+
 
 sequence_model = SequenceModel()
