@@ -26,9 +26,7 @@ class CameraManager:
 
         self.prev_time: float = time.time()
 
-    def initialize_camera(
-        self, index: int, width: int = 640, height: int = 480
-    ) -> bool:
+    def initialize_camera(self, index: int, width: int = 640, height: int = 480) -> bool:
         """
         Locks thread and starts capture channel on the device index.
         """
@@ -42,11 +40,7 @@ class CameraManager:
 
             # Use DirectShow on Windows if possible to speed up initialization
             # cv2.CAP_DSHOW can sometimes resolve slow starts
-            self.cap = (
-                cv2.VideoCapture(index, cv2.CAP_DSHOW)
-                if os_check()
-                else cv2.VideoCapture(index)
-            )
+            self.cap = cv2.VideoCapture(index, cv2.CAP_DSHOW) if os_check() else cv2.VideoCapture(index)
 
             if not self.cap.isOpened():
                 # Fallback to standard index
@@ -93,9 +87,7 @@ class CameraManager:
             success, frame = self.cap.read()
 
             if not success:
-                logger.warning(
-                    "Frame acquisition failed. Attempting camera recovery..."
-                )
+                logger.warning("Frame acquisition failed. Attempting camera recovery...")
                 self.status = "Recovery Active"
                 self.recover_connection()
                 return False, None, 0.0

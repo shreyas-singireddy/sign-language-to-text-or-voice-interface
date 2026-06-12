@@ -41,9 +41,7 @@ class TestConversationSession:
     def test_emotion_detection_urgent(self):
         from conversation.schemas import EmotionTone
 
-        turn = self.session.process_signer_input(
-            ["EMERGENCY"], "EMERGENCY!", "English", 1.0
-        )
+        turn = self.session.process_signer_input(["EMERGENCY"], "EMERGENCY!", "English", 1.0)
         assert turn.emotion in (EmotionTone.URGENT, EmotionTone.DISTRESSED)
 
     def test_get_summary_returns_summary(self):
@@ -83,9 +81,7 @@ class TestDialogueManager:
 
     def test_process_turn_returns_dialogue_turn(self):
         session_id = self.manager.start_session()
-        turn = self.manager.process_turn(
-            session_id, ["HELLO"], "Hello!", "English", 0.9
-        )
+        turn = self.manager.process_turn(session_id, ["HELLO"], "Hello!", "English", 0.9)
         assert turn.final_text == "Hello!"
 
     def test_add_listener_reply(self):
@@ -189,9 +185,7 @@ class TestMetricsCollector:
         assert abs(self.collector.get_average_confidence() - 0.9) < 0.001
 
     def test_gesture_frequency_tracking(self):
-        self.collector.record_translation(
-            ["HELLO", "WORLD"], "Hello world!", "English", 0.8
-        )
+        self.collector.record_translation(["HELLO", "WORLD"], "Hello world!", "English", 0.8)
         freq = self.collector.get_gesture_frequency()
         assert freq.get("HELLO", 0) == 1
         assert freq.get("WORLD", 0) == 1
@@ -204,9 +198,7 @@ class TestMetricsCollector:
         assert dist.get("Spanish", 0) == 1
 
     def test_get_top_gestures_returns_list(self):
-        self.collector.record_translation(
-            ["HELLO", "HELLO", "HELP"], "Hello!", "English", 1.0
-        )
+        self.collector.record_translation(["HELLO", "HELLO", "HELP"], "Hello!", "English", 1.0)
         top = self.collector.get_top_gestures(5)
         assert isinstance(top, list)
         assert len(top) > 0
@@ -416,9 +408,7 @@ class TestSOSDetector:
         self.detector.update(["CHEST"])
         self.detector.update(["PAIN"])
         # Window should have accumulated CHEST + PAIN pattern
-        assert (
-            self.detector.get_event_count() >= 0
-        )  # May or may not trigger depending on order
+        assert self.detector.get_event_count() >= 0  # May or may not trigger depending on order
 
 
 class TestAlertDispatcher:

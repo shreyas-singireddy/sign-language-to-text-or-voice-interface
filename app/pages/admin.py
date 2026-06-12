@@ -100,15 +100,11 @@ with col_db:
     )
 
     st.markdown("### Connectivity Check")
-    if st.button(
-        "🔌 Ping Database Cluster", key="btn_ping_db", use_container_width=True
-    ):
+    if st.button("🔌 Ping Database Cluster", key="btn_ping_db", use_container_width=True):
         db_conn.close()
         success = db_conn.connect()
         if success:
             st.success("MongoDB Atlas connection established and successfully pinged!")
             st.rerun()
         else:
-            st.error(
-                "Failed to connect to MongoDB. Check configuration URI and network access permissions."
-            )
+            st.error("Failed to connect to MongoDB. Check configuration URI and network access permissions.")

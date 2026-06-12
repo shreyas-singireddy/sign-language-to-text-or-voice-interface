@@ -57,9 +57,7 @@ with col_controls:
     )
     st.session_state["conv_language"] = conv_lang
 
-    if st.button(
-        "▶ Start New Session", key="btn_new_session", use_container_width=True
-    ):
+    if st.button("▶ Start New Session", key="btn_new_session", use_container_width=True):
         session_id = dialogue_manager.start_session(language=conv_lang)
         st.session_state["conv_session_id"] = session_id
         st.success("Session started")
@@ -81,9 +79,7 @@ with col_controls:
             unsafe_allow_html=True,
         )
 
-        if st.button(
-            "🔄 Reset Session", key="btn_reset_session", use_container_width=True
-        ):
+        if st.button("🔄 Reset Session", key="btn_reset_session", use_container_width=True):
             dialogue_manager.reset_session(session_id)
             st.success("Session reset.")
             st.rerun()
@@ -161,14 +157,10 @@ with col_chat:
             key="sl_confidence",
         )
 
-    if st.button(
-        "📤 Send Signer Message", key="btn_send_sign", use_container_width=True
-    ):
+    if st.button("📤 Send Signer Message", key="btn_send_sign", use_container_width=True):
         if sign_input.strip():
             session_id = st.session_state.get("conv_session_id")
-            session_id = dialogue_manager.get_or_create_session(
-                session_id, language=conv_lang
-            )
+            session_id = dialogue_manager.get_or_create_session(session_id, language=conv_lang)
             st.session_state["conv_session_id"] = session_id
 
             # Quick translate via rule-based
@@ -214,13 +206,9 @@ with col_chat:
     if st.button("📨 Send Reply", key="btn_send_reply", use_container_width=True):
         if listener_reply.strip():
             session_id = st.session_state.get("conv_session_id")
-            session_id = dialogue_manager.get_or_create_session(
-                session_id, language=conv_lang
-            )
+            session_id = dialogue_manager.get_or_create_session(session_id, language=conv_lang)
             st.session_state["conv_session_id"] = session_id
-            dialogue_manager.add_listener_reply(
-                session_id, listener_reply, language=conv_lang
-            )
+            dialogue_manager.add_listener_reply(session_id, listener_reply, language=conv_lang)
             st.rerun()
 
     # ── CONVERSATION THREAD DISPLAY ──────────────────────────────────────────
@@ -239,9 +227,7 @@ with col_chat:
                         EmotionTone.GRATEFUL: "card-yellow",
                         EmotionTone.FRIENDLY: "card-blue",
                     }.get(msg.emotion, "")
-                    signs_display = (
-                        ", ".join(msg.original_signs) if msg.original_signs else ""
-                    )
+                    signs_display = ", ".join(msg.original_signs) if msg.original_signs else ""
                     st.markdown(
                         f"""
                         <div class="bauhaus-card {emotion_color}" style="padding: 14px; margin-bottom: 8px; border-left: 8px solid #D02020;">

@@ -55,15 +55,11 @@ class DatabaseService:
                 logger.info(f"Logged translation to MongoDB: {translated_text}")
                 return record
             except Exception as e:
-                logger.error(
-                    f"Error logging to MongoDB: {e}. Falling back to local storage."
-                )
+                logger.error(f"Error logging to MongoDB: {e}. Falling back to local storage.")
 
         # Local Fallback
         record["is_offline"] = True
-        record["id"] = (
-            f"offline_{int(datetime.datetime.now(datetime.UTC).timestamp() * 1000)}"
-        )
+        record["id"] = f"offline_{int(datetime.datetime.now(datetime.UTC).timestamp() * 1000)}"
         self._log_offline(record)
         return record
 
@@ -100,9 +96,7 @@ class DatabaseService:
                     records.append(doc)
                 return records
             except Exception as e:
-                logger.error(
-                    f"Failed to fetch history from MongoDB: {e}. Reading local files."
-                )
+                logger.error(f"Failed to fetch history from MongoDB: {e}. Reading local files.")
 
         # Fallback to local files
         try:

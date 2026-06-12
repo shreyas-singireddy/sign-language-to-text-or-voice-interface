@@ -43,9 +43,7 @@ class PerceptionService:
 
         self.last_frame_time = time.time()
 
-    def process_perception_frame(
-        self, frame: np.ndarray, latency_ms: float
-    ) -> TelemetryResponse:
+    def process_perception_frame(self, frame: np.ndarray, latency_ms: float) -> TelemetryResponse:
         """
         Runs complete perception pipeline over the input frame and returns Pydantic record.
         """
@@ -92,29 +90,21 @@ class PerceptionService:
         pose_kin = self.pose_tracker.compute_kinematics("pose")
         face_kin = self.face_tracker.compute_kinematics("face")
 
-        motion_metrics = motion_metrics_calc.compile_metrics(
-            lh_kin, rh_kin, pose_kin, face_kin
-        )
+        motion_metrics = motion_metrics_calc.compile_metrics(lh_kin, rh_kin, pose_kin, face_kin)
 
         # 5. Stability & Quality metrics
         # Calculate jitter as the difference between raw normalized and smoothed normalized coordinates
-        stability_metrics = stability_metrics_calc.calculate(
-            norm_lms, smoothed_norm_lms
-        )
+        stability_metrics = stability_metrics_calc.calculate(norm_lms, smoothed_norm_lms)
 
         # 6. Visibility and Occlusion checks
         visibility_metrics = visibility_metrics_calc.calculate(frame_normalized)
         occlusion_metrics = occlusion_metrics_calc.calculate(frame_normalized)
 
         # 7. Quality & Brightness/Blur checks
-        quality_metrics = self._calculate_frame_quality(
-            frame, visibility_metrics, stability_metrics
-        )
+        quality_metrics = self._calculate_frame_quality(frame, visibility_metrics, stability_metrics)
 
         # 8. Compile latency clocks
-        performance_profiler.pipeline_time = round(
-            (time.perf_counter() - t_pipeline_start) * 1000.0, 2
-        )
+        performance_profiler.pipeline_time = round((time.perf_counter() - t_pipeline_start) * 1000.0, 2)
         performance_metrics = performance_profiler.compile_metrics()
 
         # Camera status record
@@ -168,9 +158,7 @@ class PerceptionService:
 
         return coords
 
-    def _update_from_flat_landmarks(
-        self, frame: FrameLandmarkData, coords: np.ndarray
-    ) -> None:
+    def _update_from_flat_landmarks(self, frame: FrameLandmarkData, coords: np.ndarray) -> None:
         """Updates frame landmark coordinates in-place from a flattened vector."""
         # Update pose
         if frame.pose.present:
@@ -252,11 +240,7 @@ class PerceptionService:
         blur_score_scaled = min(100.0, (blur_val / 200.0) * 100.0)
 
         # Combined quality score
-        quality = (
-            (brightness_score * 0.4)
-            + (blur_score_scaled * 0.4)
-            + (stab.tracking_stability * 0.2)
-        )
+        quality = (brightness_score * 0.4) + (blur_score_scaled * 0.4) + (stab.tracking_stability * 0.2)
 
         # Gesture readiness calculations
         # Checks if hands are present and shoulders are visible in pose index 11 and 12

@@ -13,6 +13,7 @@ def test_mongodb_connection_singleton():
     conn2 = MongoDBConnection()
     assert conn1 is conn2
 
+
 @patch("pymongo.MongoClient")
 def test_mongodb_connect_success(mock_client_class):
     mock_client = MagicMock()
@@ -28,6 +29,7 @@ def test_mongodb_connect_success(mock_client_class):
         assert conn._client is not None
         mock_client.admin.command.assert_called_with("ping")
 
+
 @patch("pymongo.MongoClient")
 def test_mongodb_connect_failure(mock_client_class):
     mock_client_class.side_effect = ConnectionFailure("Connection error")
@@ -39,12 +41,14 @@ def test_mongodb_connect_failure(mock_client_class):
         assert success is False
         assert conn._client is None
 
+
 def test_mongodb_get_db_offline():
     conn = MongoDBConnection()
     with patch("database.mongodb.MONGO_URI", ""):
         conn._client = None
         db = conn.get_db()
         assert db is None
+
 
 @patch("app.services.database_service.db_conn")
 def test_database_service_mongodb_log_success(mock_db_conn):
@@ -60,12 +64,13 @@ def test_database_service_mongodb_log_success(mock_db_conn):
         detected_gestures=["HELLO"],
         translated_text="Hello",
         confidence=0.95,
-        language="English"
+        language="English",
     )
 
     assert record["id"] == str(mock_result.inserted_id)
     assert record["is_offline"] is False
     mock_col.insert_one.assert_called_once()
+
 
 @patch("app.services.database_service.db_conn")
 def test_database_service_mongodb_get_history_success(mock_db_conn):
@@ -75,7 +80,14 @@ def test_database_service_mongodb_get_history_success(mock_db_conn):
     dummy_id = ObjectId()
     dummy_time = datetime.datetime.now(datetime.UTC)
     mock_cursor = [
-        {"_id": dummy_id, "timestamp": dummy_time, "detectedGestures": ["YES"], "translatedText": "Yes", "confidence": 0.9, "language": "English"}
+        {
+            "_id": dummy_id,
+            "timestamp": dummy_time,
+            "detectedGestures": ["YES"],
+            "translatedText": "Yes",
+            "confidence": 0.9,
+            "language": "English",
+        }
     ]
     mock_col.find.return_value.sort.return_value.limit.return_value = mock_cursor
 
@@ -85,6 +97,7 @@ def test_database_service_mongodb_get_history_success(mock_db_conn):
     assert len(history) == 1
     assert history[0]["id"] == str(dummy_id)
     assert history[0]["translatedText"] == "Yes"
+
 
 @patch("app.services.database_service.db_conn")
 def test_database_service_mongodb_delete_success(mock_db_conn):

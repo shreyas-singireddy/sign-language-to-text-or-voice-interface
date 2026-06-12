@@ -42,9 +42,7 @@ class TranslationContextManager:
             Unique session ID string
         """
         session_id = str(uuid.uuid4())
-        self._sessions[session_id] = ContextWindow(
-            entries=[], max_turns=self._max_turns, session_id=session_id
-        )
+        self._sessions[session_id] = ContextWindow(entries=[], max_turns=self._max_turns, session_id=session_id)
         logger.debug(f"Created translation session: {session_id}")
         return session_id
 
@@ -62,9 +60,7 @@ class TranslationContextManager:
             return session_id
         return self.create_session()
 
-    def add_turn(
-        self, session_id: str, signs: list[str], translation: str, language: str
-    ) -> None:
+    def add_turn(self, session_id: str, signs: list[str], translation: str, language: str) -> None:
         """
         Add a completed translation turn to the context window.
 
@@ -76,9 +72,7 @@ class TranslationContextManager:
         """
         if session_id not in self._sessions:
             logger.warning(f"Session {session_id} not found. Creating new session.")
-            self._sessions[session_id] = ContextWindow(
-                entries=[], max_turns=self._max_turns, session_id=session_id
-            )
+            self._sessions[session_id] = ContextWindow(entries=[], max_turns=self._max_turns, session_id=session_id)
 
         window = self._sessions[session_id]
         turn_index = len(window.entries)
@@ -97,9 +91,7 @@ class TranslationContextManager:
         if len(window.entries) > window.max_turns:
             window.entries = window.entries[-window.max_turns :]
 
-        logger.debug(
-            f"Context turn {turn_index} added for session {session_id}: '{translation}'"
-        )
+        logger.debug(f"Context turn {turn_index} added for session {session_id}: '{translation}'")
 
     def get_context_strings(self, session_id: str) -> list[str]:
         """

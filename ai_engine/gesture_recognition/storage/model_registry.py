@@ -128,10 +128,7 @@ class ModelRegistry:
         meta = self._read_metadata()
 
         # Verify target version exists
-        exists = any(
-            m["version"] == target_version and m["model_type"] == model_type
-            for m in meta.get("models", [])
-        )
+        exists = any(m["version"] == target_version and m["model_type"] == model_type for m in meta.get("models", []))
         if not exists:
             return False
 

@@ -11,7 +11,7 @@ def test_generate_full_report_no_db():
         confidence=0.95,
         elapsed_ms=120,
         language="English",
-        emotion="Friendly"
+        emotion="Friendly",
     )
 
     report = report_generator.generate_full_report()
@@ -22,6 +22,7 @@ def test_generate_full_report_no_db():
     assert report["language_bar"]["x"] == ["English"]
     assert report["language_bar"]["y"] == [1]
 
+
 def test_generate_full_report_with_db():
     metrics_collector.reset()
     metrics_collector.record_translation(
@@ -30,7 +31,7 @@ def test_generate_full_report_with_db():
         confidence=0.9,
         elapsed_ms=100,
         language="English",
-        emotion="Neutral"
+        emotion="Neutral",
     )
 
     db_analytics = {
@@ -38,7 +39,7 @@ def test_generate_full_report_with_db():
         "total_translations": 15,
         "average_confidence": 0.85,
         "language_distribution": {"Spanish": 10, "English": 5},
-        "daily_activity": {"2026-06-10": 15}
+        "daily_activity": {"2026-06-10": 15},
     }
 
     report = report_generator.generate_full_report(db_analytics)
@@ -52,6 +53,7 @@ def test_generate_full_report_with_db():
     assert g_y[g_x.index("HELLO")] == 6
     assert g_y[g_x.index("YES")] == 10
 
+
 def test_generate_performance_report():
     metrics_collector.reset()
     metrics_collector.record_translation(
@@ -60,7 +62,7 @@ def test_generate_performance_report():
         confidence=0.9,
         elapsed_ms=100,
         language="English",
-        emotion="Neutral"
+        emotion="Neutral",
     )
 
     perf = report_generator.generate_performance_report()

@@ -20,14 +20,10 @@ class WhisperEngine:
             # import whisper
             # self.model = whisper.load_model("base")
             # self.is_loaded = True
-            logger.info(
-                "Whisper STT engine imports verified. Operating in mock transcription mode."
-            )
+            logger.info("Whisper STT engine imports verified. Operating in mock transcription mode.")
             self.is_loaded = False
         except Exception as e:
-            logger.warning(
-                f"Could not load Whisper model: {e}. Falling back to stub transcriber."
-            )
+            logger.warning(f"Could not load Whisper model: {e}. Falling back to stub transcriber.")
             self.is_loaded = False
 
     def transcribe(self, audio_filepath: str) -> str:

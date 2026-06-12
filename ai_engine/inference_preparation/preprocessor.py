@@ -32,9 +32,7 @@ class InferencePreprocessor:
         # Add batch dimension: shape (1, N, F)
         return np.expand_dims(formatted, axis=0)
 
-    def assess_data_readiness(
-        self, landmarks: np.ndarray, tracking_health: float
-    ) -> dict:
+    def assess_data_readiness(self, landmarks: np.ndarray, tracking_health: float) -> dict:
         """
         Grades coordinate and feature quality metrics for model training compatibility.
         """
@@ -53,11 +51,7 @@ class InferencePreprocessor:
             "feature_quality_score": round(feature_quality, 2),
             "tracking_stability_score": round(tracking_health, 2),
             "is_training_ready": readiness_score > 0.7,
-            "readiness_grade": (
-                "EXCELLENT"
-                if readiness_score > 0.8
-                else "GOOD" if readiness_score > 0.6 else "POOR"
-            ),
+            "readiness_grade": ("EXCELLENT" if readiness_score > 0.8 else "GOOD" if readiness_score > 0.6 else "POOR"),
         }
 
 

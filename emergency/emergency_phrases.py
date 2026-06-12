@@ -186,6 +186,5 @@ def get_all_phrases_for_language(language: str) -> list[str]:
         List of translated emergency phrases
     """
     return [
-        translations.get(language, english_phrase)
-        for english_phrase, translations in EMERGENCY_TRANSLATIONS.items()
+        translations.get(language, english_phrase) for english_phrase, translations in EMERGENCY_TRANSLATIONS.items()
     ]

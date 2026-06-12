@@ -15,9 +15,7 @@ class VisibilityMetricsCalculator:
         pose_vis = 0.0
         if frame_data.pose.present and len(frame_data.pose.landmarks) > 0:
             # We filter standard landmark visibility indexes (0 to 33)
-            pose_vis = sum(lm.visibility for lm in frame_data.pose.landmarks) / len(
-                frame_data.pose.landmarks
-            )
+            pose_vis = sum(lm.visibility for lm in frame_data.pose.landmarks) / len(frame_data.pose.landmarks)
 
         # Overall visibility [0 - 100]
         # Sum of visibilities scaled: hands represent 50% of weight, pose 30%, face 20%

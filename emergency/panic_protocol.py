@@ -129,9 +129,7 @@ class PanicProtocol:
         }
         self._activations.append(activation)
 
-        logger.critical(
-            f"PanicProtocol ACTIVATED [{event.severity}] for user '{user_name}': {event.message}"
-        )
+        logger.critical(f"PanicProtocol ACTIVATED [{event.severity}] for user '{user_name}': {event.message}")
 
         return {
             "alert_record": alert_record,
@@ -174,10 +172,7 @@ class PanicProtocol:
                 f"{event.message} Please call emergency services immediately."
             )
         elif event.severity == LEVEL_URGENT:
-            return (
-                f"Emergency alert. {user_name} needs urgent assistance. "
-                f"{event.message}"
-            )
+            return f"Emergency alert. {user_name} needs urgent assistance. " f"{event.message}"
         else:
             return f"Alert. {user_name} may need help. {event.message}"
 

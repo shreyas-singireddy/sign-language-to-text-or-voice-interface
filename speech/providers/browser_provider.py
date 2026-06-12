@@ -51,9 +51,7 @@ class BrowserTTSProvider(BaseTTSProvider):
     def audio_format(self) -> str:
         return "browser_native"
 
-    def synthesize(
-        self, text: str, lang_code: str = "en-US", slow: bool = False, tld: str = "com"
-    ) -> TTSResult:
+    def synthesize(self, text: str, lang_code: str = "en-US", slow: bool = False, tld: str = "com") -> TTSResult:
         """
         Trigger browser Web Speech API to speak text.
         Returns empty audio bytes (audio plays directly in the browser).
@@ -82,9 +80,7 @@ class BrowserTTSProvider(BaseTTSProvider):
             success=True,
         )
 
-    def get_javascript_snippet(
-        self, text: str, lang_code: str = "en-US", slow: bool = False
-    ) -> str:
+    def get_javascript_snippet(self, text: str, lang_code: str = "en-US", slow: bool = False) -> str:
         """
         Generate the JavaScript snippet to inject into Streamlit via st.components.v1.html().
         Call this separately to actually trigger browser TTS playback.

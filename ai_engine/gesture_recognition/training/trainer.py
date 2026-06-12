@@ -73,27 +73,17 @@ class Trainer:
             # Repeat labels for each frame
             y_flat = np.repeat(y, seq_len)
 
-            X_train_split, X_val_split, X_test_split = (
-                dataset_manager.train_val_test_split(X_flat, y_flat)
-            )
+            X_train_split, X_val_split, X_test_split = dataset_manager.train_val_test_split(X_flat, y_flat)
         else:
-            X_train_split, X_val_split, X_test_split = (
-                dataset_manager.train_val_test_split(X)
-            )
+            X_train_split, X_val_split, X_test_split = dataset_manager.train_val_test_split(X)
 
-        (X_train, y_train) = X_train_split
-        (X_val, y_val) = X_val_split
-        (X_test, y_test) = X_test_split
+        X_train, y_train = X_train_split
+        X_val, y_val = X_val_split
+        X_test, y_test = X_test_split
 
-        train_loader = DataLoader(
-            GestureDataset(X_train, y_train), batch_size=batch_size, shuffle=True
-        )
-        val_loader = DataLoader(
-            GestureDataset(X_val, y_val), batch_size=batch_size, shuffle=False
-        )
-        test_loader = DataLoader(
-            GestureDataset(X_test, y_test), batch_size=batch_size, shuffle=False
-        )
+        train_loader = DataLoader(GestureDataset(X_train, y_train), batch_size=batch_size, shuffle=True)
+        val_loader = DataLoader(GestureDataset(X_val, y_val), batch_size=batch_size, shuffle=False)
+        test_loader = DataLoader(GestureDataset(X_test, y_test), batch_size=batch_size, shuffle=False)
 
         # 2. Instantiate Model
         if model_type == "alphabet":
@@ -114,16 +104,10 @@ class Trainer:
         # 3. Setup Optimizer and Loss
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=1e-4)
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            optimizer, mode="min", factor=0.5, patience=2
-        )
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=0.5, patience=2)
 
         # Setup Logger
-        writer = (
-            SummaryWriter(log_dir=str(self.model_dir / "logs"))
-            if SummaryWriter
-            else None
-        )
+        writer = SummaryWriter(log_dir=str(self.model_dir / "logs")) if SummaryWriter else None
 
         # 4. Training Loop
         best_val_loss = float("inf")
@@ -193,9 +177,7 @@ class Trainer:
 
         # 5. Evaluate on Test set using best weights
         if best_model_state:
-            model.load_state_dict(
-                {k: v.to(device) for k, v in best_model_state.items()}
-            )
+            model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
 
         model.eval()
         test_preds = []

@@ -183,9 +183,7 @@ class TestTranslationEngine:
         assert len(result) > 0
 
     def test_translate_returns_translation_result(self):
-        request = TranslationRequest(
-            recognized_signs=["WATER", "WANT"], target_language="English"
-        )
+        request = TranslationRequest(recognized_signs=["WATER", "WANT"], target_language="English")
         result = self.engine.translate(request)
         assert result.final_translation
         assert result.english_base
@@ -200,21 +198,15 @@ class TestTranslationEngine:
         assert len(result) > 0
 
     def test_grammar_analysis_populated(self):
-        request = TranslationRequest(
-            recognized_signs=["I", "WANT", "HELP"], target_language="English"
-        )
+        request = TranslationRequest(recognized_signs=["I", "WANT", "HELP"], target_language="English")
         result = self.engine.translate(request)
         assert result.grammar_analysis is not None
         assert result.grammar_analysis.tense_inferred in {"present", "past", "future"}
 
     def test_empty_tokens_returns_empty(self):
-        request = TranslationRequest(
-            recognized_signs=["   ", ""], target_language="English"
-        )
+        request = TranslationRequest(recognized_signs=["   ", ""], target_language="English")
         result = self.engine.translate(request)
-        assert result.final_translation == "" or isinstance(
-            result.final_translation, str
-        )
+        assert result.final_translation == "" or isinstance(result.final_translation, str)
 
     def test_provider_status_returns_dict(self):
         status = self.engine.get_provider_status()

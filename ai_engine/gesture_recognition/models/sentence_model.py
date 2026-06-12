@@ -5,9 +5,7 @@ from torch import nn
 
 
 class SentenceCTCModel(nn.Module):
-    def __init__(
-        self, input_dim: int = 1662, hidden_dim: int = 128, num_classes: int = 15
-    ):
+    def __init__(self, input_dim: int = 1662, hidden_dim: int = 128, num_classes: int = 15):
         """
         CTC-style sequence model that processes continuous sequences of frame landmarks
         and outputs character or word probabilities for Connectionist Temporal Classification (CTC) decoding.

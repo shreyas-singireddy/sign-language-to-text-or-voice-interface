@@ -136,11 +136,7 @@ class MessageThread:
 
     def get_signer_sign_count(self) -> int:
         """Return total number of sign tokens processed across all signer messages."""
-        return sum(
-            len(m.original_signs)
-            for m in self._thread.messages
-            if m.role == MessageRole.SIGNER
-        )
+        return sum(len(m.original_signs) for m in self._thread.messages if m.role == MessageRole.SIGNER)
 
     def get_full_thread(self) -> ConversationThread:
         """Return the full ConversationThread model."""

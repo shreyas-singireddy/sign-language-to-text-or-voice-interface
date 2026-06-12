@@ -13,15 +13,11 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
-        logger.info(
-            f"New client socket connected. Pool size: {len(self.active_connections)}"
-        )
+        logger.info(f"New client socket connected. Pool size: {len(self.active_connections)}")
 
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
-        logger.info(
-            f"Client socket disconnected. Pool size: {len(self.active_connections)}"
-        )
+        logger.info(f"Client socket disconnected. Pool size: {len(self.active_connections)}")
 
     async def broadcast_telemetry(self, message: dict):
         """

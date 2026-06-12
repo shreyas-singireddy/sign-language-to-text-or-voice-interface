@@ -12,6 +12,7 @@ def test_face_landmarks_placeholder_fallback():
     face_slice = landmarks[468:936]
     assert np.all(face_slice == 0)
 
+
 def test_face_detector_empty_frame():
     detector = FaceDetector()
     frame = np.zeros((480, 640, 3), dtype=np.uint8)

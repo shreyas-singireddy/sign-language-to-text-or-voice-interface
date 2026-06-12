@@ -78,9 +78,7 @@ class SOSDetector:
         self._token_window: list[str] = []
         self._last_event: SOSEvent | None = None
         self._total_sos_events = 0
-        logger.info(
-            f"SOSDetector initialized (window={window_size}, threshold={min_confidence})"
-        )
+        logger.info(f"SOSDetector initialized (window={window_size}, threshold={min_confidence})")
 
     def update(self, new_tokens: list[str]) -> SOSEvent | None:
         """
@@ -102,26 +100,18 @@ class SOSDetector:
 
         # Check CRITICAL patterns (highest priority)
         for pattern in CRITICAL_PATTERNS:
-            if pattern.issubset(window_set) or (
-                len(pattern) == 1 and pattern.issubset(window_set)
-            ):
-                return self._create_event(
-                    LEVEL_CRITICAL, list(window_set & pattern), list(pattern), 0.98
-                )
+            if pattern.issubset(window_set) or (len(pattern) == 1 and pattern.issubset(window_set)):
+                return self._create_event(LEVEL_CRITICAL, list(window_set & pattern), list(pattern), 0.98)
 
         # Check URGENT patterns
         for pattern in URGENT_PATTERNS:
             if pattern.issubset(window_set):
-                return self._create_event(
-                    LEVEL_URGENT, list(window_set & pattern), list(pattern), 0.88
-                )
+                return self._create_event(LEVEL_URGENT, list(window_set & pattern), list(pattern), 0.88)
 
         # Check ALERT patterns
         for pattern in ALERT_PATTERNS:
             if pattern.issubset(window_set):
-                return self._create_event(
-                    LEVEL_ALERT, list(window_set & pattern), list(pattern), 0.75
-                )
+                return self._create_event(LEVEL_ALERT, list(window_set & pattern), list(pattern), 0.75)
 
         return None
 
@@ -140,27 +130,19 @@ class SOSDetector:
 
         for pattern in CRITICAL_PATTERNS:
             if pattern.issubset(token_set):
-                return self._create_event(
-                    LEVEL_CRITICAL, list(token_set & pattern), list(pattern), 0.98
-                )
+                return self._create_event(LEVEL_CRITICAL, list(token_set & pattern), list(pattern), 0.98)
 
         for pattern in URGENT_PATTERNS:
             if pattern.issubset(token_set):
-                return self._create_event(
-                    LEVEL_URGENT, list(token_set & pattern), list(pattern), 0.88
-                )
+                return self._create_event(LEVEL_URGENT, list(token_set & pattern), list(pattern), 0.88)
 
         for pattern in ALERT_PATTERNS:
             if token_set & pattern:
-                return self._create_event(
-                    LEVEL_ALERT, list(token_set & pattern), list(pattern), 0.75
-                )
+                return self._create_event(LEVEL_ALERT, list(token_set & pattern), list(pattern), 0.75)
 
         return None
 
-    def _create_event(
-        self, severity: str, triggered: list[str], pattern: list[str], confidence: float
-    ) -> SOSEvent:
+    def _create_event(self, severity: str, triggered: list[str], pattern: list[str], confidence: float) -> SOSEvent:
         """Create and record an SOSEvent."""
         messages = {
             LEVEL_CRITICAL: "🚨 CRITICAL EMERGENCY DETECTED — Immediate action required!",
@@ -177,9 +159,7 @@ class SOSDetector:
         )
         self._last_event = event
         self._total_sos_events += 1
-        logger.warning(
-            f"SOS Event [{severity}]: tokens={triggered}, pattern={pattern}, conf={confidence}"
-        )
+        logger.warning(f"SOS Event [{severity}]: tokens={triggered}, pattern={pattern}, conf={confidence}")
         return event
 
     def get_last_event(self) -> SOSEvent | None:

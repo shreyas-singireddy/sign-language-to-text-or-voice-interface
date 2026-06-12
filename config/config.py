@@ -35,9 +35,7 @@ MP_MIN_TRACKING_CONFIDENCE = float(os.getenv("MP_MIN_TRACKING_CONFIDENCE", "0.5"
 
 # Model Thresholds
 GESTURE_CONFIDENCE_THRESHOLD = float(os.getenv("GESTURE_CONFIDENCE_THRESHOLD", "0.7"))
-SEQUENCE_BUFFER_SIZE = int(
-    os.getenv("SEQUENCE_BUFFER_SIZE", "30")
-)  # Number of frames to check for sequence models
+SEQUENCE_BUFFER_SIZE = int(os.getenv("SEQUENCE_BUFFER_SIZE", "30"))  # Number of frames to check for sequence models
 
 # Paths
 MODELS_DIR = BASE_DIR / "assets" / "models"

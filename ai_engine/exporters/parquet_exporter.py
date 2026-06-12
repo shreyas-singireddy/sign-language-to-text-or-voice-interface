@@ -131,9 +131,7 @@ class ParquetExporter:
                 logger.info(f"Session data exported to Parquet: {export_filepath}")
                 return export_filepath
             except ImportError:
-                logger.warning(
-                    "pyarrow or fastparquet not found. Falling back to CSV export instead."
-                )
+                logger.warning("pyarrow or fastparquet not found. Falling back to CSV export instead.")
                 return csv_exporter.export(raw_session_filepath)
         except Exception as e:
             logger.error(f"Failed to export Parquet: {e}")

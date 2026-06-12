@@ -54,12 +54,8 @@ class GestureService:
     def start_recording(self, label: str, user_id: str = "default_user") -> str:
         return gesture_recorder.start_recording(label, user_id)
 
-    def record_frame(
-        self, flat_landmarks: np.ndarray, quality_score: float, visibility_score: float
-    ) -> bool:
-        return gesture_recorder.record_frame(
-            flat_landmarks, quality_score, visibility_score
-        )
+    def record_frame(self, flat_landmarks: np.ndarray, quality_score: float, visibility_score: float) -> bool:
+        return gesture_recorder.record_frame(flat_landmarks, quality_score, visibility_score)
 
     def stop_and_save_recording(self) -> Path | None:
         return gesture_recorder.stop_and_save_recording()
@@ -83,9 +79,7 @@ class GestureService:
             lr=lr,
         )
 
-    def tune_model(
-        self, model_type: str = "word", arch_name: str = "LSTM"
-    ) -> tuple[dict[str, Any], float]:
+    def tune_model(self, model_type: str = "word", arch_name: str = "LSTM") -> tuple[dict[str, Any], float]:
         return hyperparameter_tuner.tune_hyperparameters(model_type, arch_name)
 
     def get_registry_status(self) -> dict[str, Any]:

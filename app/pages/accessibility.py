@@ -69,9 +69,7 @@ with col_themes:
         description = THEME_DESCRIPTIONS.get(theme_enum, "")
         col_check, col_desc = st.columns([1, 4])
         with col_check:
-            checked = st.checkbox(
-                label, value=is_active, key=f"theme_cb_{theme_enum.value}"
-            )
+            checked = st.checkbox(label, value=is_active, key=f"theme_cb_{theme_enum.value}")
         with col_desc:
             st.markdown(
                 f"<span style='font-size: 0.85rem; color: #555; font-style: italic;'>{description}</span>",
@@ -83,9 +81,7 @@ with col_themes:
     if not selected_themes:
         selected_themes = [AccessibilityTheme.BAUHAUS_DEFAULT.value]
 
-    if st.button(
-        "✅ Apply Selected Themes", key="btn_apply_themes", use_container_width=True
-    ):
+    if st.button("✅ Apply Selected Themes", key="btn_apply_themes", use_container_width=True):
         st.session_state["active_themes"] = selected_themes
         st.success(f"Themes applied: {', '.join(selected_themes)}")
         st.rerun()
@@ -159,12 +155,8 @@ with col_controls:
 
     # WCAG compliance status
     active_count = len(st.session_state["active_themes"])
-    has_high_contrast = (
-        AccessibilityTheme.HIGH_CONTRAST.value in st.session_state["active_themes"]
-    )
-    has_reduced_motion = (
-        AccessibilityTheme.REDUCED_MOTION.value in st.session_state["active_themes"]
-    )
+    has_high_contrast = AccessibilityTheme.HIGH_CONTRAST.value in st.session_state["active_themes"]
+    has_reduced_motion = AccessibilityTheme.REDUCED_MOTION.value in st.session_state["active_themes"]
     wcag_level = "AA"
     if has_high_contrast and has_reduced_motion and sr_mode:
         wcag_level = "AAA"

@@ -32,9 +32,7 @@ class GestureDetector:
             self.model_loaded = True
             return True
         except Exception as e:
-            logger.error(
-                f"Error loading model from {model_path}: {e}. Falling back to heuristic classifier."
-            )
+            logger.error(f"Error loading model from {model_path}: {e}. Falling back to heuristic classifier.")
             self.model_loaded = False
             return False
 

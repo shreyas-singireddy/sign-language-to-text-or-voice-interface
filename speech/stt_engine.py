@@ -35,13 +35,9 @@ class STTEngine:
 
     def __init__(self):
         self._default_lang = "en-US"
-        logger.info(
-            "STTEngine initialized (browser Web Speech API + text input fallback)"
-        )
+        logger.info("STTEngine initialized (browser Web Speech API + text input fallback)")
 
-    def get_stt_html(
-        self, lang_code: str = "en-US", button_label: str = "🎤 Start Listening"
-    ) -> str:
+    def get_stt_html(self, lang_code: str = "en-US", button_label: str = "🎤 Start Listening") -> str:
         """
         Generate HTML + JavaScript for browser-side speech recognition.
         The transcript is displayed in the page and can be copied.
@@ -156,9 +152,7 @@ class STTEngine:
         </html>
         """
 
-    def process_transcript(
-        self, transcript: str, lang_code: str = "en-US"
-    ) -> STTResult:
+    def process_transcript(self, transcript: str, lang_code: str = "en-US") -> STTResult:
         """
         Process a transcript string received from the browser or text input.
 

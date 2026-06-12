@@ -43,17 +43,11 @@ with col_video:
     # Camera Toggle buttons
     camera_btn_col1, camera_btn_col2, camera_btn_col3 = st.columns(3)
     with camera_btn_col1:
-        start_cam = st.button(
-            "🔌 Start Camera", key="btn_start_cam", use_container_width=True
-        )
+        start_cam = st.button("🔌 Start Camera", key="btn_start_cam", use_container_width=True)
     with camera_btn_col2:
-        stop_cam = st.button(
-            "🛑 Stop Camera", key="btn_stop_cam", use_container_width=True
-        )
+        stop_cam = st.button("🛑 Stop Camera", key="btn_stop_cam", use_container_width=True)
     with camera_btn_col3:
-        reset_seq = st.button(
-            "🔄 Reset Buffer", key="btn_reset_seq", use_container_width=True
-        )
+        reset_seq = st.button("🔄 Reset Buffer", key="btn_reset_seq", use_container_width=True)
 
     if start_cam:
         st.session_state["camera_active"] = True
@@ -71,9 +65,7 @@ with col_video:
     video_placeholder = st.empty()
 
     if st.session_state.get("camera_active", False):
-        st.markdown(
-            '<div class="pulse-badge">● RECORDING ACTIVE</div>', unsafe_allow_html=True
-        )
+        st.markdown('<div class="pulse-badge">● RECORDING ACTIVE</div>', unsafe_allow_html=True)
 
         # Open camera stream using OpenCV
         from ai_engine.computer_vision.camera import CameraManager
@@ -85,9 +77,7 @@ with col_video:
                 while st.session_state.get("camera_active", False):
                     success, frame = cam.get_frame()
                     if not success:
-                        st.error(
-                            "Failed to read camera frame. Check webcam connection."
-                        )
+                        st.error("Failed to read camera frame. Check webcam connection.")
                         break
 
                     # Process frame
@@ -99,9 +89,7 @@ with col_video:
                     display_frame_rgb = cv2.cvtColor(display_frame, cv2.COLOR_BGR2RGB)
 
                     # Render image
-                    video_placeholder.image(
-                        display_frame_rgb, channels="RGB", use_column_width=True
-                    )
+                    video_placeholder.image(display_frame_rgb, channels="RGB", use_column_width=True)
 
                     # Update states
                     st.session_state["detected_sequence"] = results["sequence"]
@@ -113,9 +101,7 @@ with col_video:
                 cam.stop()
                 video_placeholder.empty()
     else:
-        video_placeholder.info(
-            "Click '🔌 Start Camera' to launch webcam translation stream."
-        )
+        video_placeholder.info("Click '🔌 Start Camera' to launch webcam translation stream.")
 
 with col_results:
     st.markdown(
@@ -172,9 +158,7 @@ with col_results:
         use_container_width=True,
     ):
         with st.spinner("Synthesizing voice..."):
-            audio_bytes = audio_service.generate_speech(
-                text_output, lang_code=tts_lang_code
-            )
+            audio_bytes = audio_service.generate_speech(text_output, lang_code=tts_lang_code)
             st.audio(audio_bytes, format="audio/wav")
 
     # Database Logging section

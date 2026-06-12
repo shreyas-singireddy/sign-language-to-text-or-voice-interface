@@ -272,9 +272,7 @@ class LanguageRegistry:
 
     def get_languages_by_region(self, region: str) -> list[str]:
         """Return languages in a specific geographic region."""
-        return [
-            name for name, lang in LANGUAGE_REGISTRY.items() if lang.region == region
-        ]
+        return [name for name, lang in LANGUAGE_REGISTRY.items() if lang.region == region]
 
     def get_bcp47(self, language_name: str) -> str:
         """Get BCP-47 code for a language name."""

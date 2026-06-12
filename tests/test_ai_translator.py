@@ -9,10 +9,12 @@ def test_translation_engine_direct_match():
     res_please = translation_engine.translate(["HELLO", "PLEASE"], "English")
     assert res_please == "Hello, please."
 
+
 def test_translation_engine_fallback():
     # Fallback to join and capitalize
     res = translation_engine.translate(["HELLO", "WORLD"], "English")
     assert res == "Hello world."
+
 
 def test_translation_engine_multilingual():
     # Spanish mapping
@@ -33,6 +35,7 @@ def test_translation_engine_multilingual():
     # Unsupported language
     res_unsupported = translation_engine.translate(["YES"], "German")
     assert "Translated to German" in res_unsupported
+
 
 def test_translation_engine_empty():
     res = translation_engine.translate([], "English")

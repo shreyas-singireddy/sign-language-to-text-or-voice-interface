@@ -27,36 +27,25 @@ class LandmarkExtractor:
 
         # Pose (33 landmarks * 4 coordinates = 132)
         if results.pose_landmarks:
-            pose = np.array(
-                [
-                    [lm.x, lm.y, lm.z, lm.visibility]
-                    for lm in results.pose_landmarks.landmark
-                ]
-            ).flatten()
+            pose = np.array([[lm.x, lm.y, lm.z, lm.visibility] for lm in results.pose_landmarks.landmark]).flatten()
         else:
             pose = np.zeros(33 * 4)
 
         # Face (468 landmarks * 3 coordinates = 1404)
         if results.face_landmarks:
-            face = np.array(
-                [[lm.x, lm.y, lm.z] for lm in results.face_landmarks.landmark]
-            ).flatten()
+            face = np.array([[lm.x, lm.y, lm.z] for lm in results.face_landmarks.landmark]).flatten()
         else:
             face = np.zeros(468 * 3)
 
         # Left Hand (21 landmarks * 3 coordinates = 63)
         if results.left_hand_landmarks:
-            lh = np.array(
-                [[lm.x, lm.y, lm.z] for lm in results.left_hand_landmarks.landmark]
-            ).flatten()
+            lh = np.array([[lm.x, lm.y, lm.z] for lm in results.left_hand_landmarks.landmark]).flatten()
         else:
             lh = np.zeros(21 * 3)
 
         # Right Hand (21 landmarks * 3 coordinates = 63)
         if results.right_hand_landmarks:
-            rh = np.array(
-                [[lm.x, lm.y, lm.z] for lm in results.right_hand_landmarks.landmark]
-            ).flatten()
+            rh = np.array([[lm.x, lm.y, lm.z] for lm in results.right_hand_landmarks.landmark]).flatten()
         else:
             rh = np.zeros(21 * 3)
 
@@ -69,9 +58,7 @@ class LandmarkExtractor:
         """
         if results is None:
             return False
-        return (results.left_hand_landmarks is not None) or (
-            results.right_hand_landmarks is not None
-        )
+        return (results.left_hand_landmarks is not None) or (results.right_hand_landmarks is not None)
 
 
 landmark_extractor = LandmarkExtractor()

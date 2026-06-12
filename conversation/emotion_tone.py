@@ -260,9 +260,7 @@ class EmotionToneDetector:
         Returns:
             Response suggestion string for display in the UI
         """
-        return RESPONSE_SUGGESTIONS.get(
-            emotion, RESPONSE_SUGGESTIONS[EmotionTone.NEUTRAL]
-        )
+        return RESPONSE_SUGGESTIONS.get(emotion, RESPONSE_SUGGESTIONS[EmotionTone.NEUTRAL])
 
     def get_ui_color(self, emotion: EmotionTone) -> str:
         """

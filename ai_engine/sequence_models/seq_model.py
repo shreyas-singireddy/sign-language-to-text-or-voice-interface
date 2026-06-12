@@ -21,9 +21,7 @@ class SequenceModel:
         """
         model_path = MODELS_DIR / "sequence_model.h5"
         if not model_path.exists():
-            logger.warning(
-                f"No sequence model found at {model_path}. Running sequence assembly heuristics."
-            )
+            logger.warning(f"No sequence model found at {model_path}. Running sequence assembly heuristics.")
             self.model_loaded = False
             return False
 

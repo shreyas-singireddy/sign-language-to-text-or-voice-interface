@@ -50,9 +50,7 @@ class AlertDispatcher:
     def __init__(self, webhook_url: str | None = None):
         self._webhook_url = webhook_url
         self._alert_log: list[AlertRecord] = []
-        logger.info(
-            f"AlertDispatcher initialized (webhook={'enabled' if webhook_url else 'disabled'})"
-        )
+        logger.info(f"AlertDispatcher initialized (webhook={'enabled' if webhook_url else 'disabled'})")
 
     def dispatch(self, event: SOSEvent, user_name: str = "Unknown User") -> AlertRecord:
         """
@@ -82,10 +80,7 @@ class AlertDispatcher:
         self._alert_log.append(record)
         channels_notified.append("in_memory")
 
-        logger.warning(
-            f"EMERGENCY DISPATCHED [{event.severity}]: {event.message} "
-            f"| Channels: {channels_notified}"
-        )
+        logger.warning(f"EMERGENCY DISPATCHED [{event.severity}]: {event.message} " f"| Channels: {channels_notified}")
         return record
 
     def _log_alert(self, event: SOSEvent, user_name: str) -> None:

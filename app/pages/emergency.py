@@ -247,9 +247,7 @@ with col_phrases:
                         audio_bytes = tts_engine.speak(phrase, language_name=em_lang)
                         if audio_bytes:
                             st.audio(audio_bytes, format="audio/mp3")
-                            st.session_state["emergency_log"].append(
-                                {"phrase": phrase, "language": em_lang}
-                            )
+                            st.session_state["emergency_log"].append({"phrase": phrase, "language": em_lang})
 
 # ─── EMERGENCY CONTACT MANAGER ─────────────────────────────────────────────────
 st.markdown("---")
@@ -270,21 +268,15 @@ with contact_col2:
     ec2_name = st.text_input("Contact 2 Name", value="", key="ec2_name")
     ec2_phone = st.text_input("Contact 2 Phone", value="", key="ec2_phone")
 with contact_col3:
-    medical_info = st.text_area(
-        "Medical Information", value="", height=100, key="medical_info"
-    )
+    medical_info = st.text_area("Medical Information", value="", height=100, key="medical_info")
 
-if st.button(
-    "💾 Save Emergency Profile", key="btn_save_emergency", use_container_width=True
-):
+if st.button("💾 Save Emergency Profile", key="btn_save_emergency", use_container_width=True):
     st.session_state["emergency_profile"] = {
         "contact1": {"name": ec1_name, "phone": ec1_phone},
         "contact2": {"name": ec2_name, "phone": ec2_phone},
         "medical": medical_info,
     }
-    st.success(
-        "Emergency profile saved to session. In production this would persist to encrypted storage."
-    )
+    st.success("Emergency profile saved to session. In production this would persist to encrypted storage.")
 
 # ─── ALERT HISTORY ──────────────────────────────────────────────────────────────
 st.markdown("---")

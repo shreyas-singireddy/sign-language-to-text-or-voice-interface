@@ -218,17 +218,14 @@ if "user_phone" not in st.session_state:
 
 # Handle Login Flow
 if not st.session_state["authenticated"]:
-
     # Grid margins for centering
     left_spacer, center_col, right_spacer = st.columns([1, 2, 1])
 
     with center_col:
-
         # 1. SPLASH SCREEN STEP
         if st.session_state["auth_step"] == "splash":
             st.html("<div style='height: 40px;'></div>")
-            st.html(
-                """
+            st.html("""
                 <div class="bauhaus-card card-red" style="text-align: center;">
                     <h1 style="font-size: 3.5rem; letter-spacing: -2px; margin-bottom: 5px; color: #121212 !important;">SIGNBRIDGE AI</h1>
                     <p style="font-size: 1.25rem; font-weight: 600; text-transform: uppercase; color: #1040C0 !important; margin-top: 0px;">
@@ -245,8 +242,7 @@ if not st.session_state["authenticated"]:
                         Accessibility Platform utilizing Computer Vision & Sign-to-Speech translation
                     </p>
                 </div>
-                """
-            )
+                """)
 
             if st.button("Enter SignBridge AI", key="btn_enter_splash"):
                 st.session_state["auth_step"] = "login"
@@ -255,16 +251,14 @@ if not st.session_state["authenticated"]:
         # 2. LOGIN FORM STEP
         elif st.session_state["auth_step"] == "login":
             st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-            st.html(
-                """
+            st.html("""
                 <div class="bauhaus-card card-blue">
                     <h2 style="font-size: 2.2rem; margin-bottom: 10px; color: #121212 !important;">SIGNBRIDGE REGISTER</h2>
                     <p style="font-size: 0.95rem; color: #555555; margin-bottom: 20px;">
                         Create your vision-locked credentials using OTP validation. Fast, email-free authentication.
                     </p>
                 </div>
-                """
-            )
+                """)
 
             with st.container(border=True):
                 name = st.text_input(
@@ -292,8 +286,7 @@ if not st.session_state["authenticated"]:
         # 3. OTP VERIFICATION STEP
         elif st.session_state["auth_step"] == "otp":
             st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-            st.html(
-                f"""
+            st.html(f"""
                 <div class="bauhaus-card card-yellow">
                     <h2 style="font-size: 2.2rem; margin-bottom: 10px; color: #121212 !important;">OTP VERIFICATION</h2>
                     <p style="font-size: 0.95rem; color: #555555; margin-bottom: 15px;">
@@ -303,8 +296,7 @@ if not st.session_state["authenticated"]:
                         DEMO OTP CODE: <span style="font-size: 1.25rem; color: #D02020;">1919</span>
                     </div>
                 </div>
-                """
-            )
+                """)
 
             with st.container(border=True):
                 otp_code = st.text_input(
@@ -321,9 +313,7 @@ if not st.session_state["authenticated"]:
                             st.session_state["auth_step"] = "welcome"
                             st.rerun()
                         else:
-                            st.error(
-                                "Invalid OTP code. Please enter '1919' for verification."
-                            )
+                            st.error("Invalid OTP code. Please enter '1919' for verification.")
                 with col_sub2:
                     if st.button("Back", key="btn_back_otp"):
                         st.session_state["auth_step"] = "login"
@@ -332,8 +322,7 @@ if not st.session_state["authenticated"]:
         # 4. WELCOME STEP
         elif st.session_state["auth_step"] == "welcome":
             st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-            st.html(
-                f"""
+            st.html(f"""
                 <div class="bauhaus-card card-red" style="text-align: center;">
                     <h2 style="font-size: 2.5rem; margin-bottom: 10px; color: #121212 !important;">WELCOME TO SIGNBRIDGE</h2>
                     <p style="font-size: 1.25rem; color: #1040C0; font-weight: bold; text-transform: uppercase;">
@@ -343,8 +332,7 @@ if not st.session_state["authenticated"]:
                         Your device connection has been authenticated. You are ready to open the dashboard workspace.
                     </p>
                 </div>
-                """
-            )
+                """)
 
             if st.button("Launch Dashboard", key="btn_launch_app"):
                 st.session_state["authenticated"] = True
@@ -371,9 +359,7 @@ pages = [
         title="Live Gesture Recognition",
         icon="🤟",
     ),
-    st.Page(
-        pages_dir / "visual_debug_dashboard.py", title="Visual Debug Cockpit", icon="🛠️"
-    ),
+    st.Page(pages_dir / "visual_debug_dashboard.py", title="Visual Debug Cockpit", icon="🛠️"),
     st.Page(pages_dir / "live_translation.py", title="Live Translation", icon="🎥"),
     st.Page(pages_dir / "training_studio.py", title="AI Training Studio", icon="🏋️"),
     st.Page(pages_dir / "communication_hub.py", title="Conversation Hub", icon="💬"),

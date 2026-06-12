@@ -35,11 +35,7 @@ class MotionAnalyser:
         Determines the percentage of joints hidden/occluded in the frame.
         Pose has 33 landmarks with visibility attributes.
         """
-        if (
-            mp_results is None
-            or not hasattr(mp_results, "pose_landmarks")
-            or mp_results.pose_landmarks is None
-        ):
+        if mp_results is None or not hasattr(mp_results, "pose_landmarks") or mp_results.pose_landmarks is None:
             return 1.0  # 100% occluded / missing
 
         low_visibility_count = 0
@@ -68,9 +64,7 @@ class MotionAnalyser:
         activity = self.calculate_activity_index(mean_velocity)
 
         # Basic tracking health rating
-        tracking_health = round(
-            max(0.0, 1.0 - (occlusion * 0.7) - (stability * 0.1)), 4
-        )
+        tracking_health = round(max(0.0, 1.0 - (occlusion * 0.7) - (stability * 0.1)), 4)
 
         return {
             "stability_index": stability,

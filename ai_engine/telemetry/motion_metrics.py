@@ -5,9 +5,7 @@ from ai_engine.schemas.telemetry_schema import (
 
 
 class MotionMetricsCalculator:
-    def compile_metrics(
-        self, lh_kin: dict, rh_kin: dict, pose_kin: dict, face_kin: dict
-    ) -> ComponentMotionMetrics:
+    def compile_metrics(self, lh_kin: dict, rh_kin: dict, pose_kin: dict, face_kin: dict) -> ComponentMotionMetrics:
         """
         Assembles component kinematic dictionaries into Pydantic models.
         """

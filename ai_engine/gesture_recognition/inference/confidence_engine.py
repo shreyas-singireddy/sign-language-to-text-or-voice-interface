@@ -28,9 +28,7 @@ class ConfidenceEngine:
 
         # 2. Temporal Consistency (percentage of frames in history matching current prediction)
         if len(self.prediction_history) > 0:
-            matching_frames = sum(
-                1 for label in self.prediction_history if label == predicted_label
-            )
+            matching_frames = sum(1 for label in self.prediction_history if label == predicted_label)
             consistency_factor = matching_frames / len(self.prediction_history)
         else:
             consistency_factor = 1.0
@@ -44,10 +42,7 @@ class ConfidenceEngine:
         # Combined weighted score:
         # 40% raw classifier, 30% consistency, 20% tracking stability, 10% visibility
         combined = (
-            (raw_factor * 0.40)
-            + (consistency_factor * 0.30)
-            + (stability_factor * 0.20)
-            + (visibility_factor * 0.10)
+            (raw_factor * 0.40) + (consistency_factor * 0.30) + (stability_factor * 0.20) + (visibility_factor * 0.10)
         )
 
         # Scale to 0-100%

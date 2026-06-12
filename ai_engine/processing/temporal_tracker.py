@@ -48,13 +48,9 @@ class TemporalTracker:
             if component_name in ("left_hand", "right_hand"):
                 ref = np.array([comp.center.x, comp.center.y, comp.center.z])
             elif component_name == "pose" and len(comp.landmarks) > 0:
-                ref = np.array(
-                    [comp.landmarks[0].x, comp.landmarks[0].y, comp.landmarks[0].z]
-                )
+                ref = np.array([comp.landmarks[0].x, comp.landmarks[0].y, comp.landmarks[0].z])
             elif component_name == "face" and len(comp.landmarks) > 0:
-                ref = np.array(
-                    [comp.landmarks[1].x, comp.landmarks[1].y, comp.landmarks[1].z]
-                )  # Nose bridge
+                ref = np.array([comp.landmarks[1].x, comp.landmarks[1].y, comp.landmarks[1].z])  # Nose bridge
             else:
                 continue
             positions.append(ref)

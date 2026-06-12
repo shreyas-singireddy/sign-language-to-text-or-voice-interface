@@ -20,9 +20,7 @@ class SessionManager:
         self.active_session_id = f"session_{timestamp}"
 
         # Create folder under recordings
-        self.active_session_path = (
-            Path(sys_config.recordings_path) / self.active_session_id
-        )
+        self.active_session_path = Path(sys_config.recordings_path) / self.active_session_id
         self.active_session_path.mkdir(parents=True, exist_ok=True)
 
         logger.info(f"Session started: ID={self.active_session_id}")

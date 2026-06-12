@@ -34,15 +34,9 @@ class TemporalMemory:
         Computes memory occupancy metrics.
         """
         # Calculate memory footprint in bytes
-        size_30 = sys.getsizeof(self.buffer_30) + sum(
-            sys.getsizeof(r) for r in self.buffer_30
-        )
-        size_60 = sys.getsizeof(self.buffer_60) + sum(
-            sys.getsizeof(r) for r in self.buffer_60
-        )
-        size_120 = sys.getsizeof(self.buffer_120) + sum(
-            sys.getsizeof(r) for r in self.buffer_120
-        )
+        size_30 = sys.getsizeof(self.buffer_30) + sum(sys.getsizeof(r) for r in self.buffer_30)
+        size_60 = sys.getsizeof(self.buffer_60) + sum(sys.getsizeof(r) for r in self.buffer_60)
+        size_120 = sys.getsizeof(self.buffer_120) + sum(sys.getsizeof(r) for r in self.buffer_120)
 
         total_kb = (size_30 + size_60 + size_120) / 1024.0
 

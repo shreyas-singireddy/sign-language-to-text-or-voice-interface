@@ -75,9 +75,7 @@ class GoogleTranslateAdapter(BaseTranslationProvider):
             self._available = False
         return self._available
 
-    def signs_to_english(
-        self, tokens: list[str], context: list[str] | None = None
-    ) -> str:
+    def signs_to_english(self, tokens: list[str], context: list[str] | None = None) -> str:
         """
         Convert sign tokens to English.
         Delegates to RuleBasedProvider for the grammar construction phase,
@@ -96,9 +94,7 @@ class GoogleTranslateAdapter(BaseTranslationProvider):
 
         lang_code = GOOGLE_LANG_CODES.get(target_language)
         if not lang_code:
-            logger.warning(
-                f"Unknown language '{target_language}' — falling back to rule-based."
-            )
+            logger.warning(f"Unknown language '{target_language}' — falling back to rule-based.")
             return self._fallback.translate_to_language(english_text, target_language)
 
         try:
@@ -124,15 +120,11 @@ class GoogleTranslateAdapter(BaseTranslationProvider):
 
             result = "".join(translated_parts).strip()
             if result:
-                logger.debug(
-                    f"Google Translate: '{english_text}' → '{result}' ({target_language})"
-                )
+                logger.debug(f"Google Translate: '{english_text}' → '{result}' ({target_language})")
                 return result
 
         except httpx.TimeoutException:
-            logger.warning(
-                f"Google Translate timeout for '{english_text}' → {target_language}. Using fallback."
-            )
+            logger.warning(f"Google Translate timeout for '{english_text}' → {target_language}. Using fallback.")
         except httpx.NetworkError:
             logger.warning("Google Translate network error. Using fallback.")
         except (KeyError, IndexError, ValueError) as parse_err:

@@ -53,14 +53,10 @@ class DialogueManager:
         """
         session = ConversationSession(language=language)
         self._sessions[session.session_id] = session
-        logger.info(
-            f"New conversation session started: {session.session_id} ({language})"
-        )
+        logger.info(f"New conversation session started: {session.session_id} ({language})")
         return session.session_id
 
-    def get_or_create_session(
-        self, session_id: str | None, language: str = "English"
-    ) -> str:
+    def get_or_create_session(self, session_id: str | None, language: str = "English") -> str:
         """
         Return an existing session or create a new one.
 
@@ -104,9 +100,7 @@ class DialogueManager:
             confidence=confidence,
         )
 
-    def add_listener_reply(
-        self, session_id: str, text: str, language: str = "English"
-    ) -> Message:
+    def add_listener_reply(self, session_id: str, text: str, language: str = "English") -> Message:
         """
         Add a reply from the hearing participant to the session.
 
@@ -205,9 +199,7 @@ class DialogueManager:
     def _get_session(self, session_id: str) -> ConversationSession:
         """Retrieve a session by ID, auto-creating if missing."""
         if session_id not in self._sessions:
-            logger.warning(
-                f"Session {session_id} not found. Auto-creating new session."
-            )
+            logger.warning(f"Session {session_id} not found. Auto-creating new session.")
             new_id = self.start_session()
             return self._sessions[new_id]
         return self._sessions[session_id]

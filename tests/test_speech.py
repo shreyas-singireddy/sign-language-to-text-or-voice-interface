@@ -143,9 +143,7 @@ class TestTTSEngine:
         assert isinstance(audio, bytes)
 
     def test_speak_emergency_returns_bytes(self):
-        audio = self.engine.speak_emergency(
-            "CRITICAL EMERGENCY — call 911 immediately!"
-        )
+        audio = self.engine.speak_emergency("CRITICAL EMERGENCY — call 911 immediately!")
         assert isinstance(audio, bytes)
         assert len(audio) > 0
 
@@ -179,9 +177,7 @@ class TestTTSEngine:
         assert "<script>" in html
 
     def test_synthesize_with_full_request(self):
-        request = TTSRequest(
-            text="Full pipeline test", lang_code="en-US", provider=TTSProvider.GTTS
-        )
+        request = TTSRequest(text="Full pipeline test", lang_code="en-US", provider=TTSProvider.GTTS)
         result = self.engine.synthesize(request)
         assert result is not None
         assert isinstance(result.audio_bytes, bytes)

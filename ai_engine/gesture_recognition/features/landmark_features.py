@@ -148,12 +148,8 @@ def extract_pose_features(pose: np.ndarray) -> dict[str, Any]:
 
     # Arm extension relative to shoulder width
     shoulder_width = np.linalg.norm(p3d[12] - p3d[11]) + 1e-6
-    features["arm_extension_left"] = float(
-        np.linalg.norm(p3d[15] - p3d[11]) / shoulder_width
-    )
-    features["arm_extension_right"] = float(
-        np.linalg.norm(p3d[16] - p3d[12]) / shoulder_width
-    )
+    features["arm_extension_left"] = float(np.linalg.norm(p3d[15] - p3d[11]) / shoulder_width)
+    features["arm_extension_right"] = float(np.linalg.norm(p3d[16] - p3d[12]) / shoulder_width)
 
     return features
 

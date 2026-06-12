@@ -144,9 +144,7 @@ def main():
 
     # 7. Git tag check
     try:
-        tag_proc = subprocess.run(
-            ["git", "tag"], capture_output=True, text=True, check=True
-        )
+        tag_proc = subprocess.run(["git", "tag"], capture_output=True, text=True, check=True)
         tags = tag_proc.stdout.strip().split("\n")
         if "v1.0.0" in tags:
             tag_ok, tag_msg = True, "v1.0.0 exists"
@@ -175,9 +173,7 @@ def main():
     report_file = "FINAL_COMPLIANCE_REPORT.md"
     with open(report_file, "w", encoding="utf-8") as f:
         f.write("# SignBridge AI — Final Compliance Audit Report\n\n")
-        f.write(
-            "| Requirement | File | Evidence | Status | Pass/Fail | Expected Compliance Impact |\n"
-        )
+        f.write("| Requirement | File | Evidence | Status | Pass/Fail | Expected Compliance Impact |\n")
         f.write("| :--- | :--- | :--- | :--- | :--- | :--- |\n")
         for res in results:
             pf = "🟢 PASS" if res["Status"] == "PASS" else "🔴 FAIL"

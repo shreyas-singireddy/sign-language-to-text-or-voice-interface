@@ -13,8 +13,7 @@ st.markdown("---")
 col_hero_text, col_hero_shapes = st.columns([3, 2])
 
 with col_hero_text:
-    st.html(
-        """
+    st.html("""
         <div class="bauhaus-card card-red" style="min-height: 250px;">
             <h2 style="font-size: 2.5rem; line-height: 1.0; margin-bottom: 15px; color: #121212 !important;">COMMUNICATION WITHOUT BARRIERS</h2>
             <p style="font-size: 1.15rem; line-height: 1.6; color: #333333; margin-bottom: 25px;">
@@ -23,8 +22,7 @@ with col_hero_text:
                 principles to ensure natural connection for deaf, mute, and hearing-impaired communities.
             </p>
         </div>
-        """
-    )
+        """)
 
     # CTA Buttons
     col_cta1, col_cta2 = st.columns(2)
@@ -44,15 +42,13 @@ with col_hero_text:
             )
 
 with col_hero_shapes:
-    st.html(
-        """
+    st.html("""
         <div class="bauhaus-card card-blue" style="height: 330px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #E6E6E6 !important;">
             <div style="width: 150px; height: 150px; background-color: #D02020; border-radius: 50%; border: 4px solid #121212; margin-bottom: 10px;"></div>
             <div style="width: 200px; height: 30px; background-color: #F0C020; border: 4px solid #121212; transform: rotate(5deg);"></div>
             <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 1.5rem; text-transform: uppercase; margin-top: 15px; color: #121212 !important;">DESIGN IN MOTION</div>
         </div>
-        """
-    )
+        """)
 
 # 2. PROBLEM STATEMENT SECTION
 st.markdown("<br/>", unsafe_allow_html=True)
@@ -63,8 +59,7 @@ st.markdown(
 
 col_prob1, col_prob2 = st.columns(2)
 with col_prob1:
-    st.html(
-        """
+    st.html("""
         <div class="bauhaus-card card-yellow" style="min-height: 200px;">
             <h3 style="color: #D02020 !important; margin-top: 0px;">THE CHALLENGE</h3>
             <p style="font-size: 1rem; line-height: 1.6; color: #121212 !important;">
@@ -73,11 +68,9 @@ with col_prob1:
                 daily routines, workplaces, medical facilities, and emergency scenarios.
             </p>
         </div>
-        """
-    )
+        """)
 with col_prob2:
-    st.html(
-        """
+    st.html("""
         <div class="bauhaus-card card-blue" style="min-height: 200px;">
             <h3 style="color: #1040C0 !important; margin-top: 0px;">THE SOLUTION</h3>
             <p style="font-size: 1rem; line-height: 1.6; color: #121212 !important;">
@@ -86,8 +79,7 @@ with col_prob2:
                 non-signers via text outputs and voice synthesis.
             </p>
         </div>
-        """
-    )
+        """)
 
 # 3. SOLUTION PIPELINE FLOW CHART
 st.markdown("<br/>", unsafe_allow_html=True)
@@ -96,8 +88,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.html(
-    """
+st.html("""
     <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;">
         <div style="flex: 1; min-width: 150px; background-color: #FFFFFF; border: 3px solid #121212; padding: 15px; text-align: center; border-top: 8px solid #D02020; color: #121212 !important;">
             <h4 style="margin: 0 0 5px 0; color: #121212 !important;">1. CAMERA</h4>
@@ -122,8 +113,7 @@ st.html(
             <span style="font-size: 0.85rem; color: #555555;">Text & Synthetic Speech Output</span>
         </div>
     </div>
-    """
-)
+    """)
 
 # 4. HOW IT WORKS 4-STEP CONSTRUCTIVIST BLOCKS
 st.markdown("<br/>", unsafe_allow_html=True)
@@ -134,8 +124,7 @@ st.markdown(
 
 hiw1, hiw2 = st.columns(2)
 with hiw1:
-    st.html(
-        """
+    st.html("""
         <div class="bauhaus-card">
             <div class="geo-number num-red">01</div>
             <div style="margin-left: 85px;">
@@ -157,11 +146,9 @@ with hiw1:
                 </p>
             </div>
         </div>
-        """
-    )
+        """)
 with hiw2:
-    st.html(
-        """
+    st.html("""
         <div class="bauhaus-card">
             <div class="geo-number num-yellow">03</div>
             <div style="margin-left: 85px;">
@@ -183,8 +170,7 @@ with hiw2:
                 </p>
             </div>
         </div>
-        """
-    )
+        """)
 
 # 5. CORE FEATURES
 st.markdown("<br/>", unsafe_allow_html=True)
@@ -277,8 +263,7 @@ with col_man2:
     )
 
 # 7. CALL TO ACTION & FOOTER
-st.html(
-    """
+st.html("""
     <div style="background-color: #121212; border: 3.5px solid #121212; padding: 40px; text-align: center; color: #FFFFFF !important;">
         <h2 style="color: #FFFFFF !important; font-size: 2.2rem; margin-top: 0px;">JOIN THE ACCESSIBILITY REVOLUTION</h2>
         <p style="color: #E6E6E6 !important; max-width: 600px; margin: 10px auto 25px auto;">
@@ -288,5 +273,4 @@ st.html(
     <div style="text-align: center; font-size: 0.8rem; color: #555555; padding: 20px 0;">
         SignBridge AI © 2026. Designed under the Bauhaus Aesthetic. Accessibility First.
     </div>
-    """
-)
+    """)

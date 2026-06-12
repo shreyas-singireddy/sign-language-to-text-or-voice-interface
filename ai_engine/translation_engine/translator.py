@@ -46,9 +46,7 @@ class TranslationEngine:
         # For scaffolding, we provide mock multilingual variations
         return self._apply_multilingual_mapping(base_translation, language)
 
-    def _apply_multilingual_mapping(
-        self, english_text: str, target_language: str
-    ) -> str:
+    def _apply_multilingual_mapping(self, english_text: str, target_language: str) -> str:
         """
         Translates the English sentence into other supported languages.
         """
@@ -98,9 +96,7 @@ class TranslationEngine:
             return lang_map[english_text]
 
         # General translator stub message for unsupported languages or complex phrases
-        logger.info(
-            f"Target language '{target_language}' not fully mapped. Appending translation stub."
-        )
+        logger.info(f"Target language '{target_language}' not fully mapped. Appending translation stub.")
         return f"[Translated to {target_language}]: {english_text}"
 
 

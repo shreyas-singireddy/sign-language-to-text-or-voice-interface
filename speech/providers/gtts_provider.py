@@ -192,9 +192,7 @@ class GTTSProvider(BaseTTSProvider):
             logger.info("gTTS library detected and available.")
             return True
         except ImportError:
-            logger.warning(
-                "gTTS not installed. Run: pip install gTTS. Using mock WAV fallback."
-            )
+            logger.warning("gTTS not installed. Run: pip install gTTS. Using mock WAV fallback.")
             return False
 
     @property
@@ -208,9 +206,7 @@ class GTTSProvider(BaseTTSProvider):
     def health_check(self) -> bool:
         return self._gtts_available
 
-    def synthesize(
-        self, text: str, lang_code: str = "en", slow: bool = False, tld: str = "com"
-    ) -> TTSResult:
+    def synthesize(self, text: str, lang_code: str = "en", slow: bool = False, tld: str = "com") -> TTSResult:
         """
         Synthesize text into audio using gTTS if available, otherwise WAV mock.
         """
@@ -251,9 +247,7 @@ class GTTSProvider(BaseTTSProvider):
             wpm = 75 if slow else 150
             duration = (word_count / wpm) * 60
 
-            logger.info(
-                f"gTTS synthesized {len(audio_bytes)} bytes for lang={lang}: '{text[:60]}'"
-            )
+            logger.info(f"gTTS synthesized {len(audio_bytes)} bytes for lang={lang}: '{text[:60]}'")
             return TTSResult(
                 audio_bytes=audio_bytes,
                 format="mp3",
