@@ -1,4 +1,7 @@
 import shutil
+import pytest
+
+pytest.importorskip("torch")
 
 import numpy as np
 import torch
