@@ -1,7 +1,8 @@
-import pytest
 import numpy as np
+
 from ai_engine.landmark_extraction.extractor import landmark_extractor
 from ai_engine.vision.hand_detector import HandDetector
+
 
 class MockLandmark:
     def __init__(self, x: float, y: float, z: float, visibility: float = 1.0):
@@ -39,14 +40,14 @@ def test_hand_landmark_extraction_with_data():
     face = MockLandmarkList(468)
     lh = MockLandmarkList(21)
     rh = MockLandmarkList(21)
-    
+
     results = MockResults(pose=pose, face=face, left_hand=lh, right_hand=rh)
-    
+
     landmarks = landmark_extractor.extract_landmarks(results)
     assert landmarks.shape == (1662,)
     assert landmarks[0] == 0.0 # lm.x of first pose
     assert landmarks[132] == 0.0 # lm.x of first face
-    
+
     assert landmark_extractor.has_hands_detected(results) is True
     assert landmark_extractor.has_hands_detected(None) is False
 
