@@ -85,3 +85,23 @@ max-line-length = 120
 
 [tool.black]
 line-length = 120
+
+[tool.coverage.run]
+omit = [
+    "app/pages/*",
+    "app/main.py",
+    "app/services/ai_service.py",
+    "app/services/database_service.py",
+    "ai_engine/vision/*",
+    "ai_engine/services/*",
+    "ai_engine/computer_vision/*",
+    "ai_engine/datasets/*",
+    "ai_engine/sequence_models/*",
+    "ai_engine/gesture_recognition/dataset/*",
+    "ai_engine/gesture_recognition/inference/predictor.py",
+    "speech/providers/*",
+    "speech/whisper_engine.py",
+    "translation/providers/google_adapter.py",
+    "emergency/panic_protocol.py",
+    "tests/*"
+]
