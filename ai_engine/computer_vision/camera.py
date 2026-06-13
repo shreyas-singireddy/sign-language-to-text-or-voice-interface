@@ -1,5 +1,4 @@
 from ai_engine.utils.cv2_guard import cv2
-
 from config.config import WEBCAM_SOURCE
 from config.logger import setup_logger
 

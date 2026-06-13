@@ -27,7 +27,7 @@ try:
     import cv2  # noqa: F401 — re-exported
     CV2_AVAILABLE = True
     logger.debug("cv2 loaded successfully: %s", cv2.__version__)
-except Exception as _e:
+except BaseException as _e:
     cv2 = None  # type: ignore[assignment]
     CV2_AVAILABLE = False
     logger.warning("cv2 unavailable (%s). Camera/vision features disabled.", _e)
@@ -39,7 +39,7 @@ try:
     import mediapipe as mp  # noqa: F401 — re-exported
     MP_AVAILABLE = True
     logger.debug("mediapipe loaded successfully.")
-except Exception as _e:
+except BaseException as _e:
     mp = None  # type: ignore[assignment]
     MP_AVAILABLE = False
     logger.warning("mediapipe unavailable (%s). Holistic tracking disabled.", _e)
@@ -51,7 +51,7 @@ try:
     import torch  # noqa: F401 — re-exported
     TORCH_AVAILABLE = True
     logger.debug("torch loaded successfully: %s", torch.__version__)
-except Exception as _e:
+except BaseException as _e:
     torch = None  # type: ignore[assignment]
     TORCH_AVAILABLE = False
     logger.info("torch unavailable (%s). Deep learning inference disabled.", _e)
@@ -63,7 +63,7 @@ try:
     import tensorflow as tf  # noqa: F401 — re-exported
     TF_AVAILABLE = True
     logger.debug("tensorflow loaded successfully: %s", tf.__version__)
-except Exception as _e:
+except BaseException as _e:
     tf = None  # type: ignore[assignment]
     TF_AVAILABLE = False
     logger.info("tensorflow unavailable (%s). TF inference disabled.", _e)
@@ -76,7 +76,7 @@ try:
     from pydantic import BaseModel, Field  # noqa: F401 — re-exported
     PYDANTIC_AVAILABLE = True
     logger.debug("pydantic loaded successfully: %s", pydantic.__version__)
-except Exception as _e:
+except BaseException as _e:
     pydantic = None  # type: ignore[assignment]
     BaseModel = None  # type: ignore[assignment,misc]
     Field = None  # type: ignore[assignment]

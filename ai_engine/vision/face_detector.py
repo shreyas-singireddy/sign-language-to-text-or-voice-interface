@@ -1,9 +1,9 @@
-from ai_engine.utils.cv2_guard import cv2
 import mediapipe as mp
 import numpy as np
 
 from ai_engine.schemas.landmark_schema import FaceTelemetryData, Point3D
 from ai_engine.utils.config import sys_config
+from ai_engine.utils.cv2_guard import cv2
 from ai_engine.utils.logger import get_structured_logger
 
 logger = get_structured_logger("vision.face")

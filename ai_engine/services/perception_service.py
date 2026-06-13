@@ -1,6 +1,5 @@
 import time
 
-from ai_engine.utils.cv2_guard import cv2
 import numpy as np
 
 from ai_engine.processing.landmark_normalizer import landmark_normalizer
@@ -18,6 +17,7 @@ from ai_engine.telemetry.occlusion_metrics import occlusion_metrics_calc
 from ai_engine.telemetry.performance_metrics import performance_profiler
 from ai_engine.telemetry.stability_metrics import stability_metrics_calc
 from ai_engine.telemetry.visibility_metrics import visibility_metrics_calc
+from ai_engine.utils.cv2_guard import cv2
 from ai_engine.utils.logger import get_structured_logger
 from ai_engine.vision.camera_manager import CameraManager
 from ai_engine.vision.face_detector import FaceDetector

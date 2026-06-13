@@ -9,8 +9,8 @@ Exit codes:
   1 - One or more critical dependency failures
 """
 
-import sys
 import importlib
+import sys
 
 CRITICAL = []   # Must pass for app to start
 OPTIONAL = []   # Nice-to-have; warns but does not fail

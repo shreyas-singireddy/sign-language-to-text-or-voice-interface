@@ -9,7 +9,6 @@ from ai_engine.gesture_recognition.storage.model_registry import model_registry
 from ai_engine.utils.dependency_guard import TORCH_AVAILABLE
 
 
-
 class GestureService:
     def __init__(self):
         pass

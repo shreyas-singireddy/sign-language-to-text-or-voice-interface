@@ -2,7 +2,7 @@ import time
 
 import streamlit as st
 
-from ai_engine.utils.dependency_guard import cv2, CV2_AVAILABLE, require_torch
+from ai_engine.utils.dependency_guard import CV2_AVAILABLE, cv2, require_torch
 from src.services.translation_service import t
 
 # --- Graceful degradation gate ---
@@ -22,7 +22,6 @@ import pandas as pd
 
 from ai_engine.ai_agent.error_detection import error_detector
 from database.learning_schemas import learning_db
-from src.services.translation_service import t
 
 # Graceful Plotly import with fallback check
 try:

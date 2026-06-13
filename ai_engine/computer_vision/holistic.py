@@ -3,9 +3,9 @@ try:
 except ImportError:
     mp = None
 
-from ai_engine.utils.cv2_guard import cv2
 import numpy as np
 
+from ai_engine.utils.cv2_guard import cv2
 from config.config import (
     MP_MIN_DETECTION_CONFIDENCE,
     MP_MIN_TRACKING_CONFIDENCE,

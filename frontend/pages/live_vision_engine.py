@@ -3,7 +3,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from ai_engine.utils.dependency_guard import cv2, CV2_AVAILABLE
+from ai_engine.utils.dependency_guard import CV2_AVAILABLE, cv2
 from src.services.translation_service import t
 
 # --- Graceful degradation gate ---

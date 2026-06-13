@@ -2,7 +2,7 @@ import time
 
 import streamlit as st
 
-from ai_engine.utils.dependency_guard import cv2, CV2_AVAILABLE, mp, MP_AVAILABLE, require_cv2, require_torch
+from ai_engine.utils.dependency_guard import CV2_AVAILABLE, MP_AVAILABLE, cv2, mp, require_torch
 from src.services.translation_service import t
 
 # --- Graceful degradation gate ---

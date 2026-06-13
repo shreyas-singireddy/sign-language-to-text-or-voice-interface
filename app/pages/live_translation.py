@@ -2,7 +2,7 @@ import time
 
 import streamlit as st
 
-from ai_engine.utils.dependency_guard import cv2, CV2_AVAILABLE
+from ai_engine.utils.dependency_guard import CV2_AVAILABLE, cv2
 from src.services.translation_service import t
 
 # --- Graceful degradation gate ---
@@ -19,7 +19,6 @@ from app.services.ai_service import ai_service
 from app.services.audio_service import audio_service
 from app.services.database_service import db_service
 from config.config import SUPPORTED_LANGUAGES
-
 
 # Page Header
 st.markdown(
