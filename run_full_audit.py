@@ -256,6 +256,22 @@ try:
 except FileNotFoundError:
     print("MyPy not found in PATH.")
 
+# Run Pyupgrade check
+try:
+    print("Running Pyupgrade...")
+    # We run it in check mode (exit-non-zero-on-fix) to see if upgrades are available
+    res = subprocess.run(
+        ["pyupgrade", "--py312-plus", "backend/app/**/*.py", "app/**/*.py"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if res.returncode != 0:
+        static_analysis_issues.append("### Pyupgrade Suggestions Available")
+        static_analysis_issues.append("Run `pyupgrade --py312-plus` to upgrade syntax.")
+except FileNotFoundError:
+    print("Pyupgrade not found in PATH.")
+
 with open(PROJECT_ROOT / "static_analysis_report.md", "w") as f:
     f.write("# Static Analysis Audit Report\n\n")
     if static_analysis_issues:

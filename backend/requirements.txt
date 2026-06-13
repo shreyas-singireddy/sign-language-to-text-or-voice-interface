@@ -18,3 +18,4 @@ httpx
 gTTS # For cloud TTS
 google-cloud-translate # For Google Cloud Translation API
 python-gettext # For i18n in FastAPI
+pyupgrade # For automatic syntax upgrades to newer Python versions
