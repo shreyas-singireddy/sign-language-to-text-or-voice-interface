@@ -1,13 +1,23 @@
 import time
 
-from ai_engine.utils.cv2_guard import cv2
-import mediapipe as mp
 import streamlit as st
+
+from ai_engine.utils.dependency_guard import cv2, CV2_AVAILABLE, mp, MP_AVAILABLE, require_cv2
+from src.services.translation_service import t
+
+# --- Graceful degradation gate ---
+if not CV2_AVAILABLE or not MP_AVAILABLE:
+    st.warning(
+        "⚠️ **Visual Debug Dashboard is unavailable in this deployment.**\n\n"
+        "This page requires OpenCV and MediaPipe which could not be loaded. "
+        "All other pages remain fully functional.",
+        icon="🚫",
+    )
+    st.stop()
 
 from ai_engine.gesture_recognition.services.gesture_service import gesture_service
 from ai_engine.services.perception_service import perception_service
 from ai_engine.utils.config import sys_config
-from src.services.translation_service import t
 
 # MediaPipe drawing tools
 mp_drawing = mp.solutions.drawing_utils
