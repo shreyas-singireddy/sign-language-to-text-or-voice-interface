@@ -1,15 +1,28 @@
 import time
 from pathlib import Path
 
-from ai_engine.utils.cv2_guard import cv2
-import pandas as pd
 import streamlit as st
+
+from ai_engine.utils.dependency_guard import cv2, CV2_AVAILABLE
+from src.services.translation_service import t
+
+# --- Graceful degradation gate ---
+if not CV2_AVAILABLE:
+    st.warning(
+        "⚠️ **Live Vision Engine is unavailable in this deployment.**\n\n"
+        "This page requires OpenCV which could not be loaded. "
+        "All other pages remain fully functional.",
+        icon="🚫",
+    )
+    st.stop()
 
 # Graceful Plotly import with fallback check
 try:
     import plotly.graph_objects as go
 except ImportError:
     go = None
+
+import pandas as pd
 
 from ai_engine.exporters.csv_exporter import csv_exporter
 from ai_engine.exporters.json_exporter import json_exporter
@@ -20,7 +33,6 @@ from ai_engine.storage.landmark_recorder import landmark_recorder
 from ai_engine.storage.session_manager import session_manager
 from ai_engine.utils.config import sys_config
 from config.config import SUPPORTED_GESTURES
-from src.services.translation_service import t
 
 # Page headers
 st.markdown(

@@ -1,13 +1,25 @@
 import time
 
-from ai_engine.utils.cv2_guard import cv2
 import streamlit as st
+
+from ai_engine.utils.dependency_guard import cv2, CV2_AVAILABLE
+from src.services.translation_service import t
+
+# --- Graceful degradation gate ---
+if not CV2_AVAILABLE:
+    st.warning(
+        "⚠️ **Live Translation is unavailable in this deployment.**\n\n"
+        "This page requires OpenCV which could not be loaded. "
+        "All other pages remain fully functional.",
+        icon="🚫",
+    )
+    st.stop()
 
 from app.services.ai_service import ai_service
 from app.services.audio_service import audio_service
 from app.services.database_service import db_service
 from config.config import SUPPORTED_LANGUAGES
-from src.services.translation_service import t
+
 
 # Page Header
 st.markdown(

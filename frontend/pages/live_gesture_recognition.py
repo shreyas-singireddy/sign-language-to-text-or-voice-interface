@@ -1,8 +1,21 @@
 import time
 
-from ai_engine.utils.cv2_guard import cv2
-import pandas as pd
 import streamlit as st
+
+from ai_engine.utils.dependency_guard import cv2, CV2_AVAILABLE
+from src.services.translation_service import t
+
+# --- Graceful degradation gate ---
+if not CV2_AVAILABLE:
+    st.warning(
+        "⚠️ **Live Gesture Recognition is unavailable in this deployment.**\n\n"
+        "This page requires OpenCV which could not be loaded. "
+        "All other pages remain fully functional.",
+        icon="🚫",
+    )
+    st.stop()
+
+import pandas as pd
 
 from ai_engine.ai_agent.error_detection import error_detector
 from database.learning_schemas import learning_db
