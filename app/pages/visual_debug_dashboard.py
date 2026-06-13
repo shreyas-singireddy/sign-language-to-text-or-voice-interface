@@ -1,6 +1,6 @@
 import time
 
-import cv2
+from ai_engine.utils.cv2_guard import cv2
 import mediapipe as mp
 import streamlit as st
 

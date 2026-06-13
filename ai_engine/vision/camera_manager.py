@@ -1,7 +1,7 @@
 import threading
 import time
 
-import cv2
+from ai_engine.utils.cv2_guard import cv2
 import numpy as np
 
 from ai_engine.utils.config import sys_config

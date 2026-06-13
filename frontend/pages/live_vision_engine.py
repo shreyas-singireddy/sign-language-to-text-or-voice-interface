@@ -1,7 +1,7 @@
 import time
 from pathlib import Path
 
-import cv2
+from ai_engine.utils.cv2_guard import cv2
 import pandas as pd
 import streamlit as st
 
