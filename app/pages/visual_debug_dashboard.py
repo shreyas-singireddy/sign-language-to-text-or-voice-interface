@@ -2,7 +2,7 @@ import time
 
 import streamlit as st
 
-from ai_engine.utils.dependency_guard import cv2, CV2_AVAILABLE, mp, MP_AVAILABLE, require_cv2
+from ai_engine.utils.dependency_guard import cv2, CV2_AVAILABLE, mp, MP_AVAILABLE, require_cv2, require_torch
 from src.services.translation_service import t
 
 # --- Graceful degradation gate ---
@@ -13,6 +13,9 @@ if not CV2_AVAILABLE or not MP_AVAILABLE:
         "All other pages remain fully functional.",
         icon="🚫",
     )
+    st.stop()
+
+if not require_torch():
     st.stop()
 
 from ai_engine.gesture_recognition.services.gesture_service import gesture_service

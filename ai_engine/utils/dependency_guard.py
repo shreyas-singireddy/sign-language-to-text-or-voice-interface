@@ -112,3 +112,19 @@ def require_mp() -> bool:
         vision_unavailable_message()
         return False
     return True
+
+
+def require_torch() -> bool:
+    """Returns True if torch is available, otherwise shows Streamlit warning."""
+    if not TORCH_AVAILABLE:
+        try:
+            import streamlit as st
+            st.warning(
+                "⚠️ **Gesture Recognition is unavailable because PyTorch is not installed in this deployment.**\n\n"
+                "To enable gesture translation models, PyTorch must be installed.",
+                icon="🤖",
+            )
+        except Exception:
+            pass
+        return False
+    return True
