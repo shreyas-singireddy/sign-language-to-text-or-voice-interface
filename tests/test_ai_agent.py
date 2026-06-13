@@ -13,7 +13,25 @@ from ai_engine.schemas.landmark_schema import (
     Point3D,
     PoseTelemetryData,
 )
-from database.learning_schemas import LearningDatabase
+from database.learning_schemas import (
+    OFFLINE_LEARNING_FILE,
+    OFFLINE_QUIZZES_FILE,
+    LearningDatabase,
+)
+
+
+def setup_module(module):
+    # Clear offline DB files to prevent test state pollution
+    if OFFLINE_LEARNING_FILE.exists():
+        try:
+            OFFLINE_LEARNING_FILE.write_text(json.dumps({}))
+        except Exception:
+            pass
+    if OFFLINE_QUIZZES_FILE.exists():
+        try:
+            OFFLINE_QUIZZES_FILE.write_text(json.dumps([]))
+        except Exception:
+            pass
 
 
 # Mocking coordinate helper
