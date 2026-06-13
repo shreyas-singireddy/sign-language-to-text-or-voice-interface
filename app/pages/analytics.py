@@ -10,15 +10,16 @@ import streamlit as st
 from analytics.metrics_collector import metrics_collector
 from analytics.report_generator import report_generator
 from app.services.database_service import db_service
+from src.services.translation_service import t
 
 # ─── Page Header ────────────────────────────────────────────────────────────────
 st.markdown(
-    """
+    f"""
     <h1 style="font-size: 3rem; margin-bottom: 5px; text-transform: uppercase; font-family: 'Space Grotesk', sans-serif; font-weight: 900;">
-        ANALYTICS PLATFORM
+        {t("analytics_title")}
     </h1>
     <p style='font-size: 1.1rem; font-weight: bold; color: #1040C0;'>
-        Real-time translation telemetry, gesture heatmaps, confidence tracking, and language distribution.
+        {t("an_subtitle")}
     </p>
     """,
     unsafe_allow_html=True,
@@ -36,7 +37,7 @@ with kpi_col1:
     st.markdown(
         f"""
         <div class="bauhaus-card card-red" style="padding: 15px; text-align: center;">
-            <span style="font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase;">Total Translations</span>
+            <span style="font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase;">{t("an_total_translations")}</span>
             <h2 style="font-size: 2.8rem; margin: 5px 0 0 0;">{summary['total_translations']}</h2>
         </div>
         """,
@@ -47,7 +48,7 @@ with kpi_col2:
     st.markdown(
         f"""
         <div class="bauhaus-card card-blue" style="padding: 15px; text-align: center;">
-            <span style="font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase;">Avg Confidence</span>
+            <span style="font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase;">{t("an_avg_confidence")}</span>
             <h2 style="font-size: 2.8rem; margin: 5px 0 0 0;">{avg_conf_pct}%</h2>
         </div>
         """,
@@ -58,7 +59,7 @@ with kpi_col3:
     st.markdown(
         f"""
         <div class="bauhaus-card card-yellow" style="padding: 15px; text-align: center;">
-            <span style="font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase;">Avg Latency</span>
+            <span style="font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase;">{t("an_avg_latency")}</span>
             <h2 style="font-size: 2.8rem; margin: 5px 0 0 0;">{latency:.0f}<small style="font-size: 1.2rem;">ms</small></h2>
         </div>
         """,
@@ -70,7 +71,7 @@ with kpi_col4:
     st.markdown(
         f"""
         <div class="bauhaus-card" style="padding: 15px; text-align: center; border-top: 15px solid {'#D02020' if db_status == 'Offline' else '#208040'} !important;">
-            <span style="font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase;">Database</span>
+            <span style="font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase;">{t("an_database")}</span>
             <h2 style="font-size: 2.8rem; margin: 5px 0 0 0; color: {status_color} !important;">{db_status}</h2>
         </div>
         """,
@@ -96,9 +97,9 @@ with chart_col1:
             )
         )
         fig_gesture.update_layout(
-            title="Top Gesture Frequencies",
-            xaxis_title="Gesture Token",
-            yaxis_title="Count",
+            title=t("an_top_gestures"),
+            xaxis_title=t("an_gesture_token"),
+            yaxis_title=t("an_count"),
             plot_bgcolor="#F0F0F0",
             paper_bgcolor="#FFFFFF",
             font=dict(family="Outfit", size=12, color="#121212"),
@@ -109,7 +110,7 @@ with chart_col1:
         )
         st.plotly_chart(fig_gesture, use_container_width=True)
     else:
-        st.info("No gesture data yet. Start translating to generate analytics.")
+        st.info(t("an_no_gesture_data"))
 
 with chart_col2:
     # Language Distribution Bar Chart
@@ -125,9 +126,9 @@ with chart_col2:
             )
         )
         fig_lang.update_layout(
-            title="Translation Language Distribution",
-            xaxis_title="Language",
-            yaxis_title="Translations",
+            title=t("an_language_dist"),
+            xaxis_title=t("an_language"),
+            yaxis_title=t("an_translations"),
             plot_bgcolor="#F0F0F0",
             paper_bgcolor="#FFFFFF",
             font=dict(family="Outfit", size=12, color="#121212"),
@@ -138,7 +139,7 @@ with chart_col2:
         )
         st.plotly_chart(fig_lang, use_container_width=True)
     else:
-        st.info("No language data yet.")
+        st.info(t("an_no_language_data"))
 
 # ─── EMOTION PIE + CONFIDENCE HISTOGRAM ─────────────────────────────────────────
 st.markdown("---")
@@ -157,7 +158,7 @@ with pie_col:
             )
         )
         fig_emotion.update_layout(
-            title="Emotion Tone Distribution",
+            title=t("an_emotion_dist"),
             paper_bgcolor="#FFFFFF",
             font=dict(family="Outfit", size=12, color="#121212"),
             title_font=dict(size=16, color="#121212", family="Space Grotesk"),
@@ -166,7 +167,7 @@ with pie_col:
         )
         st.plotly_chart(fig_emotion, use_container_width=True)
     else:
-        st.info("Emotion data will appear after translations are processed.")
+        st.info(t("an_no_emotion_data"))
 
 with hist_col:
     conf_data = report["confidence_bars"]
@@ -181,9 +182,9 @@ with hist_col:
             )
         )
         fig_conf.update_layout(
-            title="Confidence Score Distribution",
-            xaxis_title="Confidence Range",
-            yaxis_title="Frequency",
+            title=t("an_confidence_dist"),
+            xaxis_title=t("an_confidence_range"),
+            yaxis_title=t("an_frequency"),
             plot_bgcolor="#F0F0F0",
             paper_bgcolor="#FFFFFF",
             font=dict(family="Outfit", size=12, color="#121212"),
@@ -194,7 +195,7 @@ with hist_col:
         )
         st.plotly_chart(fig_conf, use_container_width=True)
     else:
-        st.info("Confidence histogram data will appear after translations.")
+        st.info(t("an_no_confidence_data"))
 
 # ─── DAILY ACTIVITY TIMELINE ─────────────────────────────────────────────────────
 st.markdown("---")
@@ -212,9 +213,9 @@ if daily_data["x"]:
         )
     )
     fig_daily.update_layout(
-        title="Daily Translation Activity",
-        xaxis_title="Date",
-        yaxis_title="Translations",
+        title=t("an_daily_activity"),
+        xaxis_title=t("an_date"),
+        yaxis_title=t("an_translations"),
         plot_bgcolor="#F0F0F0",
         paper_bgcolor="#FFFFFF",
         font=dict(family="Outfit", size=12, color="#121212"),
@@ -225,11 +226,11 @@ if daily_data["x"]:
     )
     st.plotly_chart(fig_daily, use_container_width=True)
 else:
-    st.info("Daily activity chart will appear after translation sessions are recorded.")
+    st.info(t("an_no_activity_data"))
 
 # ─── METRICS RESET CONTROL ───────────────────────────────────────────────────────
 st.markdown("---")
-if st.button("🔄 Reset Live Session Metrics", key="btn_reset_metrics", use_container_width=True):
+if st.button(f"🔄 {t('an_reset_metrics')}", key="btn_reset_metrics", use_container_width=True):
     metrics_collector.reset()
-    st.success("Live session metrics reset.")
+    st.success(t("an_reset_success"))
     st.rerun()

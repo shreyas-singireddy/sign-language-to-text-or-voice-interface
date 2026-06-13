@@ -15,17 +15,17 @@ from emergency.emergency_phrases import EMERGENCY_CATEGORIES
 from emergency.panic_protocol import panic_protocol
 from emergency.sos_detector import LEVEL_CRITICAL, sos_detector
 from speech.tts_engine import tts_engine
+from src.services.translation_service import t
 
 # ─── Page Header ───────────────────────────────────────────────────────────────
 st.markdown(
-    """
+    f"""
     <h1 style="font-size: 3rem; margin-bottom: 5px; text-transform: uppercase;
         font-family: 'Space Grotesk', sans-serif; font-weight: 900; color: #D02020 !important;">
-        🚨 EMERGENCY SYSTEM
+        🚨 {t("em_title")}
     </h1>
     <p style='font-size: 1.1rem; font-weight: bold; color: #D02020;'>
-        Critical communication platform for life-threatening situations.
-        Instant SOS broadcast, multilingual emergency phrases, and alert dispatch.
+        {t("em_subtitle")}
     </p>
     """,
     unsafe_allow_html=True,
@@ -72,7 +72,7 @@ if st.session_state.get("emergency_active", False):
     )
 
     if st.button(
-        "✅ Emergency Resolved — Deactivate Protocol",
+        f"✅ {t('em_deactivate')}",
         key="btn_deactivate_emergency",
         use_container_width=True,
     ):
@@ -90,11 +90,11 @@ col_sos, col_phrases = st.columns([1, 2])
 # ── LEFT: SOS BROADCAST PANEL ──────────────────────────────────────────────────
 with col_sos:
     st.markdown(
-        """
+        f"""
         <div class="bauhaus-card card-red" style="padding: 20px; text-align: center;">
-            <h3 style="margin-top: 0; color: #D02020 !important;">SOS BROADCAST</h3>
+            <h3 style="margin-top: 0; color: #D02020 !important;">{t("em_sos_broadcast")}</h3>
             <p style="font-size: 0.85rem; color: #555;">
-                Activate to send emergency signals across all channels.
+                {t("Activate to send emergency signals across all channels.")}
             </p>
         </div>
         """,
@@ -130,7 +130,7 @@ with col_sos:
     user_name = st.session_state.get("user_name", "SignBridge User")
 
     if st.button(
-        "🚨 ACTIVATE FULL SOS PROTOCOL",
+        f"🚨 {t('em_activate_sos').upper()}",
         key="btn_sos_activate",
         use_container_width=True,
     ):
@@ -201,11 +201,11 @@ with col_sos:
 # ── RIGHT: EMERGENCY PHRASE BANK ──────────────────────────────────────────────
 with col_phrases:
     st.markdown(
-        """
+        f"""
         <div class="bauhaus-card card-blue" style="padding: 20px;">
-            <h3 style="margin-top: 0;">EMERGENCY PHRASE BANK</h3>
+            <h3 style="margin-top: 0;">{t("em_phrase_bank")}</h3>
             <p style="font-size: 0.85rem; color: #555; margin-bottom: 0;">
-                Tap any phrase to hear it synthesized in the selected language.
+                {t("Tap any phrase to hear it synthesized in the selected language.")}
             </p>
         </div>
         """,
@@ -214,7 +214,7 @@ with col_phrases:
 
     # Language selector
     em_lang = st.selectbox(
-        "Emergency Language:",
+        t("em_emergency_lang"),
         options=list(SUPPORTED_LANGUAGES.keys()),
         index=0,
         key="sel_emergency_lang",
@@ -252,9 +252,9 @@ with col_phrases:
 # ─── EMERGENCY CONTACT MANAGER ─────────────────────────────────────────────────
 st.markdown("---")
 st.markdown(
-    """
+    f"""
     <div class="bauhaus-card card-yellow" style="padding: 20px;">
-        <h3 style="margin-top: 0;">EMERGENCY CONTACTS</h3>
+        <h3 style="margin-top: 0;">{t("em_contacts")}</h3>
     </div>
     """,
     unsafe_allow_html=True,
@@ -262,15 +262,15 @@ st.markdown(
 
 contact_col1, contact_col2, contact_col3 = st.columns(3)
 with contact_col1:
-    ec1_name = st.text_input("Contact 1 Name", value="", key="ec1_name")
-    ec1_phone = st.text_input("Contact 1 Phone", value="", key="ec1_phone")
+    ec1_name = st.text_input(t("Contact 1 Name"), value="", key="ec1_name")
+    ec1_phone = st.text_input(t("Contact 1 Phone"), value="", key="ec1_phone")
 with contact_col2:
-    ec2_name = st.text_input("Contact 2 Name", value="", key="ec2_name")
-    ec2_phone = st.text_input("Contact 2 Phone", value="", key="ec2_phone")
+    ec2_name = st.text_input(t("Contact 2 Name"), value="", key="ec2_name")
+    ec2_phone = st.text_input(t("Contact 2 Phone"), value="", key="ec2_phone")
 with contact_col3:
-    medical_info = st.text_area("Medical Information", value="", height=100, key="medical_info")
+    medical_info = st.text_area(t("Medical Information"), value="", height=100, key="medical_info")
 
-if st.button("💾 Save Emergency Profile", key="btn_save_emergency", use_container_width=True):
+if st.button(f"💾 {t('em_save_profile')}", key="btn_save_emergency", use_container_width=True):
     st.session_state["emergency_profile"] = {
         "contact1": {"name": ec1_name, "phone": ec1_phone},
         "contact2": {"name": ec2_name, "phone": ec2_phone},
@@ -280,7 +280,7 @@ if st.button("💾 Save Emergency Profile", key="btn_save_emergency", use_contai
 
 # ─── ALERT HISTORY ──────────────────────────────────────────────────────────────
 st.markdown("---")
-st.markdown("### Alert History This Session")
+st.markdown(f"### {t('em_alert_history')}")
 history = alert_dispatcher.get_recent_alerts(10)
 if history:
     for alert in reversed(history):
@@ -299,4 +299,4 @@ if history:
             unsafe_allow_html=True,
         )
 else:
-    st.info("No emergency alerts dispatched in this session.")
+    st.info(t("em_no_alerts"))

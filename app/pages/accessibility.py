@@ -15,15 +15,16 @@ from accessibility.theme_manager import (
     AccessibilityTheme,
     theme_manager,
 )
+from src.services.translation_service import t
 
 # ─── Page Header ───────────────────────────────────────────────────────────────
 st.markdown(
-    """
+    f"""
     <h1 style="font-size: 3rem; margin-bottom: 5px; text-transform: uppercase; font-family: 'Space Grotesk', sans-serif; font-weight: 900;">
-        ACCESSIBILITY ENGINE
+        {t("acc_title")}
     </h1>
     <p style='font-size: 1.1rem; font-weight: bold; color: #1040C0;'>
-        Universal access settings — themes, motion, keyboard navigation, and screen reader support.
+        {t("acc_subtitle")}
     </p>
     """,
     unsafe_allow_html=True,
@@ -48,11 +49,11 @@ col_themes, col_controls = st.columns([2, 1])
 
 with col_themes:
     st.markdown(
-        """
+        f"""
         <div class="bauhaus-card card-red" style="padding: 20px;">
-            <h3 style="margin-top: 0px;">VISUAL THEME PRESETS</h3>
+            <h3 style="margin-top: 0px;">{t("acc_visual_presets")}</h3>
             <p style="font-size: 0.9rem; color: #555; margin-bottom: 0;">
-                Select one or more themes. Multiple themes can be combined (e.g. Dark Mode + Reduced Motion).
+                {t("acc_visual_desc")}
             </p>
         </div>
         """,
@@ -81,25 +82,25 @@ with col_themes:
     if not selected_themes:
         selected_themes = [AccessibilityTheme.BAUHAUS_DEFAULT.value]
 
-    if st.button("✅ Apply Selected Themes", key="btn_apply_themes", use_container_width=True):
+    if st.button(f"✅ {t('acc_apply_themes')}", key="btn_apply_themes", use_container_width=True):
         st.session_state["active_themes"] = selected_themes
-        st.success(f"Themes applied: {', '.join(selected_themes)}")
+        st.success(t("acc_themes_applied", themes=", ".join(selected_themes)))
         st.rerun()
 
     # Live preview badge
     st.markdown("---")
-    st.markdown("### Theme Preview")
+    st.markdown(f"### {t('acc_theme_preview')}")
     st.markdown(
-        """
+        f"""
         <div class="bauhaus-card card-blue" style="padding: 20px;">
-            <h4 style="margin-top: 0;">Sample Card</h4>
-            <p style="margin: 0;">This card reflects your active theme settings.</p>
+            <h4 style="margin-top: 0;">{t("acc_sample_card")}</h4>
+            <p style="margin: 0;">{t("acc_sample_card_desc")}</p>
         </div>
         <div class="bauhaus-card card-red" style="padding: 15px; text-align: center; margin-top: 10px;">
-            <strong>BAUHAUS HEADLINE</strong>
+            <strong>{t("acc_bauhaus_headline")}</strong>
         </div>
         <div class="bauhaus-card card-yellow" style="padding: 15px; text-align: center; margin-top: 10px;">
-            <strong>METRIC: 92.4%</strong>
+            <strong>{t("acc_metric")}</strong>
         </div>
         """,
         unsafe_allow_html=True,
@@ -107,9 +108,9 @@ with col_themes:
 
 with col_controls:
     st.markdown(
-        """
+        f"""
         <div class="bauhaus-card card-blue" style="padding: 20px;">
-            <h3 style="margin-top: 0px;">ACCESSIBILITY CONTROLS</h3>
+            <h3 style="margin-top: 0px;">{t("acc_controls")}</h3>
         </div>
         """,
         unsafe_allow_html=True,
@@ -117,7 +118,7 @@ with col_controls:
 
     # Font size control
     font_scale = st.slider(
-        "Font Size Scale (%)",
+        t("acc_font_scale"),
         min_value=80,
         max_value=150,
         value=st.session_state["font_scale"],
@@ -129,27 +130,27 @@ with col_controls:
         font_css = f"html, body, .stApp {{ font-size: {font_scale}% !important; }}"
         st.markdown(f"<style>{font_css}</style>", unsafe_allow_html=True)
 
-    st.markdown(f"**Active Scale:** `{font_scale}%`")
+    st.markdown(f"**{t('acc_active_scale', scale=font_scale)}**")
 
     st.markdown("---")
 
     # Screen reader mode toggle
     sr_mode = st.toggle(
-        "Screen Reader Mode",
+        t("acc_screen_reader_mode"),
         value=st.session_state["screen_reader_mode"],
         key="toggle_sr_mode",
-        help="Adds ARIA live regions and additional screen reader hints.",
+        help=t("acc_screen_reader_help"),
     )
     st.session_state["screen_reader_mode"] = sr_mode
     if sr_mode:
         st.markdown(
             screen_reader_hints.live_region(
-                content="<span>Screen reader mode active. Navigation landmarks enabled.</span>",
+                content=f"<span>{t('acc_screen_reader_active')}</span>",
                 aria_label="Screen reader status",
             ),
             unsafe_allow_html=True,
         )
-        st.success("Screen reader enhancements active.")
+        st.success(t("acc_screen_reader_success"))
 
     st.markdown("---")
 
@@ -166,9 +167,9 @@ with col_controls:
     st.markdown(
         f"""
         <div class="bauhaus-card card-yellow" style="padding: 16px; text-align: center;">
-            <div style="font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase;">WCAG Compliance</div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase;">{t("acc_wcag_compliance")}</div>
             <div style="font-size: 2.5rem; font-weight: 900; color: #121212;">{wcag_level}</div>
-            <div style="font-size: 0.75rem; color: #555;">{active_count} theme(s) active</div>
+            <div style="font-size: 0.75rem; color: #555;">{t("acc_themes_active_count", count=active_count)}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -177,12 +178,11 @@ with col_controls:
 # ─── Keyboard Shortcuts Reference ───────────────────────────────────────────────
 st.markdown("---")
 st.markdown(
-    """
+    f"""
     <div class="bauhaus-card card-yellow" style="padding: 20px;">
-        <h3 style="margin-top: 0;">KEYBOARD SHORTCUTS</h3>
+        <h3 style="margin-top: 0;">{t("acc_keyboard_shortcuts")}</h3>
         <p style="font-size: 0.9rem; color: #555;">
-            SignBridge AI supports keyboard navigation for hands-free operation.
-            All shortcuts use the <kbd>ALT</kbd> modifier key.
+            {t("acc_keyboard_desc")}
         </p>
     </div>
     """,
@@ -196,16 +196,16 @@ components.html(keyboard_nav.generate_keyboard_listener_html(), height=0)
 
 # ─── Screen Reader Test ──────────────────────────────────────────────────────────
 st.markdown("---")
-st.markdown("### Screen Reader Announcement Test")
+st.markdown(f"### {t('acc_sr_test_title')}")
 test_col1, test_col2 = st.columns(2)
 with test_col1:
     test_message = st.text_input(
-        "Type a message to test screen reader live region:",
+        t("acc_sr_test_label"),
         value="",
         key="sr_test_input",
     )
 with test_col2:
-    if st.button("📢 Announce", key="btn_announce_sr", use_container_width=True):
+    if st.button(f"📢 {t('acc_announce_btn')}", key="btn_announce_sr", use_container_width=True):
         if test_message.strip():
             st.markdown(
                 screen_reader_hints.alert_region(
@@ -214,15 +214,15 @@ with test_col2:
                 ),
                 unsafe_allow_html=True,
             )
-            st.success(f"Announced: '{test_message}'")
+            st.success(t("acc_announced_msg", msg=test_message))
 
 # ─── Footer ──────────────────────────────────────────────────────────────────────
 st.markdown("---")
 st.markdown(
-    """
+    f"""
     <div class="bauhaus-card" style="padding: 14px; text-align: center;">
         <p style="font-size: 0.8rem; color: #555; margin: 0;">
-            SignBridge AI — Accessibility Engine (Layer 10) | WCAG 2.1 Compliant | Universal Design Principles
+            {t("acc_footer_desc")}
         </p>
     </div>
     """,

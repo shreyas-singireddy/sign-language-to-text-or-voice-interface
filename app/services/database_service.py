@@ -202,7 +202,7 @@ class DatabaseService:
 
         # Offline fallback
         try:
-            with open(self.OFFLINE_PREFS_FILE, "r") as f:
+            with open(self.OFFLINE_PREFS_FILE) as f:
                 prefs = json.load(f)
             prefs[phone] = language
             with open(self.OFFLINE_PREFS_FILE, "w") as f:
@@ -230,7 +230,7 @@ class DatabaseService:
 
         # Offline fallback
         try:
-            with open(self.OFFLINE_PREFS_FILE, "r") as f:
+            with open(self.OFFLINE_PREFS_FILE) as f:
                 prefs = json.load(f)
             return prefs.get(phone)
         except Exception as e:

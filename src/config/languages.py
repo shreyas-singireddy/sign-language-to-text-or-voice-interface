@@ -27,7 +27,16 @@ SUPPORTED_LANGUAGES: dict[str, LanguageMetadata] = {
         tts_code="en",
         flag="🇺🇸",
     ),
+    "Spanish": LanguageMetadata(
+        code="es",
+        name="Spanish",
+        native_name="Español",
+        bcp47="es-ES",
+        tts_code="es",
+        flag="🇪🇸",
+    ),
     "Hindi": LanguageMetadata(
+
         code="hi",
         name="Hindi",
         native_name="हिंदी",

@@ -4,6 +4,10 @@ import cv2
 import pandas as pd
 import streamlit as st
 
+from ai_engine.ai_agent.error_detection import error_detector
+from database.learning_schemas import learning_db
+from src.services.translation_service import t
+
 # Graceful Plotly import with fallback check
 try:
     import plotly.graph_objects as go
@@ -16,11 +20,11 @@ from ai_engine.utils.config import sys_config
 
 # Page headers
 st.markdown(
-    '<h1 class="gradient-text" style="font-size: 3.5rem; margin-bottom: 5px; letter-spacing: -2px;">GESTURE CONTROL COCKPIT</h1>',
+    f'<h1 class="gradient-text" style="font-size: 3.5rem; margin-bottom: 5px; letter-spacing: -2px;">{t("lgr_title")}</h1>',
     unsafe_allow_html=True,
 )
 st.markdown(
-    "<p style='font-size: 1.25rem; font-weight: 700; color: #1040C0; text-transform: uppercase;'>SignBridge Real-time AI Classification & Sequence Decoding</p>",
+    f"<p style='font-size: 1.25rem; font-weight: 700; color: #1040C0; text-transform: uppercase;'>{t('lgr_subtitle')}</p>",
     unsafe_allow_html=True,
 )
 st.markdown("---")
@@ -54,24 +58,25 @@ telemetry_data = None
 
 with col_cam:
     st.markdown(
-        """
+        f"""
         <div class="bauhaus-card card-red" style="padding: 15px; margin-bottom: 15px;">
-            <h3 style="margin: 0; font-size: 1.4rem;">🎥 Gesture Recognition Stream</h3>
+            <h3 style="margin: 0; font-size: 1.4rem;">🎥 {t("lgr_gesture_stream")}</h3>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
     # Model configuration selector
-    st.markdown("### Inference Settings")
+    st.markdown(f"### {t('lgr_inference_settings')}")
     model_mode = st.selectbox(
-        "Inference Model Type",
+        t("lgr_inference_model_type"),
         ["Alphabet (Static A-Z/0-9)", "Word Model (Temporal Sequences)"],
+        format_func=lambda x: t("lgr_alphabet_mode") if x.startswith("Alphabet") else t("lgr_word_mode"),
         key="select_model_mode",
     )
 
     selected_arch = st.selectbox(
-        "Sequence Architecture Model",
+        t("lgr_seq_arch_model"),
         ["LSTM", "BiLSTM", "Transformer", "TCN"],
         index=0,
         key="select_seq_arch",
@@ -80,26 +85,26 @@ with col_cam:
     # Controls
     ctrl_col1, ctrl_col2, ctrl_col3 = st.columns(3)
     with ctrl_col1:
-        if st.button("Start AI Predictor", key="btn_start_gest_cam"):
+        if st.button(t("lgr_start_predictor"), key="btn_start_gest_cam"):
             st.session_state["gesture_cam_active"] = True
             st.session_state["predictions_log"].clear()
             st.session_state["sequence_buffer"].clear()
             st.session_state["gesture_sentence"] = ""
     with ctrl_col2:
-        if st.button("Stop Predictor", key="btn_stop_gest_cam"):
+        if st.button(t("lgr_stop_predictor"), key="btn_stop_gest_cam"):
             st.session_state["gesture_cam_active"] = False
     with ctrl_col3:
-        if st.button("Reset Timeline", key="btn_clear_gest_seq"):
+        if st.button(t("lgr_reset_timeline"), key="btn_clear_gest_seq"):
             st.session_state["predictions_log"].clear()
             st.session_state["sequence_buffer"].clear()
             st.session_state["gesture_sentence"] = ""
-            st.success("Buffer cleared!")
+            st.success(t("lgr_buffer_cleared"))
 
     video_view = st.empty()
 
     if st.session_state["gesture_cam_active"]:
         st.markdown(
-            '<div class="pulse-badge">● REAL-TIME CLASSIFIER BROADCASTING</div>',
+            f'<div class="pulse-badge">● {t("lgr_active_broadcast")}</div>',
             unsafe_allow_html=True,
         )
 
@@ -110,7 +115,7 @@ with col_cam:
                 while st.session_state["gesture_cam_active"]:
                     read_success, frame, latency = perception_service.camera.read_frame()
                     if not read_success:
-                        st.error("Ingestion failed: Camera disconnected.")
+                        st.error(t("lgr_ingest_failed"))
                         break
 
                     # Run Perception Pipeline
@@ -134,9 +139,9 @@ with col_cam:
                                 st.session_state["custom_rec_active"] = False
                                 saved_path = gesture_service.stop_and_save_recording()
                                 if saved_path:
-                                    st.success(f"Recorded 1 sample sequence successfully: {saved_path.name}")
+                                    st.success(t("lgr_record_success").format(path=saved_path.name))
                                 else:
-                                    st.error("Recording failed validation filters.")
+                                    st.error(t("lgr_record_failed"))
 
                     # Run Gesture recognition engine
                     if model_mode.startswith("Alphabet"):
@@ -159,6 +164,13 @@ with col_cam:
                     # Log prediction history
                     pred_label = prediction_data["prediction"]
                     pred_conf = prediction_data["confidence"]
+
+                    # Run Error Detection and log practice metrics
+                    if pred_label and pred_label not in ["IDLE", "WAITING_FOR_CLEAR_GESTURE", ""]:
+                        err_feedback = error_detector.detect_errors(telemetry_data.landmarks, pred_label)
+                        st.session_state["latest_error_feedback"] = err_feedback
+                        user_phone = st.session_state.get("user_phone", "demo_user")
+                        learning_db.log_practice(user_phone, pred_conf, pred_label)
 
                     if pred_label not in ["IDLE", "WAITING_FOR_CLEAR_GESTURE", ""]:
                         # Append to history logs
@@ -206,14 +218,14 @@ with col_cam:
                 perception_service.camera.release()
                 video_view.empty()
         else:
-            st.error("Capture device initialization failed.")
+            st.error(t("lgr_capture_device_failed"))
     else:
-        video_view.info("Start the AI Predictor camera loop to initiate real-time gesture classification.")
+        video_view.info(t("lgr_camera_info"))
 
 # ----------------- RIGHT COLUMN: CONTROL PANELS & STUDIO -----------------
 with col_panels:
     tab_recognition, tab_training, tab_registry = st.tabs(
-        ["🤟 AI Predictions", "🏋️ Custom Training Studio", "🛡️ Model Registry"]
+        [f"🤟 {t('lgr_tab_predictions')}", f"🏋️ {t('lgr_tab_training')}", f"🛡️ {t('lgr_tab_registry')}"]
     )
 
     with tab_recognition:
@@ -224,13 +236,13 @@ with col_panels:
         st.markdown(
             f"""
             <div class="bauhaus-card card-blue" style="padding:20px; margin-bottom:15px; text-align: center;">
-                <h4 style="margin:0 0 5px 0; font-size:1.1rem; color:#D02020 !important;">ACTIVE GESTURE CLASSIFIED</h4>
+                <h4 style="margin:0 0 5px 0; font-size:1.1rem; color:#D02020 !important;">{t("lgr_active_gesture")}</h4>
                 <h1 style="font-size:3.5rem; letter-spacing: -2px; margin: 5px 0;">{curr_pred}</h1>
                 <div style="background-color:#E6E6E6; height:20px; border:2px solid #121212; position:relative; margin-top:10px;">
                     <div style="background-color:#F0C020; height:100%; width:{int(curr_conf * 100)}%; border-right:2px solid #121212;"></div>
                 </div>
                 <div style="display:flex; justify-content:space-between; margin-top:5px; font-weight:bold; font-size:0.85rem;">
-                    <span>CONFIDENCE:</span><span>{int(curr_conf * 100)}%</span>
+                    <span>{t("lgr_confidence")}</span><span>{int(curr_conf * 100)}%</span>
                 </div>
             </div>
             """,
@@ -240,16 +252,45 @@ with col_panels:
         # Alternatives
         alts = prediction_data.get("alternatives", [])
         alt_str = ", ".join(alts) if alts else "None"
-        st.markdown(f"**Top Alternatives Candidates:** `{alt_str}`")
+        st.markdown(f"**{t('lgr_top_alternatives')}** `{alt_str}`")
+
+        # AI Postural Error Correction & Explanation
+        latest_feedback = st.session_state.get("latest_error_feedback")
+        if latest_feedback and latest_feedback.get("deviations"):
+            st.markdown("### ⚠️ AI Alignment Feedback")
+            for dev in latest_feedback["deviations"]:
+                st.write(f"- **{dev['joint']}**: Variance {dev['variance']}° (Expected {dev['expected']}°, Actual {dev['actual']}°)")
+            if latest_feedback.get("corrections"):
+                st.info("💡 Suggestions: " + " ".join(latest_feedback["corrections"]))
+        elif latest_feedback:
+            st.success("✅ Perfect alignment detected!")
+
+        # AI Sign Explainer
+        if curr_pred and curr_pred not in ["IDLE", "WAITING_FOR_CLEAR_GESTURE", ""]:
+            with st.expander("💡 AI Sign Explanation & Details", expanded=False):
+                if st.button("Generate AI Explanation", key="btn_explain_sign_lgr"):
+                    with st.spinner("Analyzing sign with AI..."):
+                        from ai_engine.ai_agent.llm_engine import llm_engine
+                        user_lang = st.session_state.get("language", "English")
+                        prompt = (
+                            f"Explain the detected sign '{curr_pred}'. "
+                            f"The model detected it with a confidence score of {curr_conf * 100}%. "
+                            f"Format your response in the language '{user_lang}'. "
+                            "Highlight its meaning, typical context, potential misclassifications with similar signs, "
+                            "and concrete suggestions to make the sign more clearly."
+                        )
+                        system_prompt = "You are an expert Sign Language Explainer and Accessibility Assistant."
+                        explanation = llm_engine.generate_completion(prompt, system_prompt=system_prompt)
+                        st.markdown(explanation)
 
         # Sentence output
         phrase = st.session_state["gesture_sentence"]
-        st.markdown("### Decoded Sentence Output")
+        st.markdown(f"### {t('lgr_decoded_output')}")
         st.markdown(
             f"""
             <div class="bauhaus-card card-yellow" style="min-height: 80px; background-color: #FFFFFF !important;">
                 <p style="font-size: 1.35rem; font-weight: 800; text-transform: uppercase; margin: 0; color: #121212;">
-                    {phrase if phrase else "Waiting for continuous signing..."}
+                    {phrase if phrase else t("lgr_waiting")}
                 </p>
             </div>
             """,
@@ -257,25 +298,30 @@ with col_panels:
         )
 
         # History log table
-        st.markdown("### Recent Gestures Timeline")
+        st.markdown(f"### {t('lgr_recent_timeline')}")
         if st.session_state["predictions_log"]:
             df_hist = pd.DataFrame(st.session_state["predictions_log"])
-            st.dataframe(df_hist, use_container_width=True, hide_index=True)
+            df_display = df_hist.rename(
+                columns={
+                    "prediction": t("lgr_col_prediction"),
+                    "timestamp": t("lgr_col_timestamp"),
+                    "confidence": t("lgr_col_confidence"),
+                }
+            )
+            st.dataframe(df_display, use_container_width=True, hide_index=True)
         else:
-            st.write("*No gestures registered in active buffer*")
+            st.write(f"*{t('lgr_no_gestures')}*")
 
     with tab_training:
-        st.markdown("### Create Custom Gesture Label")
-        custom_label = st.text_input("Enter Gesture Name:", value="GREETING", key="input_custom_train_label")
+        st.markdown(f"### {t('lgr_create_custom')}")
+        custom_label = st.text_input(t("lgr_enter_name"), value="GREETING", key="input_custom_train_label")
 
         # Recording controller
-        st.markdown("#### Record Landmark Dataset")
-        st.markdown(
-            "Before recording, make sure your body is in view. Pressing Start will start a 3-second countdown, then record 30 frames."
-        )
+        st.markdown(f"#### {t('lgr_record_dataset')}")
+        st.markdown(t("lgr_before_recording"))
 
         if st.button(
-            "🔴 Start Custom Recording",
+            t("lgr_start_custom_recording"),
             key="btn_start_custom_rec",
             disabled=st.session_state["custom_rec_active"],
         ):
@@ -284,25 +330,23 @@ with col_panels:
 
             # Start recorder session
             gesture_service.start_recording(custom_label)
-            st.info("Recording countdown starting in main camera feed...")
+            st.info(t("lgr_countdown_starting"))
 
         # Training panel trigger
         st.markdown("---")
-        st.markdown("#### Compile & Train Gesture Model")
-        st.markdown(
-            "Trigger training using PyTorch. If no recorded samples exist, the system will auto-generate synthetic sequence features."
-        )
+        st.markdown(f"#### {t('lgr_compile_train')}")
+        st.markdown(t("lgr_train_info"))
 
-        train_epochs = st.slider("Epochs count", min_value=5, max_value=50, value=15, step=5)
-        train_batch = st.select_slider("Batch Size", options=[8, 16, 32], value=16)
-        train_lr = st.selectbox("Learning Rate", [0.01, 0.001, 0.0001], index=1)
+        train_epochs = st.slider(t("lgr_epochs_count"), min_value=5, max_value=50, value=15, step=5)
+        train_batch = st.select_slider(t("lgr_batch_size"), options=[8, 16, 32], value=16)
+        train_lr = st.selectbox(t("lgr_learning_rate"), [0.01, 0.001, 0.0001], index=1)
 
         if st.button(
-            "🏋️ Run Neural Net Training",
+            t("lgr_run_training"),
             key="btn_trigger_pytorch_train",
             use_container_width=True,
         ):
-            with st.spinner("Training PyTorch classifier..."):
+            with st.spinner(t("lgr_training_spinner")):
                 version, metrics = gesture_service.train_gesture_model(
                     model_type="word",
                     arch_name=selected_arch,
@@ -310,12 +354,12 @@ with col_panels:
                     batch_size=train_batch,
                     lr=train_lr,
                 )
-                st.success(f"Model successfully trained and saved! Version: **{version}**")
+                st.success(t("lgr_train_success").format(version=version))
                 st.markdown(
                     f"""
                     <div style="background-color:#FFFFFF; border:3px solid #121212; padding:15px; color:#121212 !important;">
-                        <strong>Test Set Accuracy:</strong> {round(metrics['accuracy'] * 100, 2)}%<br/>
-                        <strong>Macro F1 Score:</strong> {round(metrics['f1_score'] * 100, 2)}%
+                        <strong>{t('lgr_test_accuracy')}</strong> {round(metrics['accuracy'] * 100, 2)}%<br/>
+                        <strong>{t('lgr_macro_f1')}</strong> {round(metrics['f1_score'] * 100, 2)}%
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -323,56 +367,56 @@ with col_panels:
 
         # Dataset Inventory stats
         st.markdown("---")
-        st.markdown("#### Dataset Inventory Counts")
+        st.markdown(f"#### {t('lgr_dataset_inventory')}")
         stats = gesture_service.get_dataset_stats()
         if stats:
-            df_stats = pd.DataFrame(list(stats.items()), columns=["Label", "Repetitions"])
+            df_stats = pd.DataFrame(list(stats.items()), columns=[t("lgr_col_label"), t("lgr_col_repetitions")])
             st.dataframe(df_stats, use_container_width=True, hide_index=True)
 
             label_to_delete = st.selectbox(
-                "Select label to clear:",
+                t("lgr_select_clear_label"),
                 options=list(stats.keys()),
                 key="select_delete_label",
             )
-            if st.button("🗑️ Delete Samples for Label", key="btn_delete_samples_label"):
+            if st.button(t("lgr_delete_samples"), key="btn_delete_samples_label"):
                 if gesture_service.clear_dataset_label(label_to_delete):
-                    st.success(f"Deleted samples for label '{label_to_delete}'")
+                    st.success(t("lgr_deleted_label").format(label=label_to_delete))
                     st.rerun()
         else:
-            st.write("*No recorded datasets present.*")
+            st.write(f"*{t('lgr_no_datasets')}*")
 
     with tab_registry:
-        st.markdown("### Active Models Configuration")
+        st.markdown(f"### {t('lgr_active_models')}")
         reg_status = gesture_service.get_registry_status()
 
         active_alphabet = reg_status["active_alphabet"]
         active_word = reg_status["active_word"]
 
-        st.markdown("**Alphabet Model:**")
+        st.markdown(f"**{t('lgr_alphabet_model')}**")
         if active_alphabet:
             st.write(
-                f"- Version: `{active_alphabet['version']}` (Accuracy: {round(active_alphabet['metrics']['test_accuracy'] * 100, 2)}%)"
+                "- " + t("lgr_version_accuracy").format(version=active_alphabet['version'], acc=round(active_alphabet['metrics']['test_accuracy'] * 100, 2))
             )
         else:
-            st.write("- Fallback default Alphabet MLP Active")
+            st.write(t("lgr_fallback_alphabet"))
 
-        st.markdown("**Sequence Word Model:**")
+        st.markdown(f"**{t('lgr_seq_word_model')}**")
         if active_word:
             st.write(
-                f"- Version: `{active_word['version']}` ({active_word['model_name']} - Accuracy: {round(active_word['metrics']['test_accuracy'] * 100, 2)}%)"
+                "- " + t("lgr_version_accuracy").format(version=active_word['version'], acc=round(active_word['metrics']['test_accuracy'] * 100, 2))
             )
         else:
-            st.write(f"- Fallback default Word {selected_arch} Active")
+            st.write(t("lgr_fallback_word").format(arch=selected_arch))
 
         # Rollback utility
         st.markdown("---")
-        st.markdown("#### Model Rollback Manager")
+        st.markdown(f"#### {t('lgr_rollback_manager')}")
         all_models = reg_status["all_models"]
 
         if all_models:
             model_options = [m["version"] for m in all_models]
             rollback_target = st.selectbox(
-                "Select Target Version to Restore",
+                t("lgr_select_rollback"),
                 options=model_options,
                 key="select_rollback_target",
             )
@@ -380,26 +424,26 @@ with col_panels:
             # Find selected model metadata
             selected_meta = next(m for m in all_models if m["version"] == rollback_target)
             st.write(
-                f"- Type: `{selected_meta['model_type']}` | Accuracy: `{round(selected_meta['metrics']['test_accuracy'] * 100, 2)}%`"
+                "- " + t("lgr_rollback_info").format(type=selected_meta['model_type'], acc=round(selected_meta['metrics']['test_accuracy'] * 100, 2))
             )
 
             if st.button(
-                "⏪ Execute Version Rollback",
+                t("lgr_rollback_btn"),
                 key="btn_rollback_model",
                 use_container_width=True,
             ):
                 success = gesture_service.rollback_model(selected_meta["model_type"], rollback_target)
                 if success:
-                    st.success(f"Rollback successful! Active model set to {rollback_target}")
+                    st.success(t("lgr_rollback_success").format(version=rollback_target))
                     st.rerun()
                 else:
-                    st.error("Failed to restore target version.")
+                    st.error(t("lgr_rollback_failed"))
         else:
-            st.write("*No previous model versions found in the registry catalog.*")
+            st.write(f"*{t('lgr_no_previous_models')}*")
 
 # ----------------- PANEL 6: REAL-TIME PLOTLY CHARTS -----------------
 st.markdown("---")
-st.markdown("### Performance & Telemetry Tracking Plots")
+st.markdown(f"### {t('lgr_performance_plots')}")
 
 if st.session_state["chart_latency"] and go is not None:
     chart_col1, chart_col2 = st.columns(2)
@@ -415,7 +459,7 @@ if st.session_state["chart_latency"] and go is not None:
             )
         )
         fig_lat.update_layout(
-            title="Execution Latency (ms)",
+            title=t("lgr_latency_chart"),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             margin=dict(l=20, r=20, t=40, b=20),
@@ -434,7 +478,7 @@ if st.session_state["chart_latency"] and go is not None:
             )
         )
         fig_conf.update_layout(
-            title="Classification Confidence Rating (%)",
+            title=t("lgr_confidence_chart"),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             margin=dict(l=20, r=20, t=40, b=20),
@@ -445,10 +489,10 @@ elif st.session_state["chart_latency"]:
     st.line_chart(
         pd.DataFrame(
             {
-                "Latency (ms)": st.session_state["chart_latency"],
-                "Confidence (%)": st.session_state["chart_confidence"],
+                t("lgr_latency_chart"): st.session_state["chart_latency"],
+                t("lgr_confidence_chart"): st.session_state["chart_confidence"],
             }
         )
     )
 else:
-    st.info("Line plots will display dynamically once webcam prediction activates.")
+    st.info(t("lgr_no_plots"))

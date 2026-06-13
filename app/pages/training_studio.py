@@ -4,14 +4,15 @@ import streamlit as st
 
 from app.services.ai_service import ai_service
 from config.config import SUPPORTED_GESTURES
+from src.services.translation_service import t
 
 # Page Header
 st.markdown(
-    '<h1 class="gradient-text" style="font-size: 3rem; margin-bottom: 5px;">AI TRAINING STUDIO</h1>',
+    f'<h1 class="gradient-text" style="font-size: 3rem; margin-bottom: 5px;">{t("training_title")}</h1>',
     unsafe_allow_html=True,
 )
 st.markdown(
-    "<p style='font-size: 1.1rem; font-weight: bold; color: #1040C0;'>Record custom gestures and compile landmark datasets for neural networks.</p>",
+    f"<p style='font-size: 1.1rem; font-weight: bold; color: #1040C0;'>{t('ts_subtitle')}</p>",
     unsafe_allow_html=True,
 )
 st.markdown("---")
@@ -20,22 +21,22 @@ col_control, col_dataset = st.columns([1, 1])
 
 with col_control:
     st.markdown(
-        """
+        f"""
         <div class="bauhaus-card card-red" style="padding: 20px;">
-            <h3 style="margin-top: 0px;">RECORD LANDMARK SAMPLES</h3>
+            <h3 style="margin-top: 0px;">{t("ts_record_landmark")}</h3>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
     # Form input for label
-    selected_label = st.selectbox("Target Gesture Label", options=SUPPORTED_GESTURES, key="select_training_label")
+    selected_label = st.selectbox(t("ts_target_label"), options=SUPPORTED_GESTURES, key="select_training_label")
 
-    custom_label = st.text_input("Or Define Custom Label:", value="", key="input_custom_label")
+    custom_label = st.text_input(t("ts_define_custom"), value="", key="input_custom_label")
     label_to_record = custom_label.strip().upper() if custom_label.strip() else selected_label
 
     frames_to_record = st.slider(
-        "Sequence Length (Number of Frames)",
+        t("ts_seq_len"),
         min_value=10,
         max_value=60,
         value=30,
@@ -43,10 +44,10 @@ with col_control:
     )
 
     # Capture control buttons
-    st.markdown("Before recording, make sure your webcam is clear and your hand is in view.")
+    st.markdown(t("ts_before_recording"))
 
     record_button = st.button(
-        "🔴 Start Recording Repetition",
+        f"🔴 {t('ts_start_recording')}",
         key="btn_start_record_sample",
         use_container_width=True,
     )
@@ -76,7 +77,7 @@ with col_control:
                 while recorded_frames < frames_to_record:
                     success, frame = cam.get_frame()
                     if not success:
-                        st.error("Failed to capture frame during recording.")
+                        st.error(t("ts_capture_failed"))
                         break
 
                     # Process frame to extract landmarks (we don't need to draw on screen here)
@@ -93,20 +94,20 @@ with col_control:
                 success = ai_service.record_sample(label_to_record, sample_landmarks_seq)
                 if success:
                     status_box.success(
-                        f"Successfully recorded 1 repetition ({frames_to_record} frames) for '{label_to_record}'!"
+                        t("ts_record_success", frames=frames_to_record, label=label_to_record)
                     )
                 else:
-                    status_box.error("Failed to save recording sample.")
+                    status_box.error(t("ts_save_failed"))
             finally:
                 cam.stop()
         else:
-            st.error("Could not open camera stream.")
+            st.error(t("ts_camera_error"))
 
 with col_dataset:
     st.markdown(
-        """
+        f"""
         <div class="bauhaus-card card-blue" style="padding: 20px;">
-            <h3 style="margin-top: 0px;">DATASET INVENTORY</h3>
+            <h3 style="margin-top: 0px;">{t("ts_dataset_inventory")}</h3>
         </div>
         """,
         unsafe_allow_html=True,
@@ -122,15 +123,15 @@ with col_dataset:
         st.dataframe(df, use_container_width=True, hide_index=True)
 
         # Clear specific label dataset
-        st.markdown("### Manage Dataset")
+        st.markdown(f"### {t('ts_manage_dataset')}")
         label_to_clear = st.selectbox(
-            "Select label to delete samples:",
+            t("ts_select_delete_label"),
             options=list(stats.keys()),
             key="select_clear_label",
         )
 
         if st.button(
-            "🗑️ Delete Samples for Label",
+            f"🗑️ {t('ts_delete_label')}",
             key="btn_clear_label",
             use_container_width=True,
         ):
@@ -139,9 +140,9 @@ with col_dataset:
                 if hasattr(ai_service, "clear_label_dataset")
                 else ai_service.clear_dataset_label(label_to_clear)
             ):
-                st.success(f"Cleared dataset for '{label_to_clear}'!")
+                st.success(t("ts_clear_success", label=label_to_clear))
                 st.rerun()
             else:
-                st.error("Failed to clear dataset.")
+                st.error(t("ts_clear_failed"))
     else:
-        st.info("No landmark datasets recorded yet. Start by capturing sign samples above.")
+        st.info(t("ts_no_datasets"))

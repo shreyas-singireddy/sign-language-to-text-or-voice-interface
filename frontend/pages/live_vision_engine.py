@@ -20,14 +20,15 @@ from ai_engine.storage.landmark_recorder import landmark_recorder
 from ai_engine.storage.session_manager import session_manager
 from ai_engine.utils.config import sys_config
 from config.config import SUPPORTED_GESTURES
+from src.services.translation_service import t
 
 # Page headers
 st.markdown(
-    '<h1 class="gradient-text" style="font-size: 3.5rem; margin-bottom: 5px; letter-spacing: -2px;">VISION MISSION CONTROL</h1>',
+    f'<h1 class="gradient-text" style="font-size: 3.5rem; margin-bottom: 5px; letter-spacing: -2px;">{t("lve_title")}</h1>',
     unsafe_allow_html=True,
 )
 st.markdown(
-    "<p style='font-size: 1.25rem; font-weight: 700; color: #1040C0; text-transform: uppercase;'>SignBridge Real-time Ingestion & Feature Analytics Cockpit</p>",
+    f"<p style='font-size: 1.25rem; font-weight: 700; color: #1040C0; text-transform: uppercase;'>{t('lve_subtitle')}</p>",
     unsafe_allow_html=True,
 )
 st.markdown("---")
@@ -61,34 +62,33 @@ frame_bgr = None
 
 with col_cam:
     st.markdown(
-        """
+        f"""
         <div class="bauhaus-card card-red" style="padding: 15px; margin-bottom: 15px;">
-            <h3 style="margin: 0; font-size: 1.4rem;">🎥 Live Capture & Replay</h3>
+            <h3 style="margin: 0; font-size: 1.4rem;">{t("lve_live_capture")}</h3>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # Mode selectors
     mode = st.radio(
         "Perception source Mode",
-        options=["Webcam Stream", "Session Replay"],
+        options=[t("lve_webcam_stream"), t("lve_session_replay")],
         horizontal=True,
         label_visibility="collapsed",
     )
 
-    if mode == "Webcam Stream":
+    if mode == t("lve_webcam_stream"):
         # Controls
         ctrl_col1, ctrl_col2, ctrl_col3 = st.columns(3)
         with ctrl_col1:
-            if st.button("Start Ingest", key="btn_start_ingest"):
+            if st.button(t("lve_start_ingest"), key="btn_start_ingest"):
                 st.session_state["cam_active"] = True
                 st.session_state["replay_active"] = False
         with ctrl_col2:
-            if st.button("Stop Ingest", key="btn_stop_ingest"):
+            if st.button(t("lve_stop_ingest"), key="btn_stop_ingest"):
                 st.session_state["cam_active"] = False
         with ctrl_col3:
-            if st.button("Restart Ingest", key="btn_restart_ingest"):
+            if st.button(t("lve_restart_ingest"), key="btn_restart_ingest"):
                 st.session_state["cam_active"] = False
                 perception_service.camera.release()
                 time.sleep(0.5)
@@ -96,10 +96,9 @@ with col_cam:
 
         video_view = st.empty()
 
-        # Ingest loop
         if st.session_state["cam_active"]:
             st.markdown(
-                '<div class="pulse-badge">● TELEMETRY BROADCAST ACTIVE</div>',
+                f'<div class="pulse-badge">● {t("lve_active_broadcast")}</div>',
                 unsafe_allow_html=True,
             )
 
@@ -110,7 +109,7 @@ with col_cam:
                     while st.session_state["cam_active"]:
                         read_success, frame, latency = perception_service.camera.read_frame()
                         if not read_success:
-                            st.error("Ingestion failed: Camera disconnect.")
+                            st.error(t("lve_ingest_failed"))
                             break
 
                         # Run Perception Service orchestrator
@@ -156,9 +155,9 @@ with col_cam:
                     perception_service.camera.release()
                     video_view.empty()
             else:
-                st.error("Capture device initialization failed. Check settings.")
+                st.error(t("lve_cam_error"))
         else:
-            video_view.info("Start camera ingestion loop to broadcast vision metrics.")
+            video_view.info(t("lve_camera_info"))
 
     else:  # Session Replay mode
         st.session_state["cam_active"] = False
@@ -169,7 +168,7 @@ with col_cam:
 
         if sessions_folders:
             selected_session = st.selectbox(
-                "Select Session File to Replay",
+                t("lve_select_replay"),
                 options=sessions_folders,
                 key="select_replay_session",
             )
@@ -177,9 +176,9 @@ with col_cam:
 
             rep_col1, rep_col2 = st.columns(2)
             with rep_col1:
-                start_rep = st.button("Start Replay Simulation", key="btn_start_replay")
+                start_rep = st.button(t("lve_start_replay"), key="btn_start_replay")
             with rep_col2:
-                stop_rep = st.button("Stop Replay", key="btn_stop_replay")
+                stop_rep = st.button(t("lve_stop_replay"), key="btn_stop_replay")
 
             if stop_rep:
                 st.session_state["replay_active"] = False
@@ -204,27 +203,27 @@ with col_cam:
                             replay_status.markdown(
                                 f"""
                                 <div style="background-color: #121212; border: 3px solid #121212; padding:15px; color: #FFFFFF !important;">
-                                    <strong>Replaying Frame:</strong> {frame_record.timestamp}<br/>
-                                    <strong>Left hand present:</strong> {frame_record.left_hand.present}<br/>
-                                    <strong>Right hand present:</strong> {frame_record.right_hand.present}<br/>
-                                    <strong>Pose joints count:</strong> {len(frame_record.pose.landmarks)} points
+                                    <strong>{t("lve_replaying_frame", timestamp=frame_record.timestamp)}</strong><br/>
+                                    <strong>{t("lve_left_hand_present", present=frame_record.left_hand.present)}</strong><br/>
+                                    <strong>{t("lve_right_hand_present", present=frame_record.right_hand.present)}</strong><br/>
+                                    <strong>{t("lve_pose_count", count=len(frame_record.pose.landmarks))}</strong>
                                 </div>
                                 """,
                                 unsafe_allow_html=True,
                             )
                             time.sleep(0.033)
                     except Exception as e:
-                        st.error(f"Replay interrupted: {e}")
+                        st.error(t("lve_replay_error", error=str(e)))
                 else:
-                    st.error("Could not load session files.")
+                    st.error(t("lve_load_error"))
         else:
-            st.info("No recorded session folders present in data recordings directory.")
+            st.info(t("lve_no_sessions"))
 
 # ----------------- PANEL CONTROLLERS (CENTER/RIGHT COLUMN) -----------------
 with col_panels:
     # Use tabs for clean panel dashboards
     tab_telemetry, tab_health, tab_recording = st.tabs(
-        ["👁️ Telemetry Panels", "🛡️ AI Health & Quality", "💾 Dataset Recorder"]
+        [f"👁️ {t('lve_tab_telemetry')}", f"🛡️ {t('lve_tab_health')}", f"💾 {t('lve_tab_recorder')}"]
     )
 
     with tab_telemetry:
@@ -242,10 +241,10 @@ with col_panels:
         st.markdown(
             f"""
             <div class="bauhaus-card card-red" style="padding:15px; margin-bottom:12px;">
-                <h4 style="margin:0 0 5px 0;">Panel 1: Ingest Telemetry</h4>
+                <h4 style="margin:0 0 5px 0;">{t("lve_p1_title")}</h4>
                 <table style="width:100%; font-size:0.85rem;">
-                    <tr><td><strong>ACTIVE FPS:</strong></td><td>{cam_fps}</td><td><strong>LATENCY:</strong></td><td>{cam_latency}ms</td></tr>
-                    <tr><td><strong>RESOLUTION:</strong></td><td>{cam_res}</td><td><strong>FRAME COUNT:</strong></td><td>{cam_count}</td></tr>
+                    <tr><td><strong>{t("lve_active_fps")}</strong></td><td>{cam_fps}</td><td><strong>{t("lve_latency")}</strong></td><td>{cam_latency}ms</td></tr>
+                    <tr><td><strong>{t("lve_resolution")}</strong></td><td>{cam_res}</td><td><strong>{t("lve_frame_count")}</strong></td><td>{cam_count}</td></tr>
                 </table>
             </div>
             """,
@@ -261,10 +260,10 @@ with col_panels:
         st.markdown(
             f"""
             <div class="bauhaus-card card-blue" style="padding:15px; margin-bottom:12px;">
-                <h4 style="margin:0 0 5px 0;">Panel 2: Hand Tracking Telemetry</h4>
+                <h4 style="margin:0 0 5px 0;">{t("lve_p2_title")}</h4>
                 <table style="width:100%; font-size:0.85rem;">
-                    <tr><td><strong>Left hand Confidence:</strong></td><td>{int(lh_conf * 100)}%</td><td><strong>Left Velocity:</strong></td><td>{round(lh_vel, 3)}</td></tr>
-                    <tr><td><strong>Right hand Confidence:</strong></td><td>{int(rh_conf * 100)}%</td><td><strong>Right Velocity:</strong></td><td>{round(rh_vel, 3)}</td></tr>
+                    <tr><td><strong>{t("lve_lh_confidence")}</strong></td><td>{int(lh_conf * 100)}%</td><td><strong>{t("lve_lh_velocity")}</strong></td><td>{round(lh_vel, 3)}</td></tr>
+                    <tr><td><strong>{t("lve_rh_confidence")}</strong></td><td>{int(rh_conf * 100)}%</td><td><strong>{t("lve_rh_velocity")}</strong></td><td>{round(rh_vel, 3)}</td></tr>
                 </table>
             </div>
             """,
@@ -280,10 +279,10 @@ with col_panels:
         st.markdown(
             f"""
             <div class="bauhaus-card" style="padding:15px; margin-bottom:12px;">
-                <h4 style="margin:0 0 5px 0;">Panel 3: Pose Tracking Telemetry</h4>
+                <h4 style="margin:0 0 5px 0;">{t("lve_p3_title")}</h4>
                 <table style="width:100%; font-size:0.85rem;">
-                    <tr><td><strong>Left Elbow Angle:</strong></td><td>{round(l_arm, 1)}°</td><td><strong>Right Elbow Angle:</strong></td><td>{round(r_arm, 1)}°</td></tr>
-                    <tr><td><strong>Shoulder Angle:</strong></td><td>{round(sh_ang, 1)}°</td><td><strong>Torso Rotation:</strong></td><td>{round(tor_rot, 1)}°</td></tr>
+                    <tr><td><strong>{t("lve_le_angle")}</strong></td><td>{round(l_arm, 1)}°</td><td><strong>{t("lve_re_angle")}</strong></td><td>{round(r_arm, 1)}°</td></tr>
+                    <tr><td><strong>{t("lve_shoulder_angle")}</strong></td><td>{round(sh_ang, 1)}°</td><td><strong>{t("lve_torso_rotation")}</strong></td><td>{round(tor_rot, 1)}°</td></tr>
                 </table>
             </div>
             """,
@@ -300,10 +299,10 @@ with col_panels:
         st.markdown(
             f"""
             <div class="bauhaus-card card-yellow" style="padding:15px; margin-bottom:0px;">
-                <h4 style="margin:0 0 5px 0;">Panel 4: Face Tracking Telemetry</h4>
+                <h4 style="margin:0 0 5px 0;">{t("lve_p4_title")}</h4>
                 <table style="width:100%; font-size:0.85rem;">
-                    <tr><td><strong>Head Pitch/Yaw/Roll:</strong></td><td>{round(f_pitch,1)}°, {round(f_yaw,1)}°, {round(f_roll,1)}°</td></tr>
-                    <tr><td><strong>Mouth Openness:</strong></td><td>{round(mouth_open, 3)}</td><td><strong>Face Confidence:</strong></td><td>{int(f_conf * 100)}%</td></tr>
+                    <tr><td><strong>{t("lve_head_pyr")}</strong></td><td>{round(f_pitch,1)}°, {round(f_yaw,1)}°, {round(f_roll,1)}°</td></tr>
+                    <tr><td><strong>{t("lve_mouth_openness")}</strong></td><td>{round(mouth_open, 3)}</td><td><strong>{t("lve_face_confidence")}</strong></td><td>{int(f_conf * 100)}%</td></tr>
                 </table>
             </div>
             """,
@@ -330,11 +329,11 @@ with col_panels:
         st.markdown(
             f"""
             <div class="bauhaus-card card-blue" style="padding:15px; margin-bottom:12px;">
-                <h4 style="margin:0 0 5px 0;">Panel 5: Tracking Quality Telemetry</h4>
+                <h4 style="margin:0 0 5px 0;">{t("lve_p5_title")}</h4>
                 <table style="width:100%; font-size:0.85rem; line-height:1.6;">
-                    <tr><td><strong>Occlusion Rate:</strong></td><td>{occ_val}%</td><td><strong>Tracking Stability:</strong></td><td>{stab_val}%</td></tr>
-                    <tr><td><strong>Visibility Score:</strong></td><td>{vis_val}%</td><td><strong>Frame Quality:</strong></td><td>{qual_val}%</td></tr>
-                    <tr><td><strong>Blur Score:</strong></td><td>{blur_val}</td><td><strong>Brightness Score:</strong></td><td>{int(bright_val)}</td></tr>
+                    <tr><td><strong>{t("lve_occlusion_rate")}</strong></td><td>{occ_val}%</td><td><strong>{t("lve_tracking_stability")}</strong></td><td>{stab_val}%</td></tr>
+                    <tr><td><strong>{t("lve_visibility_score")}</strong></td><td>{vis_val}%</td><td><strong>{t("lve_frame_quality")}</strong></td><td>{qual_val}%</td></tr>
+                    <tr><td><strong>{t("lve_blur_score")}</strong></td><td>{blur_val}</td><td><strong>{t("lve_brightness_score")}</strong></td><td>{int(bright_val)}</td></tr>
                 </table>
             </div>
             """,
@@ -344,11 +343,11 @@ with col_panels:
         st.markdown(
             f"""
             <div class="bauhaus-card card-red" style="padding:15px; margin-bottom:12px;">
-                <h4 style="margin:0 0 5px 0;">AI Ingestion Health</h4>
+                <h4 style="margin:0 0 5px 0;">{t("lve_ai_health")}</h4>
                 <table style="width:100%; font-size:0.85rem; line-height:1.6;">
-                    <tr><td><strong>Gesture Readiness:</strong></td><td style="font-weight:bold; color:#1040C0;">{readiness_val}%</td></tr>
-                    <tr><td><strong>CPU Usage:</strong></td><td>22.4%</td><td><strong>RAM Usage:</strong></td><td>18%</td></tr>
-                    <tr><td><strong>GPU Device:</strong></td><td>CUDA (Active)</td><td><strong>Pipeline Latency:</strong></td><td>{pipe_lat}ms</td></tr>
+                    <tr><td><strong>{t("lve_gesture_readiness")}</strong></td><td style="font-weight:bold; color:#1040C0;">{readiness_val}%</td></tr>
+                    <tr><td><strong>{t("lve_cpu_usage")}</strong></td><td>22.4%</td><td><strong>{t("lve_ram_usage")}</strong></td><td>18%</td></tr>
+                    <tr><td><strong>{t("lve_gpu_device")}</strong></td><td>CUDA (Active)</td><td><strong>{t("lve_pipeline_latency")}</strong></td><td>{pipe_lat}ms</td></tr>
                 </table>
             </div>
             """,
@@ -358,10 +357,10 @@ with col_panels:
         st.markdown(
             f"""
             <div class="bauhaus-card" style="padding:15px; margin-bottom:0px;">
-                <h4 style="margin:0 0 5px 0;">Detector Performance Clocks</h4>
+                <h4 style="margin:0 0 5px 0;">{t("lve_detector_clocks")}</h4>
                 <table style="width:100%; font-size:0.85rem; line-height:1.6;">
-                    <tr><td><strong>Hand Inference:</strong></td><td>{h_lat}ms</td><td><strong>Pose Inference:</strong></td><td>{p_lat}ms</td></tr>
-                    <tr><td><strong>Face Mesh Inference:</strong></td><td>{f_lat}ms</td><td><strong>Overall Detectors parse:</strong></td><td>{det_lat}ms</td></tr>
+                    <tr><td><strong>{t("lve_hand_inference")}</strong></td><td>{h_lat}ms</td><td><strong>{t("lve_pose_inference")}</strong></td><td>{p_lat}ms</td></tr>
+                    <tr><td><strong>{t("lve_face_inference")}</strong></td><td>{f_lat}ms</td><td><strong>{t("lve_overall_parse")}</strong></td><td>{det_lat}ms</td></tr>
                 </table>
             </div>
             """,
@@ -370,9 +369,9 @@ with col_panels:
 
     with tab_recording:
         # Dataset recording Panel
-        st.markdown("### Captures & Exporters Panel")
+        st.markdown(f"### {t('lve_captures_panel')}")
         selected_rec_label = st.selectbox(
-            "Target Gesture label to record:",
+            t("lve_target_label"),
             options=SUPPORTED_GESTURES,
             index=0,
             key="hub_rec_label",
@@ -381,17 +380,17 @@ with col_panels:
         rec_ctrl1, rec_ctrl2 = st.columns(2)
         with rec_ctrl1:
             if st.button(
-                "🔴 Start Session",
+                f"🔴 {t('lve_start_session')}",
                 key="btn_session_rec_start",
                 disabled=st.session_state["rec_active"],
             ):
                 session_manager.start_session()
                 st.session_state["rec_active"] = True
                 st.session_state["rec_label"] = selected_rec_label
-                st.info("Recording buffer active...")
+                st.info(t("lve_buffer_active"))
         with rec_ctrl2:
             if st.button(
-                "⏹️ Stop Session",
+                f"⏹️ {t('lve_stop_session')}",
                 key="btn_session_rec_stop",
                 disabled=not st.session_state["rec_active"],
             ):
@@ -399,15 +398,15 @@ with col_panels:
                 saved_path = landmark_recorder.save_session(st.session_state["rec_label"])
                 session_manager.end_session()
                 if saved_path:
-                    st.success(f"Saved session raw JSON to: {saved_path.name}")
+                    st.success(t("lve_session_saved", path=saved_path.name))
                     st.session_state["last_saved_file"] = saved_path
                 else:
-                    st.error("Failed to write coordinates logs.")
+                    st.error(t("lve_write_error"))
 
         # Export controls
-        st.markdown("### Export Target format")
+        st.markdown(f"### {t('lve_export_format')}")
         target_format = st.selectbox(
-            "Select Export Format",
+            t("lve_select_format"),
             options=[
                 "JSON Format (.json)",
                 "CSV flat (.csv)",
@@ -418,7 +417,7 @@ with col_panels:
 
         last_saved = st.session_state.get("last_saved_file", None)
         if st.button(
-            "📤 Export Dataset Sequence",
+            f"📤 {t('lve_export_btn')}",
             key="btn_session_rec_export",
             disabled=(not last_saved),
             use_container_width=True,
@@ -431,13 +430,13 @@ with col_panels:
                 exported = parquet_exporter.export(last_saved)
 
             if exported:
-                st.success(f"Dataset compiled and successfully exported to: {exported.name}")
+                st.success(t("lve_export_success", path=exported.name))
             else:
-                st.error("Failed to export sequence.")
+                st.error(t("lve_export_error"))
 
 # ----------------- PANEL 6: REAL-TIME PLOTLY CHARTS -----------------
 st.markdown("---")
-st.markdown("### Panel 6: Telemetry Plots Track")
+st.markdown(f"### {t('lve_p6_title')}")
 
 if st.session_state["chart_data_fps"] and go is not None:
     chart_col1, chart_col2 = st.columns(2)
@@ -449,12 +448,12 @@ if st.session_state["chart_data_fps"] and go is not None:
             go.Scatter(
                 y=st.session_state["chart_data_fps"],
                 mode="lines",
-                name="Live Ingest FPS",
+                name=t("lve_live_fps"),
                 line=dict(color="#D02020", width=3),
             )
         )
         fig_fps.update_layout(
-            title="Frames Rate Telemetry (FPS)",
+            title=t("lve_fps_chart"),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             margin=dict(l=20, r=20, t=40, b=20),
@@ -469,12 +468,12 @@ if st.session_state["chart_data_fps"] and go is not None:
             go.Scatter(
                 y=st.session_state["chart_data_velocity"],
                 mode="lines",
-                name="Hand Speed",
+                name=t("lve_hand_speed"),
                 line=dict(color="#1040C0", width=3),
             )
         )
         fig_vel.update_layout(
-            title="Hand Kinematics average velocity",
+            title=t("lve_vel_chart"),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             margin=dict(l=20, r=20, t=40, b=20),
@@ -491,4 +490,4 @@ elif st.session_state["chart_data_fps"]:
         )
     )
 else:
-    st.info("Line charts will render dynamically once camera ingestion begins.")
+    st.info(t("lve_no_charts"))

@@ -61,6 +61,7 @@ SUPPORTED_GESTURES = [
 # Supported Speech Languages
 SUPPORTED_LANGUAGES = {
     "English": "en-US",
+    "Spanish": "es-ES",
     "Hindi": "hi-IN",
     "Telugu": "te-IN",
     "Tamil": "ta-IN",
@@ -74,3 +75,4 @@ SUPPORTED_LANGUAGES = {
     "Assamese": "as-IN",
     "Portuguese": "pt-PT",
 }
+

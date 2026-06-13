@@ -7,6 +7,7 @@ import streamlit as st
 from ai_engine.gesture_recognition.services.gesture_service import gesture_service
 from ai_engine.services.perception_service import perception_service
 from ai_engine.utils.config import sys_config
+from src.services.translation_service import t
 
 # MediaPipe drawing tools
 mp_drawing = mp.solutions.drawing_utils
@@ -17,11 +18,11 @@ mp_face_mesh = mp.solutions.face_mesh
 
 # Page Layout Header
 st.markdown(
-    '<h1 class="gradient-text" style="font-size: 3rem; margin-bottom: 5px;">VISUAL DEBUG COCKPIT</h1>',
+    f'<h1 class="gradient-text" style="font-size: 3rem; margin-bottom: 5px;">{t("debug_title")}</h1>',
     unsafe_allow_html=True,
 )
 st.markdown(
-    "<p style='font-size: 1.1rem; font-weight: bold; color: #1040C0;'>Advanced real-time human perception debugging, joint skeletal overlays, and telemetry analytics.</p>",
+    f"<p style='font-size: 1.1rem; font-weight: bold; color: #1040C0;'>{t('db_subtitle')}</p>",
     unsafe_allow_html=True,
 )
 st.markdown("---")
@@ -33,9 +34,9 @@ col_cam, col_telemetry = st.columns([5, 4])
 
 with col_cam:
     st.markdown(
-        """
+        f"""
         <div class="bauhaus-card card-red" style="padding: 15px; margin-bottom: 15px;">
-            <h3 style="margin: 0; font-size: 1.4rem;">🎥 annotated skeletal video stream</h3>
+            <h3 style="margin: 0; font-size: 1.4rem;">{t("db_skeletal_stream")}</h3>
         </div>
         """,
         unsafe_allow_html=True,
@@ -44,19 +45,19 @@ with col_cam:
     # Toggle controller
     ctrl_col1, ctrl_col2 = st.columns(2)
     with ctrl_col1:
-        if st.button("Start Debug Feed", key="btn_start_debug"):
+        if st.button(t("db_start_feed"), key="btn_start_debug"):
             st.session_state["debug_active"] = True
     with ctrl_col2:
-        if st.button("Stop Debug Feed", key="btn_stop_debug"):
+        if st.button(t("db_stop_feed"), key="btn_stop_debug"):
             st.session_state["debug_active"] = False
 
     video_placeholder = st.empty()
 
 with col_telemetry:
     st.markdown(
-        """
+        f"""
         <div class="bauhaus-card card-blue" style="padding: 15px; margin-bottom: 15px;">
-            <h3 style="margin: 0; font-size: 1.4rem;">📊 real-time telemetry analytics</h3>
+            <h3 style="margin: 0; font-size: 1.4rem;">{t("db_telemetry_analytics")}</h3>
         </div>
         """,
         unsafe_allow_html=True,
@@ -94,7 +95,7 @@ if st.session_state["debug_active"]:
             while st.session_state["debug_active"]:
                 read_success, frame, latency = perception_service.camera.read_frame()
                 if not read_success:
-                    st.error("Webcam device read timeout / disconnected.")
+                    st.error(t("db_cam_timeout"))
                     break
 
                 # 1. Pipeline Telemetry response
@@ -166,9 +167,9 @@ if st.session_state["debug_active"]:
                 slot_prediction.markdown(
                     f"""
                     <div class="bauhaus-card" style="padding:15px; margin-bottom:12px; border-left:12px solid #F0C020;">
-                        <h4 style="margin:0 0 5px 0; font-size:0.9rem; color:#121212;">ACTIVE CLASSIFICATION</h4>
+                        <h4 style="margin:0 0 5px 0; font-size:0.9rem; color:#121212;">{t("db_active_classification")}</h4>
                         <div style="font-size:2rem; font-weight:900; color:#D02020;">{pred["prediction"]}</div>
-                        <div style="font-size:0.85rem; font-weight:bold; color:#1040C0;">CONFIDENCE: {int(pred["confidence"] * 100)}%</div>
+                        <div style="font-size:0.85rem; font-weight:bold; color:#1040C0;">{t("db_confidence_pct", conf=int(pred["confidence"] * 100))}</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -181,10 +182,10 @@ if st.session_state["debug_active"]:
                 slot_head_pose.markdown(
                     f"""
                     <div class="bauhaus-card" style="padding:15px; margin-bottom:12px; border-left:12px solid #1040C0;">
-                        <h4 style="margin:0 0 5px 0; font-size:0.9rem; color:#121212;">PnP HEAD POE ESTIMATION</h4>
+                        <h4 style="margin:0 0 5px 0; font-size:0.9rem; color:#121212;">{t("db_head_pose")}</h4>
                         <table style="width:100%; font-size:0.85rem; font-weight:bold;">
-                            <tr><td><strong>PITCH:</strong></td><td style="color:#D02020;">{pitch}°</td><td><strong>YAW:</strong></td><td style="color:#1040C0;">{yaw}°</td></tr>
-                            <tr><td><strong>ROLL:</strong></td><td style="color:#F0C020;">{roll}°</td><td><strong>MOUTH OPEN:</strong></td><td>{telemetry.landmarks.face.mouth_openness if telemetry.landmarks.face.present else 0.0}</td></tr>
+                            <tr><td><strong>{t("db_pitch")}:</strong></td><td style="color:#D02020;">{pitch}°</td><td><strong>{t("db_yaw")}:</strong></td><td style="color:#1040C0;">{yaw}°</td></tr>
+                            <tr><td><strong>{t("db_roll")}:</strong></td><td style="color:#F0C020;">{roll}°</td><td><strong>{t("db_mouth_open")}:</strong></td><td>{telemetry.landmarks.face.mouth_openness if telemetry.landmarks.face.present else 0.0}</td></tr>
                         </table>
                     </div>
                     """,
@@ -195,10 +196,10 @@ if st.session_state["debug_active"]:
                 slot_kinematics.markdown(
                     f"""
                     <div class="bauhaus-card" style="padding:15px; margin-bottom:12px; border-left:12px solid #D02020;">
-                        <h4 style="margin:0 0 5px 0; font-size:0.9rem; color:#121212;">KINEMATICS VELOCITY</h4>
+                        <h4 style="margin:0 0 5px 0; font-size:0.9rem; color:#121212;">{t("db_kinematics_vel")}</h4>
                         <table style="width:100%; font-size:0.85rem; font-weight:bold;">
-                            <tr><td><strong>L HAND VEL:</strong></td><td>{round(telemetry.motion.left_hand.average_velocity, 3)}</td><td><strong>R HAND VEL:</strong></td><td>{round(telemetry.motion.right_hand.average_velocity, 3)}</td></tr>
-                            <tr><td><strong>STABILITY:</strong></td><td style="color:#1040C0;">{telemetry.stability.tracking_stability}%</td><td><strong>OCCLUSION:</strong></td><td style="color:#D02020;">{telemetry.occlusion.occlusion_percentage}%</td></tr>
+                            <tr><td><strong>{t("db_l_hand_vel")}:</strong></td><td>{round(telemetry.motion.left_hand.average_velocity, 3)}</td><td><strong>{t("db_r_hand_vel")}:</strong></td><td>{round(telemetry.motion.right_hand.average_velocity, 3)}</td></tr>
+                            <tr><td><strong>{t("db_stability")}:</strong></td><td style="color:#1040C0;">{telemetry.stability.tracking_stability}%</td><td><strong>{t("db_occlusion")}:</strong></td><td style="color:#D02020;">{telemetry.occlusion.occlusion_percentage}%</td></tr>
                         </table>
                     </div>
                     """,
@@ -209,10 +210,10 @@ if st.session_state["debug_active"]:
                 slot_quality.markdown(
                     f"""
                     <div class="bauhaus-card" style="padding:15px; margin-bottom:0px; border-left:12px solid #121212;">
-                        <h4 style="margin:0 0 5px 0; font-size:0.9rem; color:#121212;">INGEST QUALITY INDEX</h4>
+                        <h4 style="margin:0 0 5px 0; font-size:0.9rem; color:#121212;">{t("db_ingest_quality")}</h4>
                         <table style="width:100%; font-size:0.85rem; font-weight:bold;">
-                            <tr><td><strong>FPS:</strong></td><td style="color:#1040C0;">{telemetry.camera.fps}</td><td><strong>LATENCY:</strong></td><td style="color:#D02020;">{telemetry.performance.total_pipeline_ms}ms</td></tr>
-                            <tr><td><strong>QUALITY SCORE:</strong></td><td>{telemetry.readiness.frame_quality_score}%</td><td><strong>READINESS:</strong></td><td>{telemetry.readiness.gesture_readiness}%</td></tr>
+                            <tr><td><strong>{t("db_fps")}:</strong></td><td style="color:#1040C0;">{telemetry.camera.fps}</td><td><strong>{t("db_latency")}:</strong></td><td style="color:#D02020;">{telemetry.performance.total_pipeline_ms}ms</td></tr>
+                            <tr><td><strong>{t("db_quality_score")}:</strong></td><td>{telemetry.readiness.frame_quality_score}%</td><td><strong>{t("db_readiness")}:</strong></td><td>{telemetry.readiness.gesture_readiness}%</td></tr>
                         </table>
                     </div>
                     """,
@@ -224,6 +225,6 @@ if st.session_state["debug_active"]:
             perception_service.camera.release()
             video_placeholder.empty()
     else:
-        st.error("Capture device initialization failed. Confirm webcam index is correct in settings.")
+            st.error(t("db_cam_error"))
 else:
-    video_placeholder.info("Activate the visual debug loop to view live joint tracking overlays.")
+    video_placeholder.info(t("db_activate_info"))

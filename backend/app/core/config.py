@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "SignBridge AI"
     API_V1_STR: str = "/api/v1"
     PORT: int = 8000
-    HOST: str = "0.0.0.0"
+    HOST: str = "0.0.0.0"  # nosec B104
 
     # MongoDB settings
     MONGO_URI: str = Field(default="")

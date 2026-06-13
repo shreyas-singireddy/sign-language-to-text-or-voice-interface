@@ -2,14 +2,14 @@ import streamlit as st
 
 import config.config as cfg
 from app.services.ai_service import ai_service
+from src.services.translation_service import t
 
-# Page Header
 st.markdown(
-    '<h1 class="gradient-text" style="font-size: 3rem; margin-bottom: 5px;">CONFIGURATION SETTINGS</h1>',
+    f'<h1 class="gradient-text" style="font-size: 3rem; margin-bottom: 5px;">{t("settings_page_title")}</h1>',
     unsafe_allow_html=True,
 )
 st.markdown(
-    "<p style='font-size: 1.1rem; font-weight: bold; color: #1040C0;'>Fine-tune computer vision parameters, detection thresholds, and system preferences.</p>",
+    f"<p style='font-size: 1.1rem; font-weight: bold; color: #1040C0;'>{t('settings_subtitle')}</p>",
     unsafe_allow_html=True,
 )
 st.markdown("---")
@@ -18,9 +18,9 @@ col_settings, col_info = st.columns([2, 1])
 
 with col_settings:
     st.markdown(
-        """
+        f"""
         <div class="bauhaus-card card-red" style="padding: 20px;">
-            <h3 style="margin-top: 0px;">COMPUTER VISION HYPERPARAMETERS</h3>
+            <h3 style="margin-top: 0px;">{t("settings_cv_hyperparameters")}</h3>
         </div>
         """,
         unsafe_allow_html=True,
@@ -28,7 +28,7 @@ with col_settings:
 
     # MediaPipe Thresholds
     mp_det_conf = st.slider(
-        "MediaPipe Minimum Detection Confidence",
+        t("settings_mp_det_conf"),
         min_value=0.1,
         max_value=1.0,
         value=cfg.MP_MIN_DETECTION_CONFIDENCE,
@@ -37,7 +37,7 @@ with col_settings:
     )
 
     mp_track_conf = st.slider(
-        "MediaPipe Minimum Tracking Confidence",
+        t("settings_mp_track_conf"),
         min_value=0.1,
         max_value=1.0,
         value=cfg.MP_MIN_TRACKING_CONFIDENCE,
@@ -47,7 +47,7 @@ with col_settings:
 
     # Classification Thresholds
     cls_conf = st.slider(
-        "Gesture Classifier Confidence Threshold",
+        t("settings_cls_conf"),
         min_value=0.1,
         max_value=1.0,
         value=cfg.GESTURE_CONFIDENCE_THRESHOLD,
@@ -55,10 +55,10 @@ with col_settings:
         key="set_cls_conf",
     )
 
-    st.markdown("### Hardware Configurations")
+    st.markdown(f"### {t('settings_hardware_configs')}")
 
     cam_source = st.number_input(
-        "Webcam Input Source index",
+        t("settings_cam_source"),
         min_value=0,
         max_value=5,
         value=cfg.WEBCAM_SOURCE,
@@ -66,9 +66,8 @@ with col_settings:
         key="set_cam_source",
     )
 
-    # Save button
     if st.button(
-        "💾 Apply Configuration Settings",
+        f"💾 {t('settings_save_btn')}",
         key="btn_save_settings",
         use_container_width=True,
     ):
@@ -82,13 +81,13 @@ with col_settings:
         ai_service.pipeline.holistic_manager._initialized = False
         ai_service.pipeline.holistic_manager.initialize()
 
-        st.success("Configuration settings updated successfully and pipeline reinitialized!")
+        st.success(t("settings_save_success"))
 
 with col_info:
     st.markdown(
-        """
+        f"""
         <div class="bauhaus-card card-blue" style="padding: 20px;">
-            <h3 style="margin-top: 0px;">DEPLOYMENT PATHWAYS</h3>
+            <h3 style="margin-top: 0px;">{t("settings_deployment_pathways")}</h3>
         </div>
         """,
         unsafe_allow_html=True,
@@ -97,15 +96,15 @@ with col_info:
         f"""
         <div class="bauhaus-card" style="padding: 20px;">
             <div style="font-size:0.85rem; margin-bottom:12px;">
-                <strong>Base Directory:</strong><br/>
+                <strong>{t("settings_base_dir")}:</strong><br/>
                 <code style="color:#1040C0;">{cfg.BASE_DIR}</code>
             </div>
             <div style="font-size:0.85rem; margin-bottom:12px;">
-                <strong>Dataset Storage Path:</strong><br/>
+                <strong>{t("settings_dataset_path")}:</strong><br/>
                 <code style="color:#1040C0;">{cfg.DATASETS_DIR}</code>
             </div>
             <div style="font-size:0.85rem;">
-                <strong>Models Assets Path:</strong><br/>
+                <strong>{t("settings_models_path")}:</strong><br/>
                 <code style="color:#1040C0;">{cfg.MODELS_DIR}</code>
             </div>
         </div>
@@ -114,5 +113,5 @@ with col_info:
     )
 
     st.info(
-        "ℹ️ Information: MediaPipe parameters determine the strictness of facial and hand bone skeleton estimation. If skeletons flicker, reduce the threshold levels."
+        f"ℹ️ {t('settings_info')}"
     )

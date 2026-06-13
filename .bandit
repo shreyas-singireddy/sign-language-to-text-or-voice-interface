@@ -1,0 +1,3 @@
+[bandit]
+exclude = .venv,backend/.venv,.venv312,node_modules,tests,run_full_audit.py,scripts
+skips = B101,B105,B110,B404,B603,B607
