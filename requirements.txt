@@ -4,8 +4,8 @@ opencv-python==4.13.0.92
 mediapipe==0.10.14
 pymongo[srv]==4.17.0
 python-dotenv==1.0.0
-numpy==2.4.6
-pandas==3.0.3
+numpy==2.2.6
+pandas==2.2.3
 pytest==9.0.3
 httpx==0.28.1
 plotly==6.8.0
