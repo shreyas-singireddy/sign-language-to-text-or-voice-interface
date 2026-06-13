@@ -7,6 +7,21 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 
+# Monkeypatch starlette to support both FastAPI 0.111.1 and Streamlit 1.58.0 requirements
+try:
+    import starlette.middleware.gzip
+    if not hasattr(starlette.middleware.gzip, "DEFAULT_EXCLUDED_CONTENT_TYPES"):
+        starlette.middleware.gzip.DEFAULT_EXCLUDED_CONTENT_TYPES = {
+            "text/html",
+            "text/css",
+            "text/javascript",
+            "application/javascript",
+            "application/json",
+            "application/xml",
+        }
+except ImportError:
+    pass
+
 import streamlit as st
 
 from app.services.database_service import db_service

@@ -21,6 +21,7 @@ from database.learning_schemas import (
 
 
 def setup_module(module):
+    _ = module
     # Clear offline DB files to prevent test state pollution
     if OFFLINE_LEARNING_FILE.exists():
         try:

@@ -4,6 +4,7 @@ stages:
   - lint
   - type_check
   - security
+  - audit
   - test
   - coverage
   - build
@@ -37,6 +38,13 @@ ruff-format-check:
   script:
     - ruff format --check .
 
+pyupgrade-check:
+  stage: format
+  image: python:3.12-slim
+  script:
+    - pip install pyupgrade==3.15.2
+    - find . -name "*.py" -not -path "./.venv/*" -not -path "./backend/.venv/*" -not -path "./node_modules/*" | xargs pyupgrade --py312-plus
+
 # --- LINT STAGE ---
 ruff-lint:
   stage: lint
@@ -55,6 +63,12 @@ pylint-lint:
   image: python:3.12-slim
   script:
     - pylint --recursive=y .
+
+vulture-deadcode:
+  stage: lint
+  image: python:3.12-slim
+  script:
+    - vulture .
 
 # --- TYPE CHECK STAGE ---
 mypy-type-check:
@@ -87,6 +101,24 @@ detect-secrets-security:
   image: python:3.12-slim
   script:
     - detect-secrets scan
+
+# --- DEPENDENCY AUDIT STAGE ---
+pip-audit:
+  stage: audit
+  image: python:3.12-slim
+  script:
+    - pip install pip-audit==2.7.2
+    - pip-audit -r backend/requirements.txt --ignore-vuln GHSA-0000-0000-0000
+  allow_failure: false
+
+npm-audit:
+  stage: audit
+  image: node:20-slim
+  script:
+    - cd frontend
+    - npm install
+    - npm audit --audit-level=high
+  allow_failure: false
 
 # --- TEST STAGE ---
 pytest-suite:

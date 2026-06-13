@@ -14,7 +14,12 @@ from ai_engine.ai_agent.error_detection import error_detector
 from ai_engine.ai_agent.learning_coach import learning_coach
 from ai_engine.ai_agent.llm_engine import llm_engine
 from ai_engine.ai_agent.rag_engine import rag_engine
-from ai_engine.schemas.landmark_schema import FaceData, FrameLandmarkData, HandData, PoseData
+from ai_engine.schemas.landmark_schema import (
+    FaceTelemetryData,
+    FrameLandmarkData,
+    HandTelemetryData,
+    PoseTelemetryData,
+)
 
 router = APIRouter()
 
@@ -100,13 +105,12 @@ async def get_learning_quiz(req: LearningCoachRequest):
 
 @router.post("/error-detect", status_code=status.HTTP_200_OK)
 async def detect_errors(req: ErrorDetectRequest):
-    # Construct a FrameLandmarkData object from the flat landmarks list or mock it if empty
     frame_lms = FrameLandmarkData(
         timestamp=0.0,
-        left_hand=HandData(present=False, landmarks=[], center=None),
-        right_hand=HandData(present=False, landmarks=[], center=None),
-        pose=PoseData(present=False, landmarks=[]),
-        face=FaceData(present=False, landmarks=[])
+        left_hand=HandTelemetryData(present=False, landmarks=[]),
+        right_hand=HandTelemetryData(present=False, landmarks=[]),
+        pose=PoseTelemetryData(present=False, landmarks=[]),
+        face=FaceTelemetryData(present=False, landmarks=[])
     )
 
     # If flat landmarks list is passed (size 1662), populate FrameLandmarkData structure
