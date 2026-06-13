@@ -1,6 +1,6 @@
 [
     {
-        "quiz_id": "quiz_1781327196013",
+        "quiz_id": "quiz_1781332174427",
         "phone": "8888888888",
         "questions": [
             {
@@ -14,11 +14,11 @@
         ],
         "score": 100,
         "completed": true,
-        "created_at": "2026-06-13T05:06:36.013289+00:00",
-        "completed_at": "2026-06-13T05:06:36.016780+00:00"
+        "created_at": "2026-06-13T06:29:34.427540+00:00",
+        "completed_at": "2026-06-13T06:29:34.430924+00:00"
     },
     {
-        "quiz_id": "quiz_1781327198302",
+        "quiz_id": "quiz_1781332176626",
         "phone": "7777777777",
         "questions": [
             {
@@ -44,36 +44,6 @@
         ],
         "score": null,
         "completed": false,
-        "created_at": "2026-06-13T05:06:38.302972+00:00"
-    },
-    {
-        "quiz_id": "quiz_1781330479352",
-        "phone": "1919123456",
-        "questions": [
-            {
-                "question_text": "What is the primary visual aspect to watch when signing 'THANK_YOU'?",
-                "options": [
-                    "Moving the hand flat from the lips forward and down",
-                    "Waving the fingers close to the ears",
-                    "Pointing to the chest in a circular pattern",
-                    "Crossing both arms over the body"
-                ],
-                "correct_answer": "Moving the hand flat from the lips forward and down"
-            },
-            {
-                "question_text": "How do you improve joint visibility and classification confidence on SignBridge?",
-                "options": [
-                    "Ensure adequate room lighting and sit straight in front of the lens",
-                    "Stand behind a physical obstruction or object",
-                    "Perform gestures as rapidly as possible",
-                    "Decrease camera frame rate settings"
-                ],
-                "correct_answer": "Ensure adequate room lighting and sit straight in front of the lens"
-            }
-        ],
-        "score": 100,
-        "completed": true,
-        "created_at": "2026-06-13T06:01:19.352113+00:00",
-        "completed_at": "2026-06-13T06:01:21.490498+00:00"
+        "created_at": "2026-06-13T06:29:36.626087+00:00"
     }
 ]
