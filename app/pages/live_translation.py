@@ -1,6 +1,6 @@
 import time
 
-import cv2
+from ai_engine.utils.cv2_guard import cv2
 import streamlit as st
 
 from app.services.ai_service import ai_service
