@@ -142,3 +142,4 @@ pytest --cov=backend --cov=ai_engine --cov=translation --cov-report=term-missing
 ## 📜 License
 
 This project is licensed under the **GNU Affero General Public License v3.0** (AGPLv3). Under this license, if you modify the code and run it as a network service, you must make your modifications available to the public. See the [LICENSE](file:///LICENSE) file for details.
+# sign-language-to-text-or-voice-interface
