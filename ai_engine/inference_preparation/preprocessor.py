@@ -37,8 +37,8 @@ class InferencePreprocessor:
         Grades coordinate and feature quality metrics for model training compatibility.
         """
         # Assess structural coverage (hands present is high readiness)
-        lh_slice = landmarks[1404:1467]
-        rh_slice = landmarks[1467:1530]
+        lh_slice = landmarks[1536:1599]
+        rh_slice = landmarks[1599:1662]
         hands_detected = np.any(lh_slice > 0) or np.any(rh_slice > 0)
 
         # Readiness calculations

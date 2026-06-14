@@ -61,12 +61,12 @@ def extract_motion_telemetry(flat_history: list) -> dict[str, Any]:
     prev = flat_history[-2]
 
     # Hand index boundaries
-    # Left hand is 1404 to 1467. Right hand is 1467 to 1530.
-    lh_curr = curr[1404:1467].reshape((-1, 3))
-    lh_prev = prev[1404:1467].reshape((-1, 3))
+    # Left hand is 1536 to 1599. Right hand is 1599 to 1662.
+    lh_curr = curr[1536:1599].reshape((-1, 3))
+    lh_prev = prev[1536:1599].reshape((-1, 3))
 
-    rh_curr = curr[1467:1530].reshape((-1, 3))
-    rh_prev = prev[1467:1530].reshape((-1, 3))
+    rh_curr = curr[1599:1662].reshape((-1, 3))
+    rh_prev = prev[1599:1662].reshape((-1, 3))
 
     # Mean displacement velocity magnitudes
     lh_disps = np.linalg.norm(lh_curr - lh_prev, axis=1)
@@ -77,8 +77,8 @@ def extract_motion_telemetry(flat_history: list) -> dict[str, Any]:
 
     if len(flat_history) >= 3:
         prev_prev = flat_history[-3]
-        lh_prev_prev = prev_prev[1404:1467].reshape((-1, 3))
-        rh_prev_prev = prev_prev[1467:1530].reshape((-1, 3))
+        lh_prev_prev = prev_prev[1536:1599].reshape((-1, 3))
+        rh_prev_prev = prev_prev[1599:1662].reshape((-1, 3))
 
         # Accelerations (difference in displacements)
         lh_disps_prev = np.linalg.norm(lh_prev - lh_prev_prev, axis=1)

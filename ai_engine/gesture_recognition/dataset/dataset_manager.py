@@ -105,8 +105,7 @@ class DatasetManager:
                 # Build mock sequence of size (seq_len, 1662)
                 seq = np.zeros((sequence_length, 1662), dtype=np.float32)
 
-                # Simulate movement trajectory in right hand coordinates
-                # Right hand starts at index 1467, 21 landmarks x 3 coordinates
+                # Right hand starts at index 1599, 21 landmarks x 3 coordinates
                 start_y = np.random.uniform(0.4, 0.6)
                 direction = 1 if label in ["HELLO", "YES", "A"] else -1
 
@@ -116,11 +115,11 @@ class DatasetManager:
                     seq[frame, 12 * 4 : 12 * 4 + 3] = [0.6, 0.2, 0.0]  # Right shoulder
 
                     # Simulate hand presence
-                    seq[frame, 1467 : 1467 + 63] = np.random.uniform(0.1, 0.9, 63)
+                    seq[frame, 1599 : 1599 + 63] = np.random.uniform(0.1, 0.9, 63)
 
                     # Apply a distinct motion curve depending on class
                     y_offset = direction * 0.1 * np.sin(np.pi * frame / sequence_length)
-                    seq[frame, 1467 + 1] = start_y + y_offset  # Move Y coord
+                    seq[frame, 1599 + 1] = start_y + y_offset  # Move Y coord
 
                 X.append(seq)
                 y.append(c_idx)
@@ -213,8 +212,8 @@ class DatasetManager:
                 # Unpack and generate rows
                 # We'll save a subset of landmarks to keep exports readable and small
                 # wrist coordinates
-                lh_wrist = frame[1404:1407]
-                rh_wrist = frame[1467:1470]
+                lh_wrist = frame[1536:1539]
+                rh_wrist = frame[1599:1602]
                 rows.append(
                     {
                         "sample_id": idx,

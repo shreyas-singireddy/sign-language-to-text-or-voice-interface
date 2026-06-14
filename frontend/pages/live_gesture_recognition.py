@@ -2,6 +2,7 @@ import time
 
 import streamlit as st
 
+from ai_engine.utils.cv_overlay import draw_skeleton_and_telemetry
 from ai_engine.utils.dependency_guard import CV2_AVAILABLE, cv2, require_torch
 from src.services.translation_service import t
 
@@ -211,10 +212,14 @@ with col_cam:
 
                     # Mirror and render frame
                     display_img = cv2.flip(frame, 1)
-                    if telemetry_data.landmarks.pose.present:
-                        display_img = perception_service.pose_det.mp_pose.solutions.drawing_utils.draw_landmarks(
-                            display_img, telemetry_data.landmarks.pose.landmarks, None
-                        )
+                    # Apply custom visual CV overlay
+                    display_img = draw_skeleton_and_telemetry(
+                        display_img,
+                        telemetry_data.landmarks,
+                        prediction_data,
+                        telemetry_data.camera.fps,
+                        telemetry_data.performance.total_pipeline_ms,
+                    )
                     display_rgb = cv2.cvtColor(display_img, cv2.COLOR_BGR2RGB)
                     video_view.image(display_rgb, use_column_width=True)
 

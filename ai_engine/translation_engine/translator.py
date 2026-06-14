@@ -19,19 +19,37 @@ class TranslationEngine:
             ("HELP",): "I need help.",
             ("SORRY",): "Sorry.",
         }
+        # Auto-correction map for likely gesture mistakes
+        self.correction_map = {
+            "HELO": "HELLO",
+            "THANKS": "THANK_YOU",
+            "THANK": "THANK_YOU",
+            "GOOD_MORNING": "GOOD MORNING",
+            "GOOD_NIGHT": "GOOD NIGHT",
+            "HELP_ME": "HELP",
+            "PLS": "PLEASE",
+        }
 
     def translate(self, gesture_sequence: list, language: str = "English") -> str:
         """
         Translates a sequence of gesture strings into a natural language sentence.
+        Applies gesture auto-correction and sentence-level grammar generation.
         """
         if not gesture_sequence:
             return ""
 
-        # Remove consecutive duplicate tokens if any got past the sequence detector
+        # Remove consecutive duplicate tokens, clean blank states, and map corrections
         clean_sequence = []
         for token in gesture_sequence:
-            if not clean_sequence or clean_sequence[-1] != token:
-                clean_sequence.append(token)
+            if token in ["IDLE", "WAITING_FOR_CLEAR_GESTURE", ""]:
+                continue
+
+            corrected_token = self.correction_map.get(token.upper(), token.upper())
+            if not clean_sequence or clean_sequence[-1] != corrected_token:
+                clean_sequence.append(corrected_token)
+
+        if not clean_sequence:
+            return ""
 
         key = tuple(clean_sequence)
 
@@ -43,7 +61,6 @@ class TranslationEngine:
             base_translation = " ".join(clean_sequence).capitalize() + "."
 
         # Translate output language from base (English) if requested
-        # For scaffolding, we provide mock multilingual variations
         return self._apply_multilingual_mapping(base_translation, language)
 
     def _apply_multilingual_mapping(self, english_text: str, target_language: str) -> str:

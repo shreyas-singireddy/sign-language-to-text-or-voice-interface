@@ -15,13 +15,13 @@ def compute_trajectory_length(sequence_history: list) -> tuple[float, float]:
     right_path = 0.0
 
     # Extract hand centers at each frame
-    # Left hand is 1404:1467, right is 1467:1530
+    # Left hand is 1536:1599, right is 1599:1662
     lh_centers = []
     rh_centers = []
 
     for frame in sequence_history:
-        lh = frame[1404:1467].reshape((21, 3))
-        rh = frame[1467:1530].reshape((21, 3))
+        lh = frame[1536:1599].reshape((21, 3))
+        rh = frame[1599:1662].reshape((21, 3))
 
         # Avoid zero/uninitialized hand coords
         if np.any(lh > 0.0):

@@ -1,7 +1,9 @@
 class ConfidenceEngine:
-    def __init__(self, history_size: int = 10):
+    def __init__(self, history_size: int = 10, alpha: float = 0.4):
         self.history_size = history_size
         self.prediction_history: list[str] = []
+        self.alpha = alpha
+        self.smoothed_confidence = None
 
     def calculate_confidence(
         self,
@@ -46,10 +48,19 @@ class ConfidenceEngine:
         )
 
         # Scale to 0-100%
-        return round(float(combined) * 100.0, 2)
+        final_score = float(combined) * 100.0
+
+        # Apply Exponential Smoothing (EMA) for prediction stability
+        if self.smoothed_confidence is None:
+            self.smoothed_confidence = final_score
+        else:
+            self.smoothed_confidence = (self.alpha * final_score) + ((1.0 - self.alpha) * self.smoothed_confidence)
+
+        return round(float(self.smoothed_confidence), 2)
 
     def clear(self):
         self.prediction_history.clear()
+        self.smoothed_confidence = None
 
 
 confidence_engine = ConfidenceEngine()

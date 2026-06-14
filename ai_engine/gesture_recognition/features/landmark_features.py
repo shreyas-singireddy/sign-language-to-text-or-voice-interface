@@ -113,6 +113,35 @@ def extract_hand_features(hand: np.ndarray) -> dict[str, Any]:
             pairwise.append(float(d))
     features["pairwise_distances"] = pairwise
 
+    # Enhanced Spatial Features: Palm width, Palm orientation normal, and Finger lengths
+    # Palm width: distance between MCP of index finger (5) and pinky finger (17)
+    palm_width = float(np.linalg.norm(hand[5] - hand[17]))
+    features["palm_width"] = palm_width
+
+    # Palm orientation: unit normal vector of the palm plane
+    v_index = hand[5] - hand[0]
+    v_pinky = hand[17] - hand[0]
+    normal = np.cross(v_index, v_pinky)
+    norm = np.linalg.norm(normal)
+    palm_orientation = (normal / (norm + 1e-6)).tolist() if norm > 1e-6 else [0.0, 0.0, 1.0]
+    features["palm_orientation"] = palm_orientation
+
+    # Finger lengths: cumulative joint segments length
+    finger_chains = [
+        [0, 1, 2, 3, 4],     # Thumb
+        [5, 6, 7, 8],        # Index
+        [9, 10, 11, 12],     # Middle
+        [13, 14, 15, 16],    # Ring
+        [17, 18, 19, 20]     # Pinky
+    ]
+    lengths = []
+    for chain in finger_chains:
+        length = 0.0
+        for k in range(len(chain) - 1):
+            length += np.linalg.norm(hand[chain[k]] - hand[chain[k+1]])
+        lengths.append(float(length))
+    features["finger_lengths"] = lengths
+
     return features
 
 
@@ -197,10 +226,16 @@ def compile_geometric_features(flat_landmarks: np.ndarray) -> np.ndarray:
     feature_list.extend(lh_feats["curls"])
     feature_list.extend(lh_feats["joint_angles"])
     feature_list.extend(lh_feats["pairwise_distances"])
+    feature_list.append(lh_feats["palm_width"])
+    feature_list.extend(lh_feats["palm_orientation"])
+    feature_list.extend(lh_feats["finger_lengths"])
 
     feature_list.extend(rh_feats["curls"])
     feature_list.extend(rh_feats["joint_angles"])
     feature_list.extend(rh_feats["pairwise_distances"])
+    feature_list.append(rh_feats["palm_width"])
+    feature_list.extend(rh_feats["palm_orientation"])
+    feature_list.extend(rh_feats["finger_lengths"])
 
     # Pose features
     feature_list.append(pose_feats["left_elbow_angle"])

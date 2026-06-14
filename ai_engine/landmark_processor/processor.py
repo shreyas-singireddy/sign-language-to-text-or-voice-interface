@@ -57,21 +57,21 @@ class LandmarkProcessor:
         normalized = raw_coords.copy()
 
         # Let's anchor the hands to the wrists if visible
-        # Right hand landmarks start at index 1467. Wrist is the first hand joint (1467, 1468, 1469)
-        # Left hand landmarks start at 1404. Wrist is 1404, 1405, 1406
-        rh_wrist = normalized[1467:1470]
-        lh_wrist = normalized[1404:1407]
+        # Right hand landmarks start at index 1599. Wrist is the first hand joint (1599, 1600, 1601)
+        # Left hand landmarks start at 1536. Wrist is 1536, 1537, 1538
+        rh_wrist = normalized[1599:1602]
+        lh_wrist = normalized[1536:1539]
 
         # If right hand wrist is present, shift all right hand landmarks relative to the wrist
         if np.any(rh_wrist != 0):
             for i in range(21):
-                idx = 1467 + (i * 3)
+                idx = 1599 + (i * 3)
                 normalized[idx : idx + 3] = normalized[idx : idx + 3] - rh_wrist
 
         # If left hand wrist is present, shift all left hand landmarks relative to the wrist
         if np.any(lh_wrist != 0):
             for i in range(21):
-                idx = 1404 + (i * 3)
+                idx = 1536 + (i * 3)
                 normalized[idx : idx + 3] = normalized[idx : idx + 3] - lh_wrist
 
         return normalized

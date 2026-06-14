@@ -2,6 +2,7 @@ import time
 
 import streamlit as st
 
+from ai_engine.utils.cv_overlay import draw_skeleton_and_telemetry
 from ai_engine.utils.dependency_guard import CV2_AVAILABLE, MP_AVAILABLE, cv2, mp, require_torch
 from src.services.translation_service import t
 
@@ -87,22 +88,6 @@ if st.session_state["debug_active"]:
     success = perception_service.camera.initialize_camera(sys_config.camera.source_index)
     if success:
         try:
-            # We initialize standard drawing models locally to ensure overlay draws correctly
-            mp_hands_model = mp_hands.Hands(
-                min_detection_confidence=sys_config.detectors.min_detection_confidence,
-                min_tracking_confidence=sys_config.detectors.min_tracking_confidence,
-            )
-            mp_pose_model = mp_pose.Pose(
-                min_detection_confidence=sys_config.detectors.min_detection_confidence,
-                min_tracking_confidence=sys_config.detectors.min_tracking_confidence,
-            )
-            mp_face_mesh_model = mp_face_mesh.FaceMesh(
-                max_num_faces=1,
-                refine_landmarks=True,
-                min_detection_confidence=sys_config.detectors.min_detection_confidence,
-                min_tracking_confidence=sys_config.detectors.min_tracking_confidence,
-            )
-
             sequence_buffer = []
 
             while st.session_state["debug_active"]:
@@ -128,48 +113,15 @@ if st.session_state["debug_active"]:
                     telemetry.stability.tracking_stability,
                 )
 
-                # 3. Draw Annotated overlays on mirrored image
+                # 3. Draw Annotated overlays on mirrored image using our efficient drawer
                 display_img = cv2.flip(frame, 1)
-                img_h, img_w, _ = display_img.shape
-
-                # Convert back to RGB for MediaPipe processors
-                rgb_img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-                # Run local estimators to draw native landmarks
-                hands_res = mp_hands_model.process(rgb_img)
-                pose_res = mp_pose_model.process(rgb_img)
-                face_res = mp_face_mesh_model.process(rgb_img)
-
-                # Draw Face Mesh Outline
-                if face_res.multi_face_landmarks:
-                    for face_landmarks in face_res.multi_face_landmarks:
-                        mp_drawing.draw_landmarks(
-                            image=display_img,
-                            landmark_list=face_landmarks,
-                            connections=mp_face_mesh.FACEMESH_CONTOURS,
-                            landmark_drawing_spec=None,
-                            connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_contours_style(),
-                        )
-
-                # Draw Pose Skeleton
-                if pose_res.pose_landmarks:
-                    mp_drawing.draw_landmarks(
-                        image=display_img,
-                        landmark_list=pose_res.pose_landmarks,
-                        connections=mp_pose.POSE_CONNECTIONS,
-                        landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(),
-                    )
-
-                # Draw Hand Joints
-                if hands_res.multi_hand_landmarks:
-                    for hand_landmarks in hands_res.multi_hand_landmarks:
-                        mp_drawing.draw_landmarks(
-                            image=display_img,
-                            landmark_list=hand_landmarks,
-                            connections=mp_hands.HAND_CONNECTIONS,
-                            landmark_drawing_spec=mp_drawing_styles.get_default_hand_landmarks_style(),
-                            connection_drawing_spec=mp_drawing_styles.get_default_hand_connections_style(),
-                        )
+                display_img = draw_skeleton_and_telemetry(
+                    display_img,
+                    telemetry.landmarks,
+                    pred,
+                    telemetry.camera.fps,
+                    telemetry.performance.total_pipeline_ms,
+                )
 
                 # Convert to RGB and render
                 rgb_display = cv2.cvtColor(display_img, cv2.COLOR_BGR2RGB)

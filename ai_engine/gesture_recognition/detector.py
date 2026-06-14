@@ -53,8 +53,8 @@ class GestureDetector:
         # If prediction fails, or readiness filter triggers "WAITING_FOR_CLEAR_GESTURE",
         # fallback to heuristic classification to keep UI responsive
         if pred == "WAITING_FOR_CLEAR_GESTURE" or conf < GESTURE_CONFIDENCE_THRESHOLD:
-            lh_slice = landmark_vector[1404:1467]
-            rh_slice = landmark_vector[1467:1530]
+            lh_slice = landmark_vector[1536:1599]
+            rh_slice = landmark_vector[1599:1662]
 
             has_left = np.any(lh_slice > 0)
             has_right = np.any(rh_slice > 0)
