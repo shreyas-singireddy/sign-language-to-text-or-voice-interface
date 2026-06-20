@@ -26,6 +26,8 @@ class CameraManager:
             self.cap = None
             return False
 
+        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+
         logger.info("Webcam stream started successfully.")
         return True
 
