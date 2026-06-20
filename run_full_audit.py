@@ -6,6 +6,8 @@ import time
 from pathlib import Path
 
 import numpy as np
+
+# pyrefly: ignore [missing-source-for-stubs]
 import psutil
 
 # Add backend and root to sys.path to ensure absolute imports resolve correctly
@@ -170,16 +172,19 @@ for mod in critical_modules:
 
     if mod.startswith("app."):
         # Root Streamlit app imports
-        sys.path = [p for p in sys.path if p != BACKEND_DIR]
+        sys.path = [p for p in sys.path if p not in (ROOT_DIR, BACKEND_DIR)]
+        sys.path.append(BACKEND_DIR)
         sys.path.insert(0, ROOT_DIR)
         mod_import = mod
     elif mod.startswith("backend."):
         # Backend FastAPI app imports
-        sys.path = [p for p in sys.path if p != ROOT_DIR]
+        sys.path = [p for p in sys.path if p not in (ROOT_DIR, BACKEND_DIR)]
+        sys.path.append(ROOT_DIR)
         sys.path.insert(0, BACKEND_DIR)
         mod_import = mod.replace("backend.", "")
     else:
-        sys.path = [p for p in sys.path if p != BACKEND_DIR]
+        sys.path = [p for p in sys.path if p not in (ROOT_DIR, BACKEND_DIR)]
+        sys.path.append(BACKEND_DIR)
         sys.path.insert(0, ROOT_DIR)
         mod_import = mod
 
@@ -691,7 +696,7 @@ print("\n--- Step 13: Running Pytest and scoring ---")
 # Run pytest tests and capture output
 res = subprocess.run(
     [
-        str(PROJECT_ROOT / "backend" / ".venv312" / "Scripts" / "python.exe"),
+        str(PROJECT_ROOT / "backend" / ".venv" / "Scripts" / "python.exe"),
         "-m",
         "pytest",
         "tests",
