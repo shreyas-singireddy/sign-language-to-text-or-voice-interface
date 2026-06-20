@@ -108,7 +108,7 @@ with col_video:
                     st.session_state["translation_buffer"] = results["translation"]
 
                     # Small sleep to manage render rates (approx 24 fps)
-                    time.sleep(0.04)
+                    time.sleep(0.01)
             finally:
                 cam.stop()
                 video_placeholder.empty()
