@@ -10,7 +10,15 @@ from ai_engine.exporters.json_exporter import JsonExporter
 from ai_engine.feature_extractor.extractor import FeatureExtractor
 from ai_engine.motion_analysis.analyser import MotionAnalyser
 from ai_engine.pipeline.vision_pipeline import vision_pipeline
+from ai_engine.schemas.landmark_schema import (
+    FaceTelemetryData,
+    FrameLandmarkData,
+    HandTelemetryData,
+    Point3D,
+    PoseTelemetryData,
+)
 from ai_engine.temporal_memory.memory import TemporalMemory
+from ai_engine.utils.cv_overlay import draw_skeleton_and_telemetry
 
 
 def test_temporal_memory():
@@ -265,4 +273,152 @@ def test_parquet_exporter():
             assert exported.suffix == ".csv"
             if exported.exists():
                 exported.unlink()
+
+
+def test_cv_overlay():
+    pts_hand = [Point3D(x=0.5, y=0.5, z=0.5, visibility=1.0) for _ in range(21)]
+    pts_pose = [Point3D(x=0.5, y=0.5, z=0.5, visibility=1.0) for _ in range(33)]
+    pts_face = [Point3D(x=0.5, y=0.5, z=0.5, visibility=1.0) for _ in range(468)]
+
+    left_hand = HandTelemetryData(present=True, landmarks=pts_hand, confidence=0.9, center=Point3D(x=0.5, y=0.5, z=0.5))
+    right_hand = HandTelemetryData(present=True, landmarks=pts_hand, confidence=0.9, center=Point3D(x=0.5, y=0.5, z=0.5))
+    pose = PoseTelemetryData(present=True, landmarks=pts_pose, confidence=0.9)
+    face = FaceTelemetryData(present=True, landmarks=pts_face, confidence=0.9)
+
+    landmarks = FrameLandmarkData(
+        timestamp=1.0,
+        left_hand=left_hand,
+        right_hand=right_hand,
+        pose=pose,
+        face=face
+    )
+
+    frame = np.zeros((480, 640, 3), dtype=np.uint8)
+    prediction_data = {"prediction": "HELLO", "confidence": 0.95}
+
+    annotated = draw_skeleton_and_telemetry(frame, landmarks, prediction_data, fps=30.0, latency_ms=10.0)
+    assert annotated.shape == (480, 640, 3)
+
+    # test missing cases
+    left_hand_missing = HandTelemetryData(present=False, landmarks=[], confidence=0.0)
+    right_hand_missing = HandTelemetryData(present=False, landmarks=[], confidence=0.0)
+    pose_missing = PoseTelemetryData(present=False, landmarks=[], confidence=0.0)
+    face_missing = FaceTelemetryData(present=False, landmarks=[], confidence=0.0)
+
+    landmarks_missing = FrameLandmarkData(
+        timestamp=1.0,
+        left_hand=left_hand_missing,
+        right_hand=right_hand_missing,
+        pose=pose_missing,
+        face=face_missing
+    )
+
+    annotated_missing = draw_skeleton_and_telemetry(frame, landmarks_missing, {}, fps=30.0, latency_ms=10.0)
+    assert annotated_missing.shape == (480, 640, 3)
+
+
+def test_gesture_detector():
+    from unittest import mock
+
+    from ai_engine.gesture_recognition.detector import GestureDetector
+
+    gd = GestureDetector()
+    # Mock predict_alphabet to return WAITING_FOR_CLEAR_GESTURE
+    with mock.patch("ai_engine.gesture_recognition.inference.predictor.gesture_predictor.predict_alphabet") as mock_predict:
+        mock_predict.return_value = {"prediction": "WAITING_FOR_CLEAR_GESTURE", "confidence": 0.5}
+
+        # 1. No hands detected (all zeros)
+        lms = np.zeros(1662)
+        label, conf = gd.predict(lms)
+        assert label == "IDLE"
+        assert conf == 1.0
+
+        # 2. Left hand present
+        lms_lh = np.zeros(1662)
+        lms_lh[1536:1599] = 1.0
+        label, conf = gd.predict(lms_lh)
+        assert label == "IDLE"
+        assert conf == 0.5
+
+        # 3. Right hand present
+        # wrist_y is at rh_slice[1] (index 1599 + 1 = 1600)
+        # tip_y is at rh_slice[25] (index 1599 + 25 = 1624)
+
+        # HELLO case (tip_y < wrist_y - 0.2)
+        lms_rh = np.zeros(1662)
+        lms_rh[1599:1662] = 1.0
+        lms_rh[1600] = 1.0  # wrist_y
+        lms_rh[1624] = 0.5  # tip_y
+        label, conf = gd.predict(lms_rh)
+        assert label == "HELLO"
+
+        # YES case (tip_y > wrist_y)
+        lms_rh2 = np.zeros(1662)
+        lms_rh2[1599:1662] = 1.0
+        lms_rh2[1600] = 0.5  # wrist_y
+        lms_rh2[1624] = 1.0  # tip_y
+        label, conf = gd.predict(lms_rh2)
+        assert label == "YES"
+
+        # THANKS case (tip_y equal to wrist_y)
+        lms_rh3 = np.zeros(1662)
+        lms_rh3[1599:1662] = 1.0
+        lms_rh3[1600] = 0.5  # wrist_y
+        lms_rh3[1624] = 0.5  # tip_y
+        label, conf = gd.predict(lms_rh3)
+        assert label == "THANKS"
+
+
+def test_landmark_processor():
+    from ai_engine.landmark_processor.processor import LandmarkProcessor
+
+    lp = LandmarkProcessor()
+
+    raw = np.random.randn(1662)
+    smoothed = lp.clean_coordinates(raw)
+    assert np.allclose(smoothed, raw)
+
+    raw2 = np.random.randn(1662)
+    smoothed2 = lp.clean_coordinates(raw2)
+    expected = 0.3 * raw2 + 0.7 * raw
+    assert np.allclose(smoothed2, expected)
+
+    assert np.allclose(lp.recover_missing_points(raw, None), raw)
+    empty = np.zeros(1662)
+    recovered = lp.recover_missing_points(empty, None)
+    assert np.allclose(recovered, raw)
+
+    normalized = lp.normalize_landmarks(raw)
+    assert normalized.shape == (1662,)
+
+    lp_new = LandmarkProcessor()
+    processed = lp_new.process(raw, None)
+    assert processed.shape == (1662,)
+
+
+def test_inference_preprocessor():
+    from ai_engine.inference_preparation.preprocessor import InferencePreprocessor
+
+    ip = InferencePreprocessor()
+
+    padded = ip.pad_sequence([])
+    assert padded.shape == (1, 30, 1662)
+
+    seq = [np.ones(1662)] * 10
+    padded = ip.pad_sequence(seq)
+    assert padded.shape == (1, 30, 1662)
+
+    seq_long = [np.ones(1662)] * 35
+    padded = ip.pad_sequence(seq_long)
+    assert padded.shape == (1, 30, 1662)
+
+    lms = np.zeros(1662)
+    res = ip.assess_data_readiness(lms, 0.9)
+    assert res["tracking_stability_score"] == 0.9
+    assert res["feature_quality_score"] == 0.4
+
+    lms[1536:1599] = 1.0
+    res_hands = ip.assess_data_readiness(lms, 0.9)
+    assert res_hands["feature_quality_score"] == 0.9
+
 
