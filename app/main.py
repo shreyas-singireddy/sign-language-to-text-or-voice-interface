@@ -460,6 +460,11 @@ pages = [
         title=t("sidebar_ai_agent_hub"),
         icon="🤖",
     ),
+    st.Page(
+        pages_dir / "computer_control.py",
+        title="Computer Control Agent",
+        icon="🖥️",
+    ),
     st.Page(pages_dir / "visual_debug_dashboard.py", title=t("sidebar_visual_debug"), icon="🛠️"),
     st.Page(pages_dir / "live_translation.py", title=t("sidebar_live_translation"), icon="🎥"),
     st.Page(pages_dir / "training_studio.py", title=t("sidebar_training_studio"), icon="🏋️"),
