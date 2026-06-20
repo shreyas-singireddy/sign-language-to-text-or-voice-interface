@@ -52,6 +52,8 @@ class CameraManager:
                 self.cap = None
                 return False
 
+            self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+
             # Set resolution parameters
             self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
             self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
