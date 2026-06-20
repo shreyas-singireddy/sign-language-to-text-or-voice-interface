@@ -20,13 +20,17 @@
 - [x] `httpx`: Installed and verified.
 ### Auditing requirements.txt
 - [x] `streamlit`: Installed and verified.
-- [x] `opencv-python`: Installed and verified (mapped to `cv2`).
+- [ ] `opencv-python-headless`: Not found / import failed.
 - [x] `mediapipe`: Installed and verified.
 - [x] `pymongo`: Installed and verified.
 - [x] `python-dotenv`: Installed and verified (mapped to `dotenv`).
+- [x] `pydantic`: Installed and verified.
+- [x] `pydantic-settings`: Installed and verified.
 - [x] `numpy`: Installed and verified.
 - [x] `pandas`: Installed and verified.
 - [x] `pytest`: Installed and verified.
 - [x] `httpx`: Installed and verified.
 - [x] `plotly`: Installed and verified.
-- [ ] `gTTS`: Not found / import failed.
+- [x] `gTTS`: Installed and verified (mapped to `gtts`).
+- [x] `torch`: Installed and verified.
+- [x] `torchvision`: Installed and verified.
