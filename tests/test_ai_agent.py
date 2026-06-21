@@ -42,6 +42,7 @@ class MockPoint:
         self.y = y
         self.z = z
 
+
 # --- 1. Test Database Schema & Progress ---
 def test_learning_database_get_default():
     db = LearningDatabase()
@@ -50,6 +51,7 @@ def test_learning_database_get_default():
     assert progress["skill_level"] == "Novice"
     assert progress["practice_count"] == 0
     assert progress["average_accuracy"] == 0.0
+
 
 def test_learning_database_save_and_log():
     db = LearningDatabase()
@@ -72,18 +74,18 @@ def test_learning_database_save_and_log():
     assert updated["average_accuracy"] == 0.70  # (0.90 + 0.50) / 2
     assert "THANK_YOU" in updated["weak_signs"]
 
+
 def test_learning_quiz_save_and_submit():
     db = LearningDatabase()
     phone = "8888888888"
-    questions = [
-        {"question_text": "Test Q", "options": ["A", "B"], "correct_answer": "A"}
-    ]
+    questions = [{"question_text": "Test Q", "options": ["A", "B"], "correct_answer": "A"}]
 
     quiz_id = db.save_quiz(phone, questions)
     assert quiz_id.startswith("quiz_")
 
     success = db.submit_quiz(quiz_id, 100)
     assert success is True
+
 
 # --- 2. Test LLM Engine Fallbacks ---
 def test_llm_engine_fallback():
@@ -99,6 +101,7 @@ def test_llm_engine_fallback():
     assert len(quiz_json) > 0
     assert "question_text" in quiz_json[0]
 
+
 # --- 3. Test RAG Search Engine ---
 def test_rag_engine_index_and_retrieve():
     # Load and index the documentation
@@ -112,14 +115,16 @@ def test_rag_engine_index_and_retrieve():
     else:
         assert context == ""
 
+
 # --- 4. Test Error Detection Computations ---
 def test_calculate_angle():
     a = MockPoint(1.0, 0.0, 0.0)
-    b = MockPoint(0.0, 0.0, 0.0) # vertex
+    b = MockPoint(0.0, 0.0, 0.0)  # vertex
     c = MockPoint(0.0, 1.0, 0.0)
 
     angle = calculate_angle(a, b, c)
     assert pytest.approx(angle, 0.1) == 90.0
+
 
 def test_error_detection_visible_hand():
     # Create mock frame landmarks
@@ -127,21 +132,21 @@ def test_error_detection_visible_hand():
         timestamp=0.0,
         left_hand=HandTelemetryData(present=False, landmarks=[]),
         right_hand=HandTelemetryData(
-            present=True,
-            landmarks=[Point3D(x=0.0, y=0.0, z=0.0)] + [Point3D(x=0.5, y=0.5, z=0.5) for _ in range(20)]
+            present=True, landmarks=[Point3D(x=0.0, y=0.0, z=0.0)] + [Point3D(x=0.5, y=0.5, z=0.5) for _ in range(20)]
         ),
         pose=PoseTelemetryData(
             present=True,
             # Generate 33 landmarks for pose (shoulders, elbows, hip)
-            landmarks=[Point3D(x=0.0, y=0.0, z=0.0) for _ in range(33)]
+            landmarks=[Point3D(x=0.0, y=0.0, z=0.0) for _ in range(33)],
         ),
-        face=FaceTelemetryData(present=False, landmarks=[])
+        face=FaceTelemetryData(present=False, landmarks=[]),
     )
 
     feedback = error_detector.detect_errors(frame_lms, "HELLO")
     assert "status" in feedback
     assert "overall_accuracy" in feedback
     assert isinstance(feedback["deviations"], list)
+
 
 # --- 5. Test Learning Coach Quiz & Daily Challenge ---
 def test_learning_coach_generators():
