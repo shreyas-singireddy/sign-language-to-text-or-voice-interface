@@ -75,4 +75,3 @@ SUPPORTED_LANGUAGES = {
     "Assamese": "as-IN",
     "Portuguese": "pt-PT",
 }
-
