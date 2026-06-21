@@ -26,12 +26,7 @@ def test_temporal_memory():
     assert mem.get_memory_stats()["buffer_30_size"] == 0
 
     # Memorize frame
-    rec = {
-        "landmarks": [0.0] * 1662,
-        "mean_velocity": 0.5,
-        "mean_acceleration": 0.1,
-        "stability_index": 0.9
-    }
+    rec = {"landmarks": [0.0] * 1662, "mean_velocity": 0.5, "mean_acceleration": 0.1, "stability_index": 0.9}
     mem.memorize(rec)
     stats = mem.get_memory_stats()
     assert stats["buffer_30_size"] == 1
@@ -78,24 +73,12 @@ def test_json_and_csv_exporters():
             "frames": [
                 {
                     "timestamp": 1.0,
-                    "left_hand": {
-                        "present": True,
-                        "landmarks": [{"x": 0.1, "y": 0.2, "z": 0.3, "visibility": 0.9}]
-                    },
-                    "right_hand": {
-                        "present": False,
-                        "landmarks": []
-                    },
-                    "pose": {
-                        "present": True,
-                        "landmarks": [{"x": 0.4, "y": 0.5, "z": 0.6, "visibility": 0.95}]
-                    },
-                    "face": {
-                        "present": False,
-                        "landmarks": []
-                    }
+                    "left_hand": {"present": True, "landmarks": [{"x": 0.1, "y": 0.2, "z": 0.3, "visibility": 0.9}]},
+                    "right_hand": {"present": False, "landmarks": []},
+                    "pose": {"present": True, "landmarks": [{"x": 0.4, "y": 0.5, "z": 0.6, "visibility": 0.95}]},
+                    "face": {"present": False, "landmarks": []},
                 }
-            ]
+            ],
         }
 
         with open(raw_file, "w") as f:
@@ -188,7 +171,6 @@ def test_feature_extractor():
     assert np.allclose(a3, 0.2)
 
 
-
 def test_vision_pipeline_none_frame():
     res = vision_pipeline.run_perception(None)
     assert res["detected"] is False
@@ -220,9 +202,9 @@ def test_session_replay():
                     "left_hand": {"present": False},
                     "right_hand": {"present": False},
                     "pose": {"present": False},
-                    "face": {"present": False}
+                    "face": {"present": False},
                 }
-            ]
+            ],
         }
         with open(session_file, "w") as f:
             json.dump(dummy_session, f)
@@ -259,9 +241,9 @@ def test_parquet_exporter():
                     "left_hand": {"present": False},
                     "right_hand": {"present": False},
                     "pose": {"present": False},
-                    "face": {"present": False}
+                    "face": {"present": False},
                 }
-            ]
+            ],
         }
         with open(raw_file, "w") as f:
             json.dump(dummy_data, f)
@@ -281,17 +263,13 @@ def test_cv_overlay():
     pts_face = [Point3D(x=0.5, y=0.5, z=0.5, visibility=1.0) for _ in range(468)]
 
     left_hand = HandTelemetryData(present=True, landmarks=pts_hand, confidence=0.9, center=Point3D(x=0.5, y=0.5, z=0.5))
-    right_hand = HandTelemetryData(present=True, landmarks=pts_hand, confidence=0.9, center=Point3D(x=0.5, y=0.5, z=0.5))
+    right_hand = HandTelemetryData(
+        present=True, landmarks=pts_hand, confidence=0.9, center=Point3D(x=0.5, y=0.5, z=0.5)
+    )
     pose = PoseTelemetryData(present=True, landmarks=pts_pose, confidence=0.9)
     face = FaceTelemetryData(present=True, landmarks=pts_face, confidence=0.9)
 
-    landmarks = FrameLandmarkData(
-        timestamp=1.0,
-        left_hand=left_hand,
-        right_hand=right_hand,
-        pose=pose,
-        face=face
-    )
+    landmarks = FrameLandmarkData(timestamp=1.0, left_hand=left_hand, right_hand=right_hand, pose=pose, face=face)
 
     frame = np.zeros((480, 640, 3), dtype=np.uint8)
     prediction_data = {"prediction": "HELLO", "confidence": 0.95}
@@ -306,11 +284,7 @@ def test_cv_overlay():
     face_missing = FaceTelemetryData(present=False, landmarks=[], confidence=0.0)
 
     landmarks_missing = FrameLandmarkData(
-        timestamp=1.0,
-        left_hand=left_hand_missing,
-        right_hand=right_hand_missing,
-        pose=pose_missing,
-        face=face_missing
+        timestamp=1.0, left_hand=left_hand_missing, right_hand=right_hand_missing, pose=pose_missing, face=face_missing
     )
 
     annotated_missing = draw_skeleton_and_telemetry(frame, landmarks_missing, {}, fps=30.0, latency_ms=10.0)
@@ -324,7 +298,9 @@ def test_gesture_detector():
 
     gd = GestureDetector()
     # Mock predict_alphabet to return WAITING_FOR_CLEAR_GESTURE
-    with mock.patch("ai_engine.gesture_recognition.inference.predictor.gesture_predictor.predict_alphabet") as mock_predict:
+    with mock.patch(
+        "ai_engine.gesture_recognition.inference.predictor.gesture_predictor.predict_alphabet"
+    ) as mock_predict:
         mock_predict.return_value = {"prediction": "WAITING_FOR_CLEAR_GESTURE", "confidence": 0.5}
 
         # 1. No hands detected (all zeros)
@@ -420,5 +396,3 @@ def test_inference_preprocessor():
     lms[1536:1599] = 1.0
     res_hands = ip.assess_data_readiness(lms, 0.9)
     assert res_hands["feature_quality_score"] == 0.9
-
-
