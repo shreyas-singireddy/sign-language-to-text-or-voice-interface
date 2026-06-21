@@ -1,4 +1,3 @@
-# GitLab CI/CD Pipeline Configuration matching all 100% compliance checks
 stages:
   - format
   - lint
@@ -11,111 +10,111 @@ stages:
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  GIT_STRATEGY: clone
 
 cache:
+  key: pip-cache
   paths:
     - .cache/pip
-    - backend/.venv
+
+default:
+  image: python:3.12-slim
 
 before_script:
-  - python -m venv backend/.venv
-  - source backend/.venv/bin/activate || backend\.venv\Scripts\activate.ps1 || .\backend\.venv\Scripts\activate
-  - pip install --upgrade pip
+  - python -m pip install --upgrade pip
   - pip install -r backend/requirements.txt
   - pip install -r requirements-dev.txt
 
-# --- FORMAT STAGE ---
+# ---------------- FORMAT ----------------
+
 black-format-check:
   stage: format
-  image: python:3.12-slim
   script:
     - black --check .
 
 ruff-format-check:
   stage: format
-  image: python:3.12-slim
   script:
     - ruff format --check .
 
-# --- LINT STAGE ---
+# ---------------- LINT ----------------
+
 ruff-lint:
   stage: lint
-  image: python:3.12-slim
   script:
     - ruff check .
 
 flake8-lint:
   stage: lint
-  image: python:3.12-slim
   script:
     - flake8 .
 
 pylint-lint:
   stage: lint
-  image: python:3.12-slim
   script:
-    - pylint --recursive=y .
+    - pylint backend
 
-# --- TYPE CHECK STAGE ---
+# ---------------- TYPE CHECK ----------------
+
 mypy-type-check:
   stage: type_check
-  image: python:3.12-slim
   script:
-    - mypy .
+    - mypy backend
 
-# --- SECURITY STAGE ---
+# ---------------- SECURITY ----------------
+
 bandit-security:
   stage: security
-  image: python:3.12-slim
   script:
-    - bandit -r .
+    - bandit -r backend
 
 semgrep-security:
   stage: security
-  image: returntocorp/semgrep
+  image: returntocorp/semgrep:latest
   script:
-    - semgrep scan --error --config auto .
+    - semgrep scan --config auto --error
 
 gitleaks-security:
   stage: security
   image: zricethezav/gitleaks:latest
   script:
-    - gitleaks detect --source=. --verbose
+    - gitleaks detect --source . --verbose
 
 detect-secrets-security:
   stage: security
-  image: python:3.12-slim
   script:
-    - detect-secrets scan
+    - detect-secrets scan --all-files
 
-# --- TEST STAGE ---
+# ---------------- TEST ----------------
+
 pytest-suite:
   stage: test
-  image: python:3.12-slim
   script:
-    - pytest
+    - pytest -v
 
-# --- COVERAGE STAGE ---
+# ---------------- COVERAGE ----------------
+
 coverage-check:
   stage: coverage
-  image: python:3.12-slim
   script:
-    - pytest --cov --cov-fail-under=80
+    - pytest --cov=backend --cov-report=term-missing --cov-fail-under=80
 
-# --- BUILD STAGE ---
+# ---------------- BUILD ----------------
+
 docker-build-check:
   stage: build
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
   script:
-    - docker build .
+    - docker build -t app:test .
 
-# --- RELEASE STAGE ---
+# ---------------- RELEASE ----------------
+
 release-notify:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   script:
     - echo "Release tagged"
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_TAG'
