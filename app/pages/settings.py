@@ -112,6 +112,4 @@ with col_info:
         unsafe_allow_html=True,
     )
 
-    st.info(
-        f"ℹ️ {t('settings_info')}"
-    )
+    st.info(f"ℹ️ {t('settings_info')}")
