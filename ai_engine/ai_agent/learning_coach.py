@@ -6,6 +6,7 @@ from database.learning_schemas import learning_db
 
 logger = setup_logger("ai_agent.coach")
 
+
 class LearningCoach:
     def generate_quiz(self, phone: str, lang_name: str = "English", num_questions: int = 3) -> dict:
         """
@@ -51,10 +52,7 @@ class LearningCoach:
         # Save to DB
         quiz_id = learning_db.save_quiz(phone, questions)
 
-        return {
-            "quiz_id": quiz_id,
-            "questions": questions
-        }
+        return {"quiz_id": quiz_id, "questions": questions}
 
     def get_daily_challenge(self, phone: str, lang_name: str = "English") -> dict:
         """
@@ -86,7 +84,7 @@ class LearningCoach:
             "target_sign": target_sign,
             "target_accuracy": 0.80,
             "required_repetitions": 3,
-            "completed": False
+            "completed": False,
         }
 
     def _get_fallback_questions(self, lang: str, weak_signs: list) -> list:
@@ -98,9 +96,9 @@ class LearningCoach:
                     "Moving the hand flat from the lips forward and down",
                     "Waving the fingers close to the ears",
                     "Pointing to the chest in a circular pattern",
-                    "Crossing both arms over the body"
+                    "Crossing both arms over the body",
                 ],
-                "correct_answer": "Moving the hand flat from the lips forward and down"
+                "correct_answer": "Moving the hand flat from the lips forward and down",
             },
             {
                 "question_text": "How do you improve joint visibility and classification confidence on SignBridge?",
@@ -108,10 +106,10 @@ class LearningCoach:
                     "Ensure adequate room lighting and sit straight in front of the lens",
                     "Stand behind a physical obstruction or object",
                     "Perform gestures as rapidly as possible",
-                    "Decrease camera frame rate settings"
+                    "Decrease camera frame rate settings",
                 ],
-                "correct_answer": "Ensure adequate room lighting and sit straight in front of the lens"
-            }
+                "correct_answer": "Ensure adequate room lighting and sit straight in front of the lens",
+            },
         ]
 
         # Localize question texts slightly for other target languages if set
@@ -121,7 +119,7 @@ class LearningCoach:
                 "हाथ को होठों से चपटा करके आगे और नीचे ले जाना",
                 "उंगलियों को कानों के पास लहराना",
                 "गोलाकार पैटर्न में छाती की ओर इशारा करना",
-                "दोनों बाहों को शरीर के ऊपर से पार करना"
+                "दोनों बाहों को शरीर के ऊपर से पार करना",
             ]
             q_list[0]["correct_answer"] = "हाथ को होठों से चपटा करके आगे और नीचे ले जाना"
 
@@ -130,10 +128,11 @@ class LearningCoach:
                 "कमरे में पर्याप्त प्रकाश व्यवस्था सुनिश्चित करें और लेंस के सामने सीधे बैठें",
                 "किसी भौतिक बाधा या वस्तु के पीछे खड़े हों",
                 "जितनी जल्दी हो सके संकेत करें",
-                "कैमरा फ्रेम दर सेटिंग्स कम करें"
+                "कैमरा फ्रेम दर सेटिंग्स कम करें",
             ]
             q_list[1]["correct_answer"] = "कमरे में पर्याप्त प्रकाश व्यवस्था सुनिश्चित करें और लेंस के सामने सीधे बैठें"
 
         return q_list
+
 
 learning_coach = LearningCoach()
