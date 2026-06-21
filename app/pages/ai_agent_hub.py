@@ -22,11 +22,9 @@ user_phone = st.session_state.get("user_phone", "demo_user")
 user_lang = st.session_state.get("language", "English")
 
 # Tabs layout
-tab_coach, tab_rag, tab_models = st.tabs([
-    "🏋️ AI Learning Coach",
-    "📚 AI Knowledge Base (RAG)",
-    "⚙️ Local Model Settings"
-])
+tab_coach, tab_rag, tab_models = st.tabs(
+    ["🏋️ AI Learning Coach", "📚 AI Knowledge Base (RAG)", "⚙️ Local Model Settings"]
+)
 
 # ----------------- TAB 1: AI LEARNING COACH -----------------
 with tab_coach:
@@ -76,7 +74,9 @@ with tab_coach:
 
     with col_quiz:
         st.markdown("### Sign Language Quiz")
-        st.write("Test your knowledge of sign gestures and pipeline settings. The questions will adapt to your weak areas.")
+        st.write(
+            "Test your knowledge of sign gestures and pipeline settings. The questions will adapt to your weak areas."
+        )
 
         # Setup session state for quizzes
         if "active_quiz" not in st.session_state:
@@ -102,11 +102,7 @@ with tab_coach:
             st.write("---")
             for idx, q in enumerate(questions):
                 st.markdown(f"**Q{idx+1}: {q['question_text']}**")
-                ans = st.radio(
-                    f"Select answer for Q{idx+1}",
-                    options=q["options"],
-                    key=f"q_{quiz_id}_{idx}"
-                )
+                ans = st.radio(f"Select answer for Q{idx+1}", options=q["options"], key=f"q_{quiz_id}_{idx}")
                 st.session_state["quiz_answers"][idx] = ans
                 st.write("")
 
@@ -132,12 +128,16 @@ with tab_coach:
 # ----------------- TAB 2: AI KNOWLEDGE BASE (RAG) -----------------
 with tab_rag:
     st.markdown("### Ask the SignBridge AI Knowledge Base")
-    st.write("This search engine is indexed directly on project documentation blueprints. Ask how sign models, database pools, or CV cameras function.")
+    st.write(
+        "This search engine is indexed directly on project documentation blueprints. Ask how sign models, database pools, or CV cameras function."
+    )
 
     if "rag_chat_history" not in st.session_state:
         st.session_state["rag_chat_history"] = []
 
-    user_query = st.text_input("Ask a question about the project:", placeholder="e.g. How does the temporal sequence model predict words?")
+    user_query = st.text_input(
+        "Ask a question about the project:", placeholder="e.g. How does the temporal sequence model predict words?"
+    )
 
     if st.button("Submit Query", key="btn_query_rag"):
         if user_query.strip():
@@ -156,10 +156,7 @@ with tab_rag:
                 answer = llm_engine.generate_completion(prompt, system_prompt=system_prompt)
 
                 # Append to history
-                st.session_state["rag_chat_history"].insert(0, {
-                    "question": user_query,
-                    "answer": answer
-                })
+                st.session_state["rag_chat_history"].insert(0, {"question": user_query, "answer": answer})
 
     # Render History
     if st.session_state["rag_chat_history"]:
@@ -187,7 +184,7 @@ with tab_models:
         "Active LLM Model",
         options=["qwen2.5", "gemma2", "llama3", "mistral", "Google Gemini (Cloud)"],
         index=0 if ollama_ok else 4,
-        key="select_active_llm"
+        key="select_active_llm",
     )
 
     st.markdown("---")
