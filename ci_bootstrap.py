@@ -1,92 +1,119 @@
+"""
+ci_bootstrap.py — Cross-platform CI venv bootstrap helper.
+
+Usage:
+    python ci_bootstrap.py --bootstrap          # Create venv + install deps
+    python ci_bootstrap.py <tool> [args...]     # Run tool inside venv
+
+Supported tool aliases:
+    black, ruff, mypy, bandit, pytest,
+    vulture, flake8, pylint, detect-secrets
+"""
+
 import os
 import subprocess
 import sys
 
 
-def main() -> None:
-    # 1. Create/Ensure virtual environment using uv or venv
-    venv_dir = os.path.join("backend", ".venv")
-    use_uv = False
-    if not os.path.exists(venv_dir):
-        # Try uv first to create a python 3.12 environment (to avoid python 3.14 incompatibilities on host)
-        try:
-            subprocess.run(["uv", "venv", venv_dir, "--python", "3.12"], check=True)
-            use_uv = True
-        except (subprocess.SubprocessError, FileNotFoundError):
-            # Fallback to python -m venv
-            subprocess.run([sys.executable, "-m", "venv", venv_dir], check=True)
-            use_uv = False
-    else:
-        # Check if uv is available
-        try:
-            subprocess.run(["uv", "--version"], capture_output=True, check=True)
-            use_uv = True
-        except (subprocess.SubprocessError, FileNotFoundError):
-            use_uv = False
-
-    # 2. Compute virtual env paths
+def _find_venv_python(venv_dir: str) -> tuple[str, str]:
+    """Return (python_path, pip_path) for the given venv directory."""
     bin_dir = "Scripts" if os.name == "nt" else "bin"
-    venv_python = os.path.abspath(os.path.join(venv_dir, bin_dir, "python" + (".exe" if os.name == "nt" else "")))
-    venv_pip = os.path.abspath(os.path.join(venv_dir, bin_dir, "pip" + (".exe" if os.name == "nt" else "")))
+    suffix = ".exe" if os.name == "nt" else ""
+    python = os.path.abspath(os.path.join(venv_dir, bin_dir, f"python{suffix}"))
+    pip = os.path.abspath(os.path.join(venv_dir, bin_dir, f"pip{suffix}"))
+    return python, pip
 
-    # 3. Bootstrap mode
-    if len(sys.argv) > 1 and sys.argv[1] == "--bootstrap":
+
+def _uv_available() -> bool:
+    try:
+        subprocess.run(["uv", "--version"], capture_output=True, check=True)
+        return True
+    except (subprocess.SubprocessError, FileNotFoundError):
+        return False
+
+
+def bootstrap(venv_dir: str) -> None:
+    """Create venv (if missing) and install all project requirements."""
+    use_uv = _uv_available()
+
+    if not os.path.exists(venv_dir):
+        print(f"[bootstrap] Creating venv at {venv_dir!r} ...", flush=True)
         if use_uv:
-            # Install all requirements using uv pip install
-            subprocess.run(
-                [
-                    "uv",
-                    "pip",
-                    "install",
-                    "--python",
-                    venv_dir,
-                    "-r",
-                    "backend/requirements.txt",
-                    "-r",
-                    "requirements-dev.txt",
-                ],
-                check=True,
-            )
+            subprocess.run(["uv", "venv", venv_dir, "--python", "3.12"], check=True)
         else:
-            # Upgrade pip
-            subprocess.run([venv_python, "-m", "pip", "install", "--upgrade", "pip"], check=True)
-            # Install requirements
-            subprocess.run([venv_pip, "install", "-r", "backend/requirements.txt"], check=True)
-            subprocess.run([venv_pip, "install", "-r", "requirements-dev.txt"], check=True)
+            subprocess.run([sys.executable, "-m", "venv", venv_dir], check=True)
+    else:
+        print(f"[bootstrap] Venv already exists at {venv_dir!r}.", flush=True)
+
+    print("[bootstrap] Installing requirements ...", flush=True)
+    venv_python, venv_pip = _find_venv_python(venv_dir)
+
+    req_files = []
+    if os.path.exists("backend/requirements.txt"):
+        req_files += ["-r", "backend/requirements.txt"]
+    if os.path.exists("requirements-dev.txt"):
+        req_files += ["-r", "requirements-dev.txt"]
+
+    if use_uv:
+        subprocess.run(
+            ["uv", "pip", "install", "--python", venv_dir] + req_files,
+            check=True,
+        )
+    else:
+        subprocess.run(
+            [venv_python, "-m", "pip", "install", "--upgrade", "pip"],
+            check=True,
+        )
+        subprocess.run([venv_pip, "install"] + req_files, check=True)
+
+    print("[bootstrap] Done.", flush=True)
+
+
+def run_tool(venv_dir: str, cmd: list[str]) -> int:
+    """Execute a tool from inside the venv. Returns exit code."""
+    venv_python, _ = _find_venv_python(venv_dir)
+    bin_dir = "Scripts" if os.name == "nt" else "bin"
+    venv_bin_path = os.path.abspath(os.path.join(venv_dir, bin_dir))
+
+    TOOL_ALIASES: dict[str, list[str]] = {
+        "detect-secrets": [venv_python, "-m", "detect_secrets"],
+        "black": [venv_python, "-m", "black"],
+        "ruff": [venv_python, "-m", "ruff"],
+        "mypy": [venv_python, "-m", "mypy"],
+        "bandit": [venv_python, "-m", "bandit"],
+        "pytest": [venv_python, "-m", "pytest"],
+        "vulture": [venv_python, "-m", "vulture"],
+        "flake8": [venv_python, "-m", "flake8"],
+        "pylint": [venv_python, "-m", "pylint"],
+    }
+
+    tool = cmd[0]
+    args = cmd[1:]
+
+    if tool in TOOL_ALIASES:
+        run_cmd = TOOL_ALIASES[tool] + args
+    else:
+        # Unknown tool — prepend venv bin to PATH and run directly
+        os.environ["PATH"] = venv_bin_path + os.pathsep + os.environ.get("PATH", "")
+        run_cmd = cmd
+
+    result = subprocess.run(run_cmd, check=False)
+    return result.returncode
+
+
+def main() -> None:
+    venv_dir = os.path.join("backend", ".venv")
+
+    if len(sys.argv) < 2:
+        print(__doc__)
+        sys.exit(1)
+
+    if sys.argv[1] == "--bootstrap":
+        bootstrap(venv_dir)
         sys.exit(0)
 
-    # 4. Command execution mode
-    if len(sys.argv) > 1:
-        cmd = sys.argv[1:]
-        # If the command starts with a known tool, run it via the virtual environment python -m
-        tool_mappings = [
-            "black",
-            "ruff",
-            "mypy",
-            "bandit",
-            "pytest",
-            "vulture",
-            "flake8",
-            "pylint",
-            "detect-secrets",
-        ]
-
-        # Map detect-secrets command name to package import name
-        if cmd[0] == "detect-secrets":
-            run_cmd = [venv_python, "-m", "detect_secrets"] + cmd[1:]
-        elif cmd[0] in tool_mappings:
-            run_cmd = [venv_python, "-m", cmd[0]] + cmd[1:]
-        else:
-            # Add virtual env bin path to PATH and run directly
-            venv_bin_path = os.path.abspath(os.path.join(venv_dir, bin_dir))
-            os.environ["PATH"] = venv_bin_path + os.pathsep + os.environ["PATH"]
-            run_cmd = cmd
-
-        result = subprocess.run(run_cmd, check=False)
-        sys.exit(result.returncode)
-    else:
-        print("Usage: python ci_bootstrap.py [--bootstrap | <command> [args...]]")
-        sys.exit(1)
+    exit_code = run_tool(venv_dir, sys.argv[1:])
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":
