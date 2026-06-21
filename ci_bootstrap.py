@@ -32,63 +32,41 @@ def _uv_available() -> bool:
         return False
 
 
-def _force_remove_dir(path: str) -> None:
-    """Remove a directory using a long-path-safe method.
-
-    On Windows, shutil.rmtree fails on paths > 260 chars (e.g. inside
-    sklearn or jax venvs). PowerShell's Remove-Item uses the \\?\\ prefix
-    internally and handles long paths correctly.
-    """
-    if not os.path.exists(path):
-        return
-    if os.name == "nt":
-        subprocess.run(
-            [
-                "powershell",
-                "-NoProfile",
-                "-Command",
-                f"Remove-Item -Recurse -Force -LiteralPath '{path}'",
-            ],
-            check=False,  # best-effort; next step will reveal any real failures
-        )
-    else:
-        import shutil
-
-        shutil.rmtree(path, ignore_errors=True)
-
-
 def bootstrap(venv_dir: str) -> None:
     """Create venv and install all project requirements.
 
     Three-state logic:
-    1. Python binary exists → reuse venv, only install deps.
+    1. Python binary exists → reuse venv, skip creation.
     2. Dir exists but Python binary missing (stale/broken cache) →
-       force-remove with long-path-safe helper, then create fresh.
+       use UV_VENV_CLEAR=1 to overwrite pyvenv.cfg in-place.
+       This avoids deleting the directory (which fails on Windows with
+       long-path files inside sklearn/jax site-packages).
     3. Dir absent → create fresh.
-
-    Avoids ``uv venv --clear`` which calls the same OS delete API that
-    fails on Windows long-path files inside sklearn/jax site-packages.
     """
     use_uv = _uv_available()
     venv_python, venv_pip = _find_venv_python(venv_dir)
 
     if os.path.exists(venv_python):
-        # Happy path: valid, usable venv already present.
+        # Happy path: valid venv already present — skip creation entirely.
         print(f"[bootstrap] Reusing existing venv at {venv_dir!r}.", flush=True)
     else:
+        env = os.environ.copy()
         if os.path.exists(venv_dir):
-            # Stale directory (e.g. cache restored without Python binary).
-            # Must remove before creating, but rmtree fails on long paths.
+            # Stale/partial directory (e.g. cache without Python binary).
+            # UV_VENV_CLEAR=1 rewrites pyvenv.cfg in-place — no deletion needed.
+            # This avoids Windows MAX_PATH failures when long-path files exist.
             print(
-                f"[bootstrap] Stale/partial venv at {venv_dir!r} — removing ...",
+                f"[bootstrap] Stale venv at {venv_dir!r} — recreating in-place ...",
                 flush=True,
             )
-            _force_remove_dir(venv_dir)
+            env["UV_VENV_CLEAR"] = "1"
+        else:
+            print(f"[bootstrap] Creating venv at {venv_dir!r} ...", flush=True)
 
-        print(f"[bootstrap] Creating venv at {venv_dir!r} ...", flush=True)
         if use_uv:
             subprocess.run(
                 ["uv", "venv", venv_dir, "--python", "3.12"],
+                env=env,
                 check=True,
             )
         else:
