@@ -12,33 +12,40 @@ from ai_engine.utils.cv2_guard import cv2
 # Hand connections indices
 HAND_CONNECTIONS = [
     # Thumb
-    (0, 1), (1, 2), (2, 3), (3, 4),
+    (0, 1),
+    (1, 2),
+    (2, 3),
+    (3, 4),
     # Index finger
-    (5, 6), (6, 7), (7, 8),
+    (5, 6),
+    (6, 7),
+    (7, 8),
     # Middle finger
-    (9, 10), (10, 11), (11, 12),
+    (9, 10),
+    (10, 11),
+    (11, 12),
     # Ring finger
-    (13, 14), (14, 15), (15, 16),
+    (13, 14),
+    (14, 15),
+    (15, 16),
     # Pinky
-    (17, 18), (18, 19), (19, 20),
+    (17, 18),
+    (18, 19),
+    (19, 20),
     # Palm/knuckle connections
-    (0, 5), (5, 9), (9, 13), (13, 17), (0, 17)
+    (0, 5),
+    (5, 9),
+    (9, 13),
+    (13, 17),
+    (0, 17),
 ]
 
 # Pose key connections (Shoulders, Elbows, Wrists)
-POSE_CONNECTIONS = [
-    (11, 12),  # Shoulder to Shoulder
-    (11, 13), (13, 15),  # Left arm
-    (12, 14), (14, 16)   # Right arm
-]
+POSE_CONNECTIONS = [(11, 12), (11, 13), (13, 15), (12, 14), (14, 16)]  # Shoulder to Shoulder  # Left arm  # Right arm
 
 
 def draw_skeleton_and_telemetry(
-    frame: np.ndarray,
-    landmarks,
-    prediction_data: dict,
-    fps: float,
-    latency_ms: float
+    frame: np.ndarray, landmarks, prediction_data: dict, fps: float, latency_ms: float
 ) -> np.ndarray:
     """
     Annotates the given image frame with hand skeletons, pose joints, bounding boxes,
@@ -128,7 +135,7 @@ def draw_skeleton_and_telemetry(
                     0.6,
                     (20, 240, 20),
                     2,
-                    cv2.LINE_AA
+                    cv2.LINE_AA,
                 )
 
     # 3. Global AI HUD Overlay (Top Left)
@@ -138,9 +145,36 @@ def draw_skeleton_and_telemetry(
     status_color = (40, 240, 40) if active_hand_present else (40, 120, 240)
 
     # Render HUD stats
-    cv2.putText(annotated_frame, f"Tracking: {status_str}", (hud_x + 10, hud_y + 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, status_color, 2, cv2.LINE_AA)
-    cv2.putText(annotated_frame, f"FPS: {fps:.1f}", (hud_x + 10, hud_y + 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (250, 250, 250), 1, cv2.LINE_AA)
-    cv2.putText(annotated_frame, f"Latency: {latency_ms:.1f} ms", (hud_x + 10, hud_y + 70), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (250, 250, 250), 1, cv2.LINE_AA)
+    cv2.putText(
+        annotated_frame,
+        f"Tracking: {status_str}",
+        (hud_x + 10, hud_y + 25),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.6,
+        status_color,
+        2,
+        cv2.LINE_AA,
+    )
+    cv2.putText(
+        annotated_frame,
+        f"FPS: {fps:.1f}",
+        (hud_x + 10, hud_y + 50),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.5,
+        (250, 250, 250),
+        1,
+        cv2.LINE_AA,
+    )
+    cv2.putText(
+        annotated_frame,
+        f"Latency: {latency_ms:.1f} ms",
+        (hud_x + 10, hud_y + 70),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.5,
+        (250, 250, 250),
+        1,
+        cv2.LINE_AA,
+    )
 
     # Clean borders for hud box
     cv2.rectangle(annotated_frame, (hud_x, hud_y), (hud_x + 220, hud_y + 80), (120, 120, 120), 1)

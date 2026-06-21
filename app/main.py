@@ -10,6 +10,7 @@ if str(PROJECT_ROOT) not in sys.path:
 # Monkeypatch starlette to support both FastAPI 0.111.1 and Streamlit 1.58.0 requirements
 try:
     import starlette.middleware.gzip
+
     if not hasattr(starlette.middleware.gzip, "DEFAULT_EXCLUDED_CONTENT_TYPES"):
         starlette.middleware.gzip.DEFAULT_EXCLUDED_CONTENT_TYPES = {
             "text/html",
@@ -43,7 +44,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
 
 
 # Global Bauhaus CSS Overrides
@@ -242,7 +242,7 @@ if "user_phone" not in st.session_state:
 # Browser Language Auto-Detection
 if "detected_lang" not in st.session_state and "detected_lang" in st.query_params:
     detected_code = st.query_params["detected_lang"]
-    base_code = detected_code.split('-')[0].lower()
+    base_code = detected_code.split("-")[0].lower()
     matched_lang = None
     for name, lang_meta in SUPPORTED_LANGUAGES.items():
         if lang_meta.code == base_code or lang_meta.bcp47.lower() == detected_code.lower():
@@ -266,7 +266,7 @@ if "detected_lang" not in st.session_state and "detected_lang" not in st.query_p
         </script>
         """,
         height=0,
-        width=0
+        width=0,
     )
 
 # Inject dynamic RTL stylesheet if language is RTL
@@ -281,7 +281,7 @@ if dir_styles["direction"] == "rtl":
         }
         </style>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 # Sidebar Global Language Selector

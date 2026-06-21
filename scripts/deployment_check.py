@@ -12,8 +12,8 @@ Exit codes:
 import importlib
 import sys
 
-CRITICAL = []   # Must pass for app to start
-OPTIONAL = []   # Nice-to-have; warns but does not fail
+CRITICAL = []  # Must pass for app to start
+OPTIONAL = []  # Nice-to-have; warns but does not fail
 
 
 def check(package: str, critical: bool = True) -> bool:

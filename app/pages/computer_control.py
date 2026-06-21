@@ -89,20 +89,14 @@ with col_controls:
             "Agent Mode",
             options=["Safe Simulation (Mock Mode)", "Live System Execution"],
             index=0,
-            key="cc_execution_mode"
+            key="cc_execution_mode",
         )
     with opt_col2:
-        cc_voice_feedback = st.checkbox(
-            "Speak Confirmation Feedback",
-            value=True,
-            key="cc_voice_feedback"
-        )
+        cc_voice_feedback = st.checkbox("Speak Confirmation Feedback", value=True, key="cc_voice_feedback")
 
     # Manual Command entry for testing
     manual_input = st.text_input(
-        "Simulate Command Input",
-        placeholder="e.g. Open Notepad, Open Downloads, Open Chrome",
-        key="cc_manual_input"
+        "Simulate Command Input", placeholder="e.g. Open Notepad, Open Downloads, Open Chrome", key="cc_manual_input"
     )
     if st.button("🚀 Execute Simulated Command", key="btn_cc_exec_manual"):
         if manual_input.strip():
@@ -116,7 +110,9 @@ with col_controls:
 
             # Run action
             is_mock = "Mock" in cc_mode
-            success, msg = computer_control_service.execute_action(intent_data["intent"], intent_data["target"], mock=is_mock)
+            success, msg = computer_control_service.execute_action(
+                intent_data["intent"], intent_data["target"], mock=is_mock
+            )
             st.session_state["cc_execution_success"] = success
             st.session_state["cc_execution_status"] = msg
 
@@ -155,7 +151,7 @@ with col_timeline:
             Command: {cmd_text if cmd_text else 'Waiting for command...'}
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # 3. Intent Understanding State
@@ -246,11 +242,15 @@ if st.session_state["cc_camera_active"]:
                         intent_data = computer_control_service.parse_intent(translation)
                         st.session_state["cc_intent_data"] = intent_data
 
-                        plan = computer_control_service.create_execution_plan(intent_data["intent"], intent_data["target"])
+                        plan = computer_control_service.create_execution_plan(
+                            intent_data["intent"], intent_data["target"]
+                        )
                         st.session_state["cc_execution_plan"] = plan
 
                         is_mock = "Mock" in cc_mode
-                        success_res, status_msg = computer_control_service.execute_action(intent_data["intent"], intent_data["target"], mock=is_mock)
+                        success_res, status_msg = computer_control_service.execute_action(
+                            intent_data["intent"], intent_data["target"], mock=is_mock
+                        )
                         st.session_state["cc_execution_success"] = success_res
                         st.session_state["cc_execution_status"] = status_msg
 

@@ -190,6 +190,6 @@ if st.session_state["debug_active"]:
             perception_service.camera.release()
             video_placeholder.empty()
     else:
-            st.error(t("db_cam_error"))
+        st.error(t("db_cam_error"))
 else:
     video_placeholder.info(t("db_activate_info"))

@@ -10,6 +10,7 @@ logger = setup_logger("database.learning")
 OFFLINE_LEARNING_FILE = DATASETS_DIR / "offline_learning_progress.json"
 OFFLINE_QUIZZES_FILE = DATASETS_DIR / "offline_quizzes.json"
 
+
 class LearningDatabase:
     def __init__(self):
         # Initialize fallback files if they do not exist
@@ -57,7 +58,7 @@ class LearningDatabase:
             "average_accuracy": 0.0,
             "weak_signs": [],
             "streak": 0,
-            "last_practice_date": None
+            "last_practice_date": None,
         }
 
     def save_progress(self, phone: str, progress: dict) -> bool:
@@ -70,11 +71,7 @@ class LearningDatabase:
         col = self._get_learning_collection()
         if col is not None:
             try:
-                col.update_one(
-                    {"phone": phone},
-                    {"$set": progress},
-                    upsert=True
-                )
+                col.update_one({"phone": phone}, {"$set": progress}, upsert=True)
                 logger.info(f"Saved learning progress for {phone} in MongoDB.")
                 return True
             except Exception as e:
@@ -154,7 +151,7 @@ class LearningDatabase:
             "questions": questions,
             "score": None,
             "completed": False,
-            "created_at": datetime.datetime.now(datetime.UTC).isoformat()
+            "created_at": datetime.datetime.now(datetime.UTC).isoformat(),
         }
 
         col = self._get_quizzes_collection()
@@ -188,7 +185,13 @@ class LearningDatabase:
             try:
                 res = col.update_one(
                     {"quiz_id": quiz_id},
-                    {"$set": {"score": score, "completed": True, "completed_at": datetime.datetime.now(datetime.UTC).isoformat()}}
+                    {
+                        "$set": {
+                            "score": score,
+                            "completed": True,
+                            "completed_at": datetime.datetime.now(datetime.UTC).isoformat(),
+                        }
+                    },
                 )
                 if res.modified_count > 0:
                     logger.info(f"Updated quiz {quiz_id} in MongoDB with score {score}.")
@@ -216,5 +219,6 @@ class LearningDatabase:
         except Exception as e:
             logger.error(f"Failed to update quiz offline: {e}")
         return False
+
 
 learning_db = LearningDatabase()

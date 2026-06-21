@@ -25,6 +25,7 @@ logger = logging.getLogger("dependency_guard")
 # ---------------------------------------------------------------------------
 try:
     import cv2  # noqa: F401 — re-exported
+
     CV2_AVAILABLE = True
     logger.debug("cv2 loaded successfully: %s", cv2.__version__)
 except BaseException as _e:
@@ -37,6 +38,7 @@ except BaseException as _e:
 # ---------------------------------------------------------------------------
 try:
     import mediapipe as mp  # noqa: F401 — re-exported
+
     MP_AVAILABLE = True
     logger.debug("mediapipe loaded successfully.")
 except BaseException as _e:
@@ -49,6 +51,7 @@ except BaseException as _e:
 # ---------------------------------------------------------------------------
 try:
     import torch  # noqa: F401 — re-exported
+
     TORCH_AVAILABLE = True
     logger.debug("torch loaded successfully: %s", torch.__version__)
 except BaseException as _e:
@@ -61,6 +64,7 @@ except BaseException as _e:
 # ---------------------------------------------------------------------------
 try:
     import tensorflow as tf  # noqa: F401 — re-exported
+
     TF_AVAILABLE = True
     logger.debug("tensorflow loaded successfully: %s", tf.__version__)
 except BaseException as _e:
@@ -74,6 +78,7 @@ except BaseException as _e:
 try:
     import pydantic  # noqa: F401 — re-exported
     from pydantic import BaseModel, Field  # noqa: F401 — re-exported
+
     PYDANTIC_AVAILABLE = True
     logger.debug("pydantic loaded successfully: %s", pydantic.__version__)
 except BaseException as _e:
@@ -88,6 +93,7 @@ def vision_unavailable_message() -> None:
     """Display a graceful Streamlit warning when vision deps are missing."""
     try:
         import streamlit as st
+
         st.warning(
             "⚠️ **Computer Vision features are unavailable in this deployment.**\n\n"
             "This page requires OpenCV and/or MediaPipe, which could not be loaded "
@@ -119,6 +125,7 @@ def require_torch() -> bool:
     if not TORCH_AVAILABLE:
         try:
             import streamlit as st
+
             st.warning(
                 "⚠️ **Gesture Recognition is unavailable because PyTorch is not installed in this deployment.**\n\n"
                 "To enable gesture translation models, PyTorch must be installed.",

@@ -93,9 +93,7 @@ with col_control:
                 # Save sequence
                 success = ai_service.record_sample(label_to_record, sample_landmarks_seq)
                 if success:
-                    status_box.success(
-                        t("ts_record_success", frames=frames_to_record, label=label_to_record)
-                    )
+                    status_box.success(t("ts_record_success", frames=frames_to_record, label=label_to_record))
                 else:
                     status_box.error(t("ts_save_failed"))
             finally:

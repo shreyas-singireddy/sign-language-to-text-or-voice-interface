@@ -25,29 +25,36 @@ router = APIRouter()
 
 # --- REQUEST / RESPONSE SCHEMAS ---
 
+
 class ExplainRequest(BaseModel):
     detected_sign: str
     confidence: float = 1.0
     language: str = "English"
 
+
 class ConversationAssistRequest(BaseModel):
     detected_phrase: str
     language: str = "English"
+
 
 class LearningCoachRequest(BaseModel):
     phone: str
     language: str = "English"
     num_questions: int = 3
 
+
 class ErrorDetectRequest(BaseModel):
     target_sign: str
-    landmarks_flat: list[float] = [] # Optional flat list of landmarks coordinates
+    landmarks_flat: list[float] = []  # Optional flat list of landmarks coordinates
+
 
 class RAGAskRequest(BaseModel):
     question: str
     top_k: int = 3
 
+
 # --- API ENDPOINTS ---
+
 
 @router.post("/explain", status_code=status.HTTP_200_OK)
 async def explain_sign(req: ExplainRequest):
@@ -65,8 +72,9 @@ async def explain_sign(req: ExplainRequest):
         "detected_sign": req.detected_sign,
         "confidence": req.confidence,
         "language": req.language,
-        "explanation": explanation
+        "explanation": explanation,
     }
+
 
 @router.post("/conversation-assist", status_code=status.HTTP_200_OK)
 async def conversation_assist(req: ConversationAssistRequest):
@@ -78,30 +86,16 @@ async def conversation_assist(req: ConversationAssistRequest):
     system_prompt = "You are a Conversational Agent for deaf and hard-of-hearing users."
 
     suggestions = llm_engine.generate_completion(prompt, system_prompt=system_prompt)
-    return {
-        "detected_phrase": req.detected_phrase,
-        "language": req.language,
-        "suggestions": suggestions
-    }
+    return {"detected_phrase": req.detected_phrase, "language": req.language, "suggestions": suggestions}
+
 
 @router.post("/learning-coach", status_code=status.HTTP_200_OK)
 async def get_learning_quiz(req: LearningCoachRequest):
-    quiz_data = learning_coach.generate_quiz(
-        phone=req.phone,
-        lang_name=req.language,
-        num_questions=req.num_questions
-    )
-    challenge_data = learning_coach.get_daily_challenge(
-        phone=req.phone,
-        lang_name=req.language
-    )
+    quiz_data = learning_coach.generate_quiz(phone=req.phone, lang_name=req.language, num_questions=req.num_questions)
+    challenge_data = learning_coach.get_daily_challenge(phone=req.phone, lang_name=req.language)
 
-    return {
-        "phone": req.phone,
-        "language": req.language,
-        "quiz": quiz_data,
-        "daily_challenge": challenge_data
-    }
+    return {"phone": req.phone, "language": req.language, "quiz": quiz_data, "daily_challenge": challenge_data}
+
 
 @router.post("/error-detect", status_code=status.HTTP_200_OK)
 async def detect_errors(req: ErrorDetectRequest):
@@ -110,19 +104,21 @@ async def detect_errors(req: ErrorDetectRequest):
         left_hand=HandTelemetryData(present=False, landmarks=[]),
         right_hand=HandTelemetryData(present=False, landmarks=[]),
         pose=PoseTelemetryData(present=False, landmarks=[]),
-        face=FaceTelemetryData(present=False, landmarks=[])
+        face=FaceTelemetryData(present=False, landmarks=[]),
     )
 
     # If flat landmarks list is passed (size 1662), populate FrameLandmarkData structure
     if len(req.landmarks_flat) == 1662:
         from ai_engine.services.perception_service import perception_service
+
         try:
             perception_service._update_from_flat_landmarks(frame_lms, np.array(req.landmarks_flat))
         except Exception:
-            pass # fallback to mock defaults
+            pass  # fallback to mock defaults
 
     feedback = error_detector.detect_errors(frame_lms, req.target_sign)
     return feedback
+
 
 @router.post("/rag-ask", status_code=status.HTTP_200_OK)
 async def rag_ask(req: RAGAskRequest):
@@ -139,8 +135,4 @@ async def rag_ask(req: RAGAskRequest):
     system_prompt = "You are a SignBridge AI Knowledge Base Assistant built on project documentation."
 
     answer = llm_engine.generate_completion(prompt, system_prompt=system_prompt)
-    return {
-        "question": req.question,
-        "answer": answer,
-        "has_context": bool(context)
-    }
+    return {"question": req.question, "answer": answer, "has_context": bool(context)}

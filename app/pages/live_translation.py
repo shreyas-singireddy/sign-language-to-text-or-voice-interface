@@ -196,4 +196,4 @@ with col_results:
             confidence=0.88,  # Mock pipeline average confidence
             language=selected_language,
         )
-        st.success(t("lt_log_success", id=record['id']))
+        st.success(t("lt_log_success", id=record["id"]))

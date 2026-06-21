@@ -12,31 +12,191 @@ DOCS_DIR = PROJECT_ROOT / "PROJECT_MASTER_DOCUMENTATION"
 
 # Simple list of English stop words to filter out during indexing
 STOP_WORDS = {
-    "a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "arent", "as", "at",
-    "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "cant", "cannot", "could",
-    "did", "didnt", "do", "does", "doesnt", "doing", "dont", "down", "during", "each", "few", "for", "from",
-    "further", "had", "hadnt", "has", "hasnt", "have", "havent", "having", "he", "hed", "hell", "hes", "her",
-    "here", "heres", "hers", "herself", "him", "himself", "his", "how", "hows", "i", "id", "ill", "im", "ive",
-    "if", "in", "into", "is", "isnt", "it", "its", "itself", "lets", "me", "more", "most", "mustnt", "my", "myself",
-    "no", "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves",
-    "out", "over", "own", "same", "shant", "she", "shed", "shell", "shes", "should", "shouldnt", "so", "some",
-    "such", "than", "that", "thats", "the", "their", "theirs", "them", "themselves", "then", "there", "theres",
-    "these", "they", "theyd", "theyll", "theyre", "theyve", "this", "those", "through", "to", "too", "under",
-    "until", "up", "very", "was", "wasnt", "we", "wed", "well", "were", "weve", "werent", "what", "whats", "when",
-    "whens", "where", "wheres", "which", "while", "who", "whos", "whom", "why", "whys", "with", "wont", "would",
-    "wouldnt", "you", "youd", "youll", "youre", "youve", "your", "yours", "yourself", "yourselves"
+    "a",
+    "about",
+    "above",
+    "after",
+    "again",
+    "against",
+    "all",
+    "am",
+    "an",
+    "and",
+    "any",
+    "are",
+    "arent",
+    "as",
+    "at",
+    "be",
+    "because",
+    "been",
+    "before",
+    "being",
+    "below",
+    "between",
+    "both",
+    "but",
+    "by",
+    "cant",
+    "cannot",
+    "could",
+    "did",
+    "didnt",
+    "do",
+    "does",
+    "doesnt",
+    "doing",
+    "dont",
+    "down",
+    "during",
+    "each",
+    "few",
+    "for",
+    "from",
+    "further",
+    "had",
+    "hadnt",
+    "has",
+    "hasnt",
+    "have",
+    "havent",
+    "having",
+    "he",
+    "hed",
+    "hell",
+    "hes",
+    "her",
+    "here",
+    "heres",
+    "hers",
+    "herself",
+    "him",
+    "himself",
+    "his",
+    "how",
+    "hows",
+    "i",
+    "id",
+    "ill",
+    "im",
+    "ive",
+    "if",
+    "in",
+    "into",
+    "is",
+    "isnt",
+    "it",
+    "its",
+    "itself",
+    "lets",
+    "me",
+    "more",
+    "most",
+    "mustnt",
+    "my",
+    "myself",
+    "no",
+    "nor",
+    "not",
+    "of",
+    "off",
+    "on",
+    "once",
+    "only",
+    "or",
+    "other",
+    "ought",
+    "our",
+    "ours",
+    "ourselves",
+    "out",
+    "over",
+    "own",
+    "same",
+    "shant",
+    "she",
+    "shed",
+    "shell",
+    "shes",
+    "should",
+    "shouldnt",
+    "so",
+    "some",
+    "such",
+    "than",
+    "that",
+    "thats",
+    "the",
+    "their",
+    "theirs",
+    "them",
+    "themselves",
+    "then",
+    "there",
+    "theres",
+    "these",
+    "they",
+    "theyd",
+    "theyll",
+    "theyre",
+    "theyve",
+    "this",
+    "those",
+    "through",
+    "to",
+    "too",
+    "under",
+    "until",
+    "up",
+    "very",
+    "was",
+    "wasnt",
+    "we",
+    "wed",
+    "well",
+    "were",
+    "weve",
+    "werent",
+    "what",
+    "whats",
+    "when",
+    "whens",
+    "where",
+    "wheres",
+    "which",
+    "while",
+    "who",
+    "whos",
+    "whom",
+    "why",
+    "whys",
+    "with",
+    "wont",
+    "would",
+    "wouldnt",
+    "you",
+    "youd",
+    "youll",
+    "youre",
+    "youve",
+    "your",
+    "yours",
+    "yourself",
+    "yourselves",
 }
+
 
 def tokenize(text: str) -> list:
     """Lowercase and extract words from text."""
     words = re.findall(r"\b[a-zA-Z0-9_]+\b", text.lower())
     return [w for w in words if w not in STOP_WORDS]
 
+
 class RAGEngine:
     def __init__(self):
-        self.chunks = []      # List of dict: {"file": str, "content": str, "title": str}
-        self.idf = {}         # Vocabulary IDF mapping
-        self.chunk_vectors = [] # List of dict mappings: {word: tf_idf}
+        self.chunks = []  # List of dict: {"file": str, "content": str, "title": str}
+        self.idf = {}  # Vocabulary IDF mapping
+        self.chunk_vectors = []  # List of dict mappings: {word: tf_idf}
         self.indexed = False
 
     def load_and_index(self):
@@ -57,17 +217,13 @@ class RAGEngine:
                 for sec in sections:
                     sec_clean = sec.strip()
                     if len(sec_clean) < 50:
-                        continue # skip tiny snippets
+                        continue  # skip tiny snippets
 
                     # Extract heading title if any
                     title_match = re.match(r"^##\s+(.+)$", sec_clean, re.MULTILINE)
                     title = title_match.group(1).strip() if title_match else file_path.name
 
-                    self.chunks.append({
-                        "file": file_path.name,
-                        "title": title,
-                        "content": sec_clean
-                    })
+                    self.chunks.append({"file": file_path.name, "title": title, "content": sec_clean})
             except Exception as e:
                 logger.error(f"Failed to read file {file_path.name}: {e}")
 
@@ -134,8 +290,8 @@ class RAGEngine:
                 if word in chunk_vector:
                     dot_product += val * chunk_vector[word]
 
-            query_norm = math.sqrt(sum(val ** 2 for val in query_vector.values()))
-            chunk_norm = math.sqrt(sum(val ** 2 for val in chunk_vector.values()))
+            query_norm = math.sqrt(sum(val**2 for val in query_vector.values()))
+            chunk_norm = math.sqrt(sum(val**2 for val in chunk_vector.values()))
 
             score = 0.0
             if query_norm > 0 and chunk_norm > 0:
@@ -150,11 +306,9 @@ class RAGEngine:
         for score, idx in scores[:top_k]:
             if score > 0.05:  # relevance threshold
                 chunk = self.chunks[idx]
-                results.append(
-                    f"--- Source: {chunk['file']} (Section: {chunk['title']}) ---\n"
-                    f"{chunk['content']}"
-                )
+                results.append(f"--- Source: {chunk['file']} (Section: {chunk['title']}) ---\n" f"{chunk['content']}")
 
         return "\n\n".join(results)
+
 
 rag_engine = RAGEngine()

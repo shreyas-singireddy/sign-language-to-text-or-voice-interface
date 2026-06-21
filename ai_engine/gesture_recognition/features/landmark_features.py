@@ -128,17 +128,17 @@ def extract_hand_features(hand: np.ndarray) -> dict[str, Any]:
 
     # Finger lengths: cumulative joint segments length
     finger_chains = [
-        [0, 1, 2, 3, 4],     # Thumb
-        [5, 6, 7, 8],        # Index
-        [9, 10, 11, 12],     # Middle
-        [13, 14, 15, 16],    # Ring
-        [17, 18, 19, 20]     # Pinky
+        [0, 1, 2, 3, 4],  # Thumb
+        [5, 6, 7, 8],  # Index
+        [9, 10, 11, 12],  # Middle
+        [13, 14, 15, 16],  # Ring
+        [17, 18, 19, 20],  # Pinky
     ]
     lengths = []
     for chain in finger_chains:
         length = 0.0
         for k in range(len(chain) - 1):
-            length += np.linalg.norm(hand[chain[k]] - hand[chain[k+1]])
+            length += np.linalg.norm(hand[chain[k]] - hand[chain[k + 1]])
         lengths.append(float(length))
     features["finger_lengths"] = lengths
 

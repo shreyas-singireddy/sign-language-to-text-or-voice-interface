@@ -190,11 +190,7 @@ class DatabaseService:
         col = self._get_preferences_collection()
         if col is not None:
             try:
-                col.update_one(
-                    {"phone": phone},
-                    {"$set": {"phone": phone, "language": language}},
-                    upsert=True
-                )
+                col.update_one({"phone": phone}, {"$set": {"phone": phone, "language": language}}, upsert=True)
                 logger.info(f"Saved language preference '{language}' for phone {phone} in MongoDB.")
                 return True
             except Exception as e:

@@ -21,32 +21,21 @@ def calculate_angle(a, b, c) -> float:
     angle = np.arccos(cosine_angle)
     return float(np.degrees(angle))
 
+
 class ErrorDetectionEngine:
     def __init__(self):
         # Default reference joint angles (in degrees) for common signs
         self.reference_angles = {
-            "hello": {
-                "right_elbow": 140.0,
-                "right_shoulder": 80.0,
-                "fingers_spread": True
-            },
-            "thank_you": {
-                "right_elbow": 60.0,
-                "right_shoulder": 40.0,
-                "fingers_spread": False
-            },
-            "greeting": {
-                "right_elbow": 110.0,
-                "right_shoulder": 50.0,
-                "fingers_spread": True
-            },
+            "hello": {"right_elbow": 140.0, "right_shoulder": 80.0, "fingers_spread": True},
+            "thank_you": {"right_elbow": 60.0, "right_shoulder": 40.0, "fingers_spread": False},
+            "greeting": {"right_elbow": 110.0, "right_shoulder": 50.0, "fingers_spread": True},
             "emergency": {
                 "right_elbow": 90.0,
                 "right_shoulder": 90.0,
                 "left_elbow": 90.0,
                 "left_shoulder": 90.0,
-                "fingers_spread": True
-            }
+                "fingers_spread": True,
+            },
         }
 
     def detect_errors(self, frame_lms: FrameLandmarkData, target_sign: str) -> dict:
@@ -59,11 +48,7 @@ class ErrorDetectionEngine:
 
         # If no explicit sign ref, provide general hand/posture statistics check
         if not ref:
-            ref = {
-                "right_elbow": 100.0,
-                "right_shoulder": 60.0,
-                "fingers_spread": True
-            }
+            ref = {"right_elbow": 100.0, "right_shoulder": 60.0, "fingers_spread": True}
 
         deviations = []
         corrections = []
@@ -83,12 +68,14 @@ class ErrorDetectionEngine:
 
             elbow_diff = abs(right_elbow_ang - ref_elbow)
             if elbow_diff > 25.0:
-                deviations.append({
-                    "joint": "Right Elbow Angle",
-                    "actual": round(right_elbow_ang, 1),
-                    "expected": round(ref_elbow, 1),
-                    "variance": round(elbow_diff, 1)
-                })
+                deviations.append(
+                    {
+                        "joint": "Right Elbow Angle",
+                        "actual": round(right_elbow_ang, 1),
+                        "expected": round(ref_elbow, 1),
+                        "variance": round(elbow_diff, 1),
+                    }
+                )
                 if right_elbow_ang < ref_elbow:
                     corrections.append("Extend your right arm more outwards.")
                 else:
@@ -96,12 +83,14 @@ class ErrorDetectionEngine:
 
             shoulder_diff = abs(right_shoulder_ang - ref_shoulder)
             if shoulder_diff > 25.0:
-                deviations.append({
-                    "joint": "Right Shoulder Elevation",
-                    "actual": round(right_shoulder_ang, 1),
-                    "expected": round(ref_shoulder, 1),
-                    "variance": round(shoulder_diff, 1)
-                })
+                deviations.append(
+                    {
+                        "joint": "Right Shoulder Elevation",
+                        "actual": round(right_shoulder_ang, 1),
+                        "expected": round(ref_shoulder, 1),
+                        "variance": round(shoulder_diff, 1),
+                    }
+                )
                 if right_shoulder_ang < ref_shoulder:
                     corrections.append("Raise your right arm higher.")
                 else:
@@ -133,23 +122,22 @@ class ErrorDetectionEngine:
             is_spread = avg_extension > 0.35
 
             if expected_spread != is_spread:
-                deviations.append({
-                    "joint": "Hand Configuration",
-                    "actual": "Spread" if is_spread else "Closed",
-                    "expected": "Spread" if expected_spread else "Closed",
-                    "variance": abs(avg_extension - 0.35)
-                })
+                deviations.append(
+                    {
+                        "joint": "Hand Configuration",
+                        "actual": "Spread" if is_spread else "Closed",
+                        "expected": "Spread" if expected_spread else "Closed",
+                        "variance": abs(avg_extension - 0.35),
+                    }
+                )
                 if expected_spread:
                     corrections.append("Spread your fingers wide apart.")
                 else:
                     corrections.append("Close your fingers together or form a flat palm.")
         elif not hand_present:
-            deviations.append({
-                "joint": "Hand Tracking",
-                "actual": "Not In View",
-                "expected": "Visible",
-                "variance": 1.0
-            })
+            deviations.append(
+                {"joint": "Hand Tracking", "actual": "Not In View", "expected": "Visible", "variance": 1.0}
+            )
             corrections.append("Bring your hand fully in front of the camera sensor.")
 
         # Compile final feedback structure
@@ -161,7 +149,8 @@ class ErrorDetectionEngine:
             "target_sign": target_sign,
             "deviations": deviations,
             "corrections": corrections,
-            "overall_accuracy": max(0, 100 - len(deviations) * 20)
+            "overall_accuracy": max(0, 100 - len(deviations) * 20),
         }
+
 
 error_detector = ErrorDetectionEngine()

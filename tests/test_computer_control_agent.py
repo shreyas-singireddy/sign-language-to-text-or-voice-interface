@@ -26,7 +26,9 @@ def test_parse_intent_llm_success():
 def test_parse_intent_llm_json_block():
     service = ComputerControlService()
     with mock.patch("ai_engine.ai_agent.computer_control_service.llm_engine.generate_completion") as mock_completion:
-        mock_completion.return_value = 'Here is the result: ```json\n{"intent": "OPEN_FOLDER", "target": "downloads"}\n```'
+        mock_completion.return_value = (
+            'Here is the result: ```json\n{"intent": "OPEN_FOLDER", "target": "downloads"}\n```'
+        )
         res = service.parse_intent("open downloads please")
         assert res["intent"] == "OPEN_FOLDER"
         assert res["target"] == "downloads"
@@ -167,8 +169,7 @@ def test_execute_action_app_failure():
 
 def test_execute_action_folder_downloads_success():
     service = ComputerControlService()
-    with mock.patch("os.path.exists", return_value=True), \
-         mock.patch("os.startfile") as mock_startfile:
+    with mock.patch("os.path.exists", return_value=True), mock.patch("os.startfile") as mock_startfile:
         ok, msg = service.execute_action("OPEN_FOLDER", "downloads")
         assert ok
         assert "Downloads folder opened successfully" in msg
@@ -185,8 +186,10 @@ def test_execute_action_folder_not_exist():
 
 def test_execute_action_folder_failure():
     service = ComputerControlService()
-    with mock.patch("os.path.exists", return_value=True), \
-         mock.patch("os.startfile", side_effect=OSError("Explorer error")):
+    with (
+        mock.patch("os.path.exists", return_value=True),
+        mock.patch("os.startfile", side_effect=OSError("Explorer error")),
+    ):
         ok, msg = service.execute_action("OPEN_FOLDER", "downloads")
         assert not ok
         assert "Failed to open folder: Explorer error" in msg
@@ -194,8 +197,7 @@ def test_execute_action_folder_failure():
 
 def test_execute_action_file_docs_success():
     service = ComputerControlService()
-    with mock.patch("os.path.exists", return_value=True), \
-         mock.patch("os.startfile") as mock_startfile:
+    with mock.patch("os.path.exists", return_value=True), mock.patch("os.startfile") as mock_startfile:
         ok, msg = service.execute_action("OPEN_FILE", "resume.pdf")
         assert ok
         assert "File 'resume.pdf' opened successfully." in msg
@@ -205,8 +207,7 @@ def test_execute_action_file_docs_success():
 def test_execute_action_file_workspace_success():
     service = ComputerControlService()
     # first exists call is for Documents (False), second exists call is for project root (True)
-    with mock.patch("os.path.exists", side_effect=[False, True]), \
-         mock.patch("os.startfile") as mock_startfile:
+    with mock.patch("os.path.exists", side_effect=[False, True]), mock.patch("os.startfile") as mock_startfile:
         ok, msg = service.execute_action("OPEN_FILE", "resume.pdf")
         assert ok
         assert "File 'resume.pdf' opened successfully from workspace." in msg
@@ -216,9 +217,11 @@ def test_execute_action_file_workspace_success():
 def test_execute_action_file_dummy_creation():
     service = ComputerControlService()
     # documents exists (False), workspace exists (False)
-    with mock.patch("os.path.exists", side_effect=[False, False]), \
-         mock.patch("builtins.open", mock.mock_open()) as mock_file, \
-         mock.patch("os.startfile") as mock_startfile:
+    with (
+        mock.patch("os.path.exists", side_effect=[False, False]),
+        mock.patch("builtins.open", mock.mock_open()) as mock_file,
+        mock.patch("os.startfile") as mock_startfile,
+    ):
         ok, msg = service.execute_action("OPEN_FILE", "resume.pdf")
         assert ok
         assert "Created and opened dummy 'resume.pdf'" in msg
