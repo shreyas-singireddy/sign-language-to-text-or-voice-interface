@@ -7,4 +7,3 @@ All notable changes to this project will be documented in this file.
 ### Miscellaneous Tasks
 
 - Stabilize Streamlit widgets, fix layout CSS, resolve MediaPipe import issue, and update audit reports (726af98)
-

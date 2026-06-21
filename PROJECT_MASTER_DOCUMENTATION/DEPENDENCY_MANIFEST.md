@@ -6,7 +6,7 @@ This document details the software package dependencies, virtual environment con
 
 ## 1. Virtual Environment Setup
 
-The application is validated under **Python 3.12** inside the active virtual environment `backend\.venv`. 
+The application is validated under **Python 3.12** inside the active virtual environment `backend\.venv`.
 
 ### 1.1 Root dependencies (`requirements.txt`)
 ```text

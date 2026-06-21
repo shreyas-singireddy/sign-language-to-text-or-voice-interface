@@ -60,7 +60,7 @@ Webcam Frame: Shape (height, width, 3), format BGR
 RGB Frame: Shape (height, width, 3), format RGB
    │
    ▼ [MediaPipe Holistic Processors]
-Holistic Landmarks: 
+Holistic Landmarks:
    ├── Face: 468 landmarks (x, y, z)
    ├── Left Hand: 21 landmarks (x, y, z)
    ├── Right Hand: 21 landmarks (x, y, z)
@@ -115,7 +115,7 @@ Audio Waveform: Synthesized voice output
 
 ### 4.2 Weak Implementations
 *   **Head Pose Estimators**: Pitch, yaw, and roll are calculated using simple distance differentials between eye corners and nose tips, instead of using perspective-n-point (PnP) solvers.
-*   **Overlapping Landmark Indexes (Critical Bug)**: 
+*   **Overlapping Landmark Indexes (Critical Bug)**:
     *   In `_flatten_landmarks` (and its unpacker/updater), the left hand coordinates start at index `1404` and the right hand at index `1467`.
     *   Since the face mesh contains 468 landmarks × 3 coordinates (`1404` values), the face coordinates occupy indices `132` to `1535`.
     *   As a result, the hand coordinates overwrite the face coordinates starting at index `1404` (corresponding to face landmark `424`).

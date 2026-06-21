@@ -4,9 +4,9 @@
 Briefly describe the feature and what it solves.
 
 ## Requirements
-- **Must Have**: 
-- **Nice to Have**: 
-- **Non-goals**: 
+- **Must Have**:
+- **Nice to Have**:
+- **Non-goals**:
 
 ## User Experience
 - Target User:

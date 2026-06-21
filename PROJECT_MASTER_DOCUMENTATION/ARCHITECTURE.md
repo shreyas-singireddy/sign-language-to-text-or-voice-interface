@@ -16,18 +16,18 @@ graph TD
     D --> D1[Hand Detector]
     D --> D2[Pose Detector]
     D --> D3[Face Detector]
-    
+
     D1 & D2 & D3 --> E[Holistic Landmarks Object]
     E --> F[Landmark Processor EMA Smoothing]
     F --> G[Normalizer Scale & Shift]
-    
+
     G --> H[Gesture Predictor Engine]
     H --> H1[Alphabet MLP Model]
     H --> H2[Word LSTM/Transformer Model]
-    
+
     H1 & H2 --> I[Rule-Based / ML Translation Engine]
     I --> J[Grammar Correctors & Output Text]
-    
+
     J --> K[TTS Engine Audio Service]
     J --> L[MongoDB Atlas / Local Fallback JSON]
     J --> M[SOS Alert Dispatcher & SMS Gateway]

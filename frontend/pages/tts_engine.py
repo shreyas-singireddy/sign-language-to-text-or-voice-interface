@@ -1,9 +1,11 @@
-import os
 import logging
+import os
 import subprocess
+
 from backend.app.core.config import settings
 
 logger = logging.getLogger(__name__)
+
 
 class LocalTTSEngine:
     """
@@ -11,6 +13,7 @@ class LocalTTSEngine:
     This is a placeholder; actual implementation could use eSpeak NG, Coqui TTS,
     or another local TTS library.
     """
+
     def __init__(self):
         self.model = None
         self._load_model()
@@ -22,7 +25,9 @@ class LocalTTSEngine:
             logger.info(f"Loading local TTS model from: {settings.LOCAL_TTS_MODEL_PATH}")
             # self.model = load_your_actual_tts_model(settings.LOCAL_TTS_MODEL_PATH)
         else:
-            logger.warning(f"Local TTS model not found at: {settings.LOCAL_TTS_MODEL_PATH}. Local TTS will attempt to use eSpeak NG or a mock implementation.")
+            logger.warning(
+                f"Local TTS model not found at: {settings.LOCAL_TTS_MODEL_PATH}. Local TTS will attempt to use eSpeak NG or a mock implementation."
+            )
 
     def generate_audio(self, text: str, target_lang: str, output_filepath: str) -> str | None:
         """
@@ -34,12 +39,15 @@ class LocalTTSEngine:
             # self.model.synthesize(text, target_lang, output_filepath)
             logger.info(f"Generating audio locally using loaded model for '{text}' in {target_lang}")
             # Mock audio file creation
-            with open(output_filepath, 'w') as f: f.write("mock audio data")
+            with open(output_filepath, "w") as f:
+                f.write("mock audio data")
             return output_filepath
         else:
             # Fallback to eSpeak NG if available
             try:
-                subprocess.run(["espeak", f"-v{target_lang}", "-w", output_filepath, text], check=True, capture_output=True)
+                subprocess.run(
+                    ["espeak", f"-v{target_lang}", "-w", output_filepath, text], check=True, capture_output=True
+                )
                 logger.info(f"Generated audio using eSpeak NG for '{text}' in {target_lang} at {output_filepath}")
                 return output_filepath
             except FileNotFoundError:
@@ -48,6 +56,6 @@ class LocalTTSEngine:
                 logger.error(f"eSpeak NG error: {e.stderr.decode()}")
             except Exception as e:
                 logger.error(f"An unexpected error occurred during local TTS generation: {e}")
-            
+
             logger.warning(f"Failed to generate local audio for '{text}' in {target_lang}. Returning None.")
             return None

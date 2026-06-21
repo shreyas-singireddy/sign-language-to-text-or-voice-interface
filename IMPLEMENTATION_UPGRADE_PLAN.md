@@ -7,7 +7,7 @@ This document outlines the proposed updates to resolve accuracy bottlenecks and 
 ## 1. Upgrade: Fix Coordinates Overlap in Flat Arrays
 
 *   **Problem**: In `_flatten_landmarks` (and corresponding unpackers/updaters), hand coordinates start at index `1404` and `1467`, overlapping with and overwriting face mesh landmarks.
-*   **Root Cause**: 
+*   **Root Cause**:
     *   The face mesh has 468 landmarks × 3 coordinates (`1404` values), which occupy indices `132` to `1535` in the flat array.
     *   The hand coordinates were mistakenly mapped to start at index `1404` instead of `1536`.
 *   **Proposed Solution**:

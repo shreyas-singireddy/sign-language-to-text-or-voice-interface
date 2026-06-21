@@ -6,7 +6,7 @@ We take the security of SignBridge AI seriously. If you believe you have found a
 
 ## 🛡️ Supported Versions
 
-Only the latest release version is supported with security updates. 
+Only the latest release version is supported with security updates.
 
 | Version | Supported |
 | :--- | :--- |

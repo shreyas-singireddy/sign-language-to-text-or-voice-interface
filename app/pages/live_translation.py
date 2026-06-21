@@ -1,6 +1,9 @@
+import queue
+import threading
 import time
 
 import cv2
+import psutil
 import streamlit as st
 
 from app.services.ai_service import ai_service
@@ -20,6 +23,7 @@ st.markdown(
 )
 st.markdown("---")
 
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Session State Initialization
 # ──────────────────────────────────────────────────────────────────────────────
@@ -29,7 +33,7 @@ def _init_state():
         "translation_buffer": "",
         "detected_sequence": [],
         "last_processed_time": time.time(),
-        "live_frame": None,          # holds latest annotated frame (BGR bytes)
+        "live_frame": None,  # holds latest annotated frame (BGR bytes)
         "live_gesture": "IDLE",
         "live_confidence": 0.0,
         "live_fps": 0.0,
@@ -42,6 +46,7 @@ def _init_state():
     for k, v in defaults.items():
         if k not in st.session_state:
             st.session_state[k] = v
+
 
 _init_state()
 
@@ -66,12 +71,12 @@ def _camera_worker(stop_event: threading.Event, result_queue: queue.Queue):
     and pushes results into result_queue (dropping stale frames to prevent lag).
     """
     from ai_engine.computer_vision.camera import CameraManager
+
     cam = CameraManager()
     if not cam.start():
         result_queue.put({"error": "Camera failed to open."})
         return
 
-    frame_times = []
     frame_count = 0
     t_start = time.time()
 
@@ -143,12 +148,7 @@ def _start_camera():
         except queue.Empty:
             break
 
-    t = threading.Thread(
-        target=_camera_worker,
-        args=(stop_event, q),
-        daemon=True,
-        name="CamWorker"
-    )
+    t = threading.Thread(target=_camera_worker, args=(stop_event, q), daemon=True, name="CamWorker")
     t.start()
     st.session_state["cam_thread"] = t
     st.session_state["camera_active"] = True
@@ -268,7 +268,7 @@ with col_results:
         index=0,
         key="select_lang_translation",
     )
-    
+
     # Update AI service language so the background thread uses it
     ai_service.set_target_language(selected_language)
 
@@ -300,7 +300,7 @@ with col_results:
                     <div style="font-size:0.75rem; color:#4FC; font-weight:bold;">CONF: {conf_pct}%</div>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
         with gesture_conf_col2:
             hands_icon = "✅" if st.session_state.get("live_hands_detected") else "❌"
@@ -312,7 +312,7 @@ with col_results:
                     <div style="font-size:0.75rem; color:#4FC; font-weight:bold;">FPS: {st.session_state.get('live_fps', 0.0)}</div>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
     # Sequence visualization

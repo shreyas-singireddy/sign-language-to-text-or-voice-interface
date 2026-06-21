@@ -11,7 +11,7 @@ This document provides a detailed review of the implementation details, algorith
 *   **Algorithms**: MediaPipe `FaceMesh` (residual neural network framework mapping coordinates on frame).
 *   **Data Ingest**: RGB Frame matrix `np.ndarray` shape `(height, width, 3)`.
 *   **Data Output**: `FaceTelemetryData` containing 468 `Point3D` coordinates, head rotation pitch/yaw/roll floats, mouth openness float, and visibility float.
-*   **Internal Mechanics**: 
+*   **Internal Mechanics**:
     *   Estimates mouth openness by calculating the ratio of the vertical lip gap (between landmarks 13 and 14) to the horizontal lip width (between landmarks 78 and 308).
 *   **Limitations**: High latency under multi-face configurations, and fails to track facial landmarks under side-profile occlusions.
 
@@ -40,7 +40,7 @@ This document provides a detailed review of the implementation details, algorith
 *   **Algorithms**: MediaPipe `Hands` tracking model.
 *   **Data Ingest**: RGB Frame matrix `np.ndarray`.
 *   **Data Output**: `HandTelemetryData` containing 21 `Point3D` coordinates, classification confidence float, center `Point3D`, and `BoundingBox3D`.
-*   **Finger tracking logic**: 
+*   **Finger tracking logic**:
     *   Computes finger curls as the ratio of the tip-to-wrist distance to the MCP-to-wrist distance.
     *   MCP-PIP-DIP joint angles are calculated using dot-product cosine vector rules.
 *   **Limitations**: Hand coordinates overlap with face mesh coordinates in the raw flat array. The system loses tracking during rapid hand movement (motion blur) or hand-on-hand occlusion.
@@ -64,7 +64,7 @@ This document provides a detailed review of the implementation details, algorith
 
 *   **Role**: Orchestrates frame processing, normalizes coordinates, applies EMA smoothing, and calculates performance metrics.
 *   **Responsible File**: [perception_service.py](file:///C:/Users/shrey/Downloads/hack2/sign-language-to-text-or-voice-translator/ai_engine/services/perception_service.py)
-*   **Algorithms**: 
+*   **Algorithms**:
     *   *Smoothing*: Exponential Moving Average (EMA) with $\alpha=0.3$.
     *   *Quality Check*: Brightness mean analysis and Laplacian variance calculations to estimate frame blur.
 *   **Data Ingest**: BGR Camera Frame `np.ndarray`.

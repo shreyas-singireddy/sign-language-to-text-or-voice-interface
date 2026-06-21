@@ -3,7 +3,6 @@ import numpy as np
 from ai_engine.schemas.landmark_schema import FrameLandmarkData, Point3D
 
 
-
 class LandmarkNormalizer:
     def normalize_frame(self, frame_data: FrameLandmarkData) -> FrameLandmarkData:
         """

@@ -1,0 +1,5 @@
+[allowlist]
+description = "Global allowlist for sign-bridge translation repository"
+paths = [
+    '''\.secrets\.baseline'''
+]

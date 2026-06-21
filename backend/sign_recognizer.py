@@ -1,8 +1,10 @@
-import os
 import logging
+import os
+
 from backend.config import LOCAL_SIGN_RECOGNITION_MODEL_PATH
 
 logger = logging.getLogger(__name__)
+
 
 class SignRecognizer:
     """
@@ -10,6 +12,7 @@ class SignRecognizer:
     This is a placeholder; actual implementation would load and run a model
     like an ONNX model, MediaPipe, or a custom TensorFlow/PyTorch model.
     """
+
     def __init__(self):
         self.model = None
         self._load_model()
@@ -32,7 +35,7 @@ class SignRecognizer:
             # Placeholder for actual model inference
             # For example: recognized_text = self.model.run(video_frame_data)
             # For now, a mock response
-            return "Hello World" # Default recognized text
+            return "Hello World"  # Default recognized text
         else:
             logger.info("Using mock sign recognition due to missing model.")
             # Mock recognition logic
