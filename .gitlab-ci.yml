@@ -105,12 +105,17 @@ bandit-security:
   <<: *python_job
   stage: security
   script:
+    # Exclude venv, cache, builds and frontend node_modules from bandit scan.
+    # Scanning third-party packages inside .venv takes 15+ minutes and produces
+    # only false positives from packages we don't own.
     - python ci_bootstrap.py bandit -r . -lll
+        --exclude backend/.venv,.cache,builds,frontend/node_modules,frontend/.next
 
 detect-secrets-check:
   <<: *python_job
   stage: security
   script:
+    # Audit existing baseline — fails only if new unreviewed secrets are found.
     - python ci_bootstrap.py detect-secrets audit .secrets.baseline
 
 semgrep-security:
@@ -122,7 +127,9 @@ semgrep-security:
   variables:
     GIT_CLEAN_FLAGS: "-ffdx"
   script:
-    - semgrep scan --error --config auto --exclude backend/.venv --exclude .cache .
+    - semgrep scan --error --config auto
+        --exclude backend/.venv --exclude .cache
+        --exclude builds --exclude frontend/node_modules .
   allow_failure: true   # semgrep is advisory on feature branches
 
 gitleaks-security:

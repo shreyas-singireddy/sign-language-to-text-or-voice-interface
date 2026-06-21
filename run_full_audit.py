@@ -6,6 +6,8 @@ import time
 from pathlib import Path
 
 import numpy as np
+
+# pyrefly: ignore [missing-source-for-stubs]
 import psutil
 
 # Add backend and root to sys.path to ensure absolute imports resolve correctly
