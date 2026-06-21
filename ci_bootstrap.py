@@ -32,51 +32,82 @@ def _uv_available() -> bool:
         return False
 
 
+def _force_remove_dir(path: str) -> None:
+    """Remove a directory using a long-path-safe method.
+
+    On Windows, shutil.rmtree fails on paths > 260 chars (e.g. inside
+    sklearn or jax venvs). PowerShell's Remove-Item uses the \\?\\ prefix
+    internally and handles long paths correctly.
+    """
+    if not os.path.exists(path):
+        return
+    if os.name == "nt":
+        subprocess.run(
+            [
+                "powershell",
+                "-NoProfile",
+                "-Command",
+                f"Remove-Item -Recurse -Force -LiteralPath '{path}'",
+            ],
+            check=False,  # best-effort; next step will reveal any real failures
+        )
+    else:
+        import shutil
+
+        shutil.rmtree(path, ignore_errors=True)
+
+
 def bootstrap(venv_dir: str) -> None:
-    """Create venv (if missing) and install all project requirements."""
+    """Create venv and install all project requirements.
+
+    Three-state logic:
+    1. Python binary exists → reuse venv, only install deps.
+    2. Dir exists but Python binary missing (stale/broken cache) →
+       force-remove with long-path-safe helper, then create fresh.
+    3. Dir absent → create fresh.
+
+    Avoids ``uv venv --clear`` which calls the same OS delete API that
+    fails on Windows long-path files inside sklearn/jax site-packages.
+    """
     use_uv = _uv_available()
     venv_python, venv_pip = _find_venv_python(venv_dir)
 
-    # Guard: directory may exist from cache but Python binary may be missing
-    # (e.g. runner cloned into a fresh build dir with a stale cache restore).
-    # In that case, remove the broken directory and recreate it.
-    venv_exists = os.path.exists(venv_dir)
-    python_exists = os.path.exists(venv_python)
+    if os.path.exists(venv_python):
+        # Happy path: valid, usable venv already present.
+        print(f"[bootstrap] Reusing existing venv at {venv_dir!r}.", flush=True)
+    else:
+        if os.path.exists(venv_dir):
+            # Stale directory (e.g. cache restored without Python binary).
+            # Must remove before creating, but rmtree fails on long paths.
+            print(
+                f"[bootstrap] Stale/partial venv at {venv_dir!r} — removing ...",
+                flush=True,
+            )
+            _force_remove_dir(venv_dir)
 
-    if venv_exists and not python_exists:
-        print(
-            f"[bootstrap] Stale venv detected at {venv_dir!r} "
-            "(directory exists but Python binary is missing). Recreating ...",
-            flush=True,
-        )
-        import shutil
-
-        shutil.rmtree(venv_dir, ignore_errors=True)
-        venv_exists = False
-
-    if not venv_exists:
         print(f"[bootstrap] Creating venv at {venv_dir!r} ...", flush=True)
         if use_uv:
-            subprocess.run(["uv", "venv", venv_dir, "--python", "3.12"], check=True)
+            subprocess.run(
+                ["uv", "venv", venv_dir, "--python", "3.12"],
+                check=True,
+            )
         else:
             subprocess.run([sys.executable, "-m", "venv", venv_dir], check=True)
-    else:
-        print(f"[bootstrap] Venv already exists at {venv_dir!r}.", flush=True)
 
-    # Recompute paths after potential recreation
-    venv_python, venv_pip = _find_venv_python(venv_dir)
+        # Recompute paths after creation.
+        venv_python, venv_pip = _find_venv_python(venv_dir)
 
-    print("[bootstrap] Installing requirements ...", flush=True)
-
-    req_files = []
+    req_files: list[str] = []
     if os.path.exists("backend/requirements.txt"):
         req_files += ["-r", "backend/requirements.txt"]
     if os.path.exists("requirements-dev.txt"):
         req_files += ["-r", "requirements-dev.txt"]
 
+    print("[bootstrap] Installing requirements ...", flush=True)
+
     if use_uv:
-        # Pass the Python *binary* path, not the venv directory.
-        # uv resolves --python as an interpreter, not a venv folder.
+        # Pass the Python *binary* path — uv --python expects an interpreter,
+        # not a venv directory path.
         subprocess.run(
             ["uv", "pip", "install", "--python", venv_python] + req_files,
             check=True,
