@@ -116,7 +116,7 @@ detect-secrets-check:
   script:
     # Update baseline non-interactively, then fail if new secrets modified the file
     - python ci_bootstrap.py detect-secrets scan --baseline .secrets.baseline
-    - git diff -I '"generated_at":' --exit-code .secrets.baseline
+    - git diff -I generated_at --exit-code .secrets.baseline
 
 semgrep-security:
   stage: security

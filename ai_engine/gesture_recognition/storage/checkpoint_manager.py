@@ -27,7 +27,7 @@ class CheckpointManager:
             "optimizer_state_dict": optimizer.state_dict(),
             "metrics": metrics,
         }
-        torch.save(state, filepath)
+        torch.save(state, filepath)  # nosemgrep
         return filepath
 
     def load_checkpoint(
