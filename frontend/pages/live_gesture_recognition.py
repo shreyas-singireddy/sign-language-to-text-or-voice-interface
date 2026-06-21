@@ -279,7 +279,9 @@ with col_panels:
         if latest_feedback and latest_feedback.get("deviations"):
             st.markdown("### ⚠️ AI Alignment Feedback")
             for dev in latest_feedback["deviations"]:
-                st.write(f"- **{dev['joint']}**: Variance {dev['variance']}° (Expected {dev['expected']}°, Actual {dev['actual']}°)")
+                st.write(
+                    f"- **{dev['joint']}**: Variance {dev['variance']}° (Expected {dev['expected']}°, Actual {dev['actual']}°)"
+                )
             if latest_feedback.get("corrections"):
                 st.info("💡 Suggestions: " + " ".join(latest_feedback["corrections"]))
         elif latest_feedback:
@@ -291,6 +293,7 @@ with col_panels:
                 if st.button("Generate AI Explanation", key="btn_explain_sign_lgr"):
                     with st.spinner("Analyzing sign with AI..."):
                         from ai_engine.ai_agent.llm_engine import llm_engine
+
                         user_lang = st.session_state.get("language", "English")
                         prompt = (
                             f"Explain the detected sign '{curr_pred}'. "
@@ -415,7 +418,10 @@ with col_panels:
         st.markdown(f"**{t('lgr_alphabet_model')}**")
         if active_alphabet:
             st.write(
-                "- " + t("lgr_version_accuracy").format(version=active_alphabet['version'], acc=round(active_alphabet['metrics']['test_accuracy'] * 100, 2))
+                "- "
+                + t("lgr_version_accuracy").format(
+                    version=active_alphabet["version"], acc=round(active_alphabet["metrics"]["test_accuracy"] * 100, 2)
+                )
             )
         else:
             st.write(t("lgr_fallback_alphabet"))
@@ -423,7 +429,10 @@ with col_panels:
         st.markdown(f"**{t('lgr_seq_word_model')}**")
         if active_word:
             st.write(
-                "- " + t("lgr_version_accuracy").format(version=active_word['version'], acc=round(active_word['metrics']['test_accuracy'] * 100, 2))
+                "- "
+                + t("lgr_version_accuracy").format(
+                    version=active_word["version"], acc=round(active_word["metrics"]["test_accuracy"] * 100, 2)
+                )
             )
         else:
             st.write(t("lgr_fallback_word").format(arch=selected_arch))
@@ -444,7 +453,10 @@ with col_panels:
             # Find selected model metadata
             selected_meta = next(m for m in all_models if m["version"] == rollback_target)
             st.write(
-                "- " + t("lgr_rollback_info").format(type=selected_meta['model_type'], acc=round(selected_meta['metrics']['test_accuracy'] * 100, 2))
+                "- "
+                + t("lgr_rollback_info").format(
+                    type=selected_meta["model_type"], acc=round(selected_meta["metrics"]["test_accuracy"] * 100, 2)
+                )
             )
 
             if st.button(
