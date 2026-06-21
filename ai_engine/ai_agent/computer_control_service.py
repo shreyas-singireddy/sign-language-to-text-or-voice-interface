@@ -32,7 +32,7 @@ class ComputerControlService:
 
         system_prompt = (
             "You are a command parser. Convert user commands into structured JSON.\n"
-            "Format: {\"intent\": \"INTENT_NAME\", \"target\": \"TARGET_NAME\"}\n"
+            'Format: {"intent": "INTENT_NAME", "target": "TARGET_NAME"}\n'
             "Supported Intents: OPEN_APPLICATION, OPEN_FOLDER, OPEN_FILE\n"
             "Supported Targets: chrome, notepad, downloads, documents, resume.pdf\n"
             "Respond ONLY with valid JSON."
@@ -47,12 +47,10 @@ class ComputerControlService:
                 end_idx = response.rfind("}") + 1
                 json_str = response[start_idx:end_idx]
                 import json
+
                 data = json.loads(json_str)
                 if "intent" in data and "target" in data:
-                    return {
-                        "intent": data["intent"].upper(),
-                        "target": data["target"].lower()
-                    }
+                    return {"intent": data["intent"].upper(), "target": data["target"].lower()}
         except Exception as e:
             logger.error(f"Error parsing JSON from LLM response: {e}")
 
@@ -95,21 +93,21 @@ class ComputerControlService:
                 f"Verify application '{target}' matches whitelist",
                 f"Locate environment binary for '{target}'",
                 f"Initialize process for '{target}' via subprocess",
-                f"Confirm active UI window for '{target}'"
+                f"Confirm active UI window for '{target}'",
             ]
         elif intent == "OPEN_FOLDER":
             return [
                 f"Resolve system path for folder '{target}'",
                 "Check read/write permissions on folder directory",
                 f"Trigger system File Explorer to launch folder '{target}'",
-                "Confirm Explorer frame registration"
+                "Confirm Explorer frame registration",
             ]
         elif intent == "OPEN_FILE":
             return [
                 f"Search directory tree for file '{target}'",
                 "Verify safe file MIME type and handler",
                 f"Invoke default shell viewer for '{target}'",
-                "Confirm file viewer launched successfully"
+                "Confirm file viewer launched successfully",
             ]
         else:
             return ["Identify operation", "Operation not supported."]
