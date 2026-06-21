@@ -114,17 +114,17 @@ detect-secrets-check:
   <<: *python_job
   stage: security
   script:
-    # Audit existing baseline — fails only if new unreviewed secrets are found.
-    - python ci_bootstrap.py detect-secrets audit .secrets.baseline
+    # Update baseline non-interactively, then fail if new secrets modified the file
+    - python ci_bootstrap.py detect-secrets scan --baseline .secrets.baseline
+    - git diff --exit-code .secrets.baseline
 
 semgrep-security:
   stage: security
-  image: returntocorp/semgrep
-  # semgrep image has its own Python — no bootstrap needed
+  # semgrep image ignored on Windows shell runner, but semgrep is globally installed
   before_script: []
   cache: []
   variables:
-    GIT_CLEAN_FLAGS: "-ffdx"
+    GIT_CLEAN_FLAGS: "-ffdx -e backend/.venv/ -e .venv/"
   script:
     - semgrep scan --error --config auto
         --exclude backend/.venv --exclude .cache
@@ -133,13 +133,14 @@ semgrep-security:
 
 gitleaks-security:
   stage: security
-  image: zricethezav/gitleaks:latest
   before_script: []
   cache: []
   variables:
-    GIT_CLEAN_FLAGS: "-ffdx"
+    GIT_CLEAN_FLAGS: "-ffdx -e backend/.venv/ -e .venv/"
   script:
-    - gitleaks detect --source=. --verbose --no-git
+    - Invoke-WebRequest -Uri "https://github.com/gitleaks/gitleaks/releases/download/v8.18.2/gitleaks_8.18.2_windows_x64.zip" -OutFile gitleaks.zip
+    - Expand-Archive gitleaks.zip -DestinationPath . -Force
+    - .\gitleaks.exe detect --source=. --verbose --no-git
 
 # ════════════════════════════════════════════════════════════
 # TEST STAGE — unit tests + coverage in one run (was 2 runs)
