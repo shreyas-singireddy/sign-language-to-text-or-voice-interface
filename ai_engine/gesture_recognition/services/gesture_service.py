@@ -27,6 +27,7 @@ class GestureService:
         if not TORCH_AVAILABLE:
             return {"prediction": "WAITING_FOR_CLEAR_GESTURE", "confidence": 0.0, "alternatives": []}
         from ai_engine.gesture_recognition.inference.predictor import gesture_predictor
+
         return gesture_predictor.predict_alphabet(
             flat_landmarks,
             visibility_score,
@@ -49,6 +50,7 @@ class GestureService:
         if not TORCH_AVAILABLE:
             return {"prediction": "WAITING_FOR_CLEAR_GESTURE", "confidence": 0.0}
         from ai_engine.gesture_recognition.inference.predictor import gesture_predictor
+
         return gesture_predictor.predict_word(
             sequence, visibility_score, quality_score, occlusion_score, stability_score
         )
@@ -76,6 +78,7 @@ class GestureService:
         if not TORCH_AVAILABLE:
             return "Failed: PyTorch not installed", {}
         from ai_engine.gesture_recognition.training.trainer import trainer
+
         return trainer.train_model(
             model_type=model_type,
             arch_name=arch_name,
@@ -88,6 +91,7 @@ class GestureService:
         if not TORCH_AVAILABLE:
             return {}, 0.0
         from ai_engine.gesture_recognition.training.hyperparameter_tuner import hyperparameter_tuner
+
         return hyperparameter_tuner.tune_hyperparameters(model_type, arch_name)
 
     def get_registry_status(self) -> dict[str, Any]:
