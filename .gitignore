@@ -18,5 +18,7 @@ translations/*.mo # Ignore compiled translation files
 translations/*.pot # Ignore translation template file
 .DS_Store
 .vscode
-.idea
 *.log
+builds/
+config.toml
+.runner_system_id

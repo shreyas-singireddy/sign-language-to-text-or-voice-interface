@@ -18,67 +18,65 @@ cache:
     - backend/.venv
 
 before_script:
-  - python -m venv backend/.venv
-  - source backend/.venv/bin/activate || backend\.venv\Scripts\activate.ps1 || .\backend\.venv\Scripts\activate
-  - pip install --upgrade pip
-  - pip install -r backend/requirements.txt
-  - pip install -r requirements-dev.txt
+  - python ci_bootstrap.py --bootstrap
 
 # --- FORMAT STAGE ---
 black-format-check:
   stage: format
   image: python:3.12-slim
   script:
-    - black --check .
+    - python ci_bootstrap.py black --check .
 
 ruff-format-check:
   stage: format
   image: python:3.12-slim
   script:
-    - ruff format --check .
+    - python ci_bootstrap.py ruff format --check .
 
 # --- LINT STAGE ---
 ruff-lint:
   stage: lint
   image: python:3.12-slim
   script:
-    - ruff check .
+    - python ci_bootstrap.py ruff check .
 
 flake8-lint:
   stage: lint
   image: python:3.12-slim
   script:
-    - flake8 .
+    - python ci_bootstrap.py flake8 .
 
 pylint-lint:
   stage: lint
   image: python:3.12-slim
   script:
-    - pylint --recursive=y .
+    - python ci_bootstrap.py pylint --recursive=y .
 
 # --- TYPE CHECK STAGE ---
 mypy-type-check:
   stage: type_check
   image: python:3.12-slim
   script:
-    - mypy .
+    - python ci_bootstrap.py mypy .
 
 # --- SECURITY STAGE ---
 bandit-security:
   stage: security
   image: python:3.12-slim
   script:
-    - bandit -r .
+    - python ci_bootstrap.py bandit -r .
 
 semgrep-security:
   stage: security
   image: returntocorp/semgrep
+  before_script: []
   script:
     - semgrep scan --error --config auto .
 
 gitleaks-security:
   stage: security
   image: zricethezav/gitleaks:latest
+  before_script: []
   script:
     - gitleaks detect --source=. --verbose
 
@@ -86,21 +84,21 @@ detect-secrets-security:
   stage: security
   image: python:3.12-slim
   script:
-    - detect-secrets scan
+    - python ci_bootstrap.py detect-secrets scan
 
 # --- TEST STAGE ---
 pytest-suite:
   stage: test
   image: python:3.12-slim
   script:
-    - pytest
+    - python ci_bootstrap.py pytest
 
 # --- COVERAGE STAGE ---
 coverage-check:
   stage: coverage
   image: python:3.12-slim
   script:
-    - pytest --cov --cov-fail-under=80
+    - python ci_bootstrap.py pytest --cov --cov-fail-under=80
 
 # --- BUILD STAGE ---
 docker-build-check:
@@ -108,6 +106,7 @@ docker-build-check:
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
+  before_script: []
   script:
     - docker build .
 
@@ -115,6 +114,7 @@ docker-build-check:
 release-notify:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
+  before_script: []
   script:
     - echo "Release tagged"
   rules:
