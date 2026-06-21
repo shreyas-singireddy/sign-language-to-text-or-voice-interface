@@ -108,8 +108,7 @@ bandit-security:
     # Exclude venv, cache, builds and frontend node_modules from bandit scan.
     # Scanning third-party packages inside .venv takes 15+ minutes and produces
     # only false positives from packages we don't own.
-    - python ci_bootstrap.py bandit -r . -lll
-        --exclude backend/.venv,.cache,builds,frontend/node_modules,frontend/.next
+    - python ci_bootstrap.py bandit -r . -c pyproject.toml -lll
 
 detect-secrets-check:
   <<: *python_job

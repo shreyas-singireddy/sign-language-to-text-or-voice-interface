@@ -105,3 +105,6 @@ omit = [
     "emergency/panic_protocol.py",
     "tests/*"
 ]
+
+[tool.bandit]
+exclude_dirs = ['backend/.venv', '.venv', 'frontend/node_modules', '.cache', 'builds']
