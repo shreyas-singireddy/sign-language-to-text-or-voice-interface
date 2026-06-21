@@ -22,7 +22,7 @@ if BACKEND_DIR not in sys.path:
 
 # Configure fake/mock environment variables for setup stability
 os.environ["MONGO_URI"] = ""
-os.environ["JWT_SECRET"] = "d3b07384d113edec49eaa6238ad5ff00"
+os.environ["JWT_SECRET"] = "d3b07384d113edec49eaa6238ad5ff00"  # pragma: allowlist secret
 
 print("Starting SignBridge AI Comprehensive Audit & Repair Verification...")
 
@@ -149,7 +149,7 @@ import_successes = 0
 critical_modules = [
     # "app.services.audio_service", # Removed, not in backend/app/
     # "app.services.database_service", # Removed, not in backend/app/
-    "backend.services.ai_service", # New AI service
+    "backend.services.ai_service",  # New AI service
     "backend.app.main",
     "backend.app.core.database",
     "backend.app.core.config",
@@ -430,15 +430,17 @@ try:
     sys.path = [p for p in sys.path if p != BACKEND_DIR]
     sys.path.insert(0, ROOT_DIR)
 
-    from backend.services.ai_service import AIService
     from backend.app.core.config import settings
+    from backend.services.ai_service import AIService
 
     ai_service_instance = AIService()
 
     # Generate mock BGR frame
     frame = np.ones((480, 640, 3), dtype=np.uint8) * 120
     # Process through pipeline
-    translated_text, audio_path = ai_service_instance.process_sign_language(frame.tolist(), settings.BABEL_DEFAULT_LOCALE)
+    translated_text, audio_path = ai_service_instance.process_sign_language(
+        frame.tolist(), settings.BABEL_DEFAULT_LOCALE
+    )
     integration_log.append("- [x] Blank frame routed through `ai_service.process_sign_language` successfully.")
     integration_log.append(f"- [x] Translated text: `{translated_text}`.")
     integration_log.append(f"- [x] Audio path: `{audio_path}`.")
