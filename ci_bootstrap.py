@@ -35,8 +35,26 @@ def _uv_available() -> bool:
 def bootstrap(venv_dir: str) -> None:
     """Create venv (if missing) and install all project requirements."""
     use_uv = _uv_available()
+    venv_python, venv_pip = _find_venv_python(venv_dir)
 
-    if not os.path.exists(venv_dir):
+    # Guard: directory may exist from cache but Python binary may be missing
+    # (e.g. runner cloned into a fresh build dir with a stale cache restore).
+    # In that case, remove the broken directory and recreate it.
+    venv_exists = os.path.exists(venv_dir)
+    python_exists = os.path.exists(venv_python)
+
+    if venv_exists and not python_exists:
+        print(
+            f"[bootstrap] Stale venv detected at {venv_dir!r} "
+            "(directory exists but Python binary is missing). Recreating ...",
+            flush=True,
+        )
+        import shutil
+
+        shutil.rmtree(venv_dir, ignore_errors=True)
+        venv_exists = False
+
+    if not venv_exists:
         print(f"[bootstrap] Creating venv at {venv_dir!r} ...", flush=True)
         if use_uv:
             subprocess.run(["uv", "venv", venv_dir, "--python", "3.12"], check=True)
@@ -45,8 +63,10 @@ def bootstrap(venv_dir: str) -> None:
     else:
         print(f"[bootstrap] Venv already exists at {venv_dir!r}.", flush=True)
 
-    print("[bootstrap] Installing requirements ...", flush=True)
+    # Recompute paths after potential recreation
     venv_python, venv_pip = _find_venv_python(venv_dir)
+
+    print("[bootstrap] Installing requirements ...", flush=True)
 
     req_files = []
     if os.path.exists("backend/requirements.txt"):
@@ -55,8 +75,10 @@ def bootstrap(venv_dir: str) -> None:
         req_files += ["-r", "requirements-dev.txt"]
 
     if use_uv:
+        # Pass the Python *binary* path, not the venv directory.
+        # uv resolves --python as an interpreter, not a venv folder.
         subprocess.run(
-            ["uv", "pip", "install", "--python", venv_dir] + req_files,
+            ["uv", "pip", "install", "--python", venv_python] + req_files,
             check=True,
         )
     else:
