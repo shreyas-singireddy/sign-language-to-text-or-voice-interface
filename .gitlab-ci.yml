@@ -129,7 +129,7 @@ semgrep-security:
     - semgrep scan --error --config auto
         --exclude backend/.venv --exclude .cache
         --exclude builds --exclude frontend/node_modules .
-  allow_failure: true   # semgrep is advisory on feature branches
+  allow_failure: false
 
 gitleaks-security:
   stage: security
