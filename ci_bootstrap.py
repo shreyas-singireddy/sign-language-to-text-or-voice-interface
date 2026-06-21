@@ -4,10 +4,25 @@ import sys
 
 
 def main() -> None:
-    # 1. Create/Ensure virtual environment
+    # 1. Create/Ensure virtual environment using uv or venv
     venv_dir = os.path.join("backend", ".venv")
+    use_uv = False
     if not os.path.exists(venv_dir):
-        subprocess.run([sys.executable, "-m", "venv", venv_dir], check=True)
+        # Try uv first to create a python 3.12 environment (to avoid python 3.14 incompatibilities on host)
+        try:
+            subprocess.run(["uv", "venv", venv_dir, "--python", "3.12"], check=True)
+            use_uv = True
+        except (subprocess.SubprocessError, FileNotFoundError):
+            # Fallback to python -m venv
+            subprocess.run([sys.executable, "-m", "venv", venv_dir], check=True)
+            use_uv = False
+    else:
+        # Check if uv is available
+        try:
+            subprocess.run(["uv", "--version"], capture_output=True, check=True)
+            use_uv = True
+        except (subprocess.SubprocessError, FileNotFoundError):
+            use_uv = False
 
     # 2. Compute virtual env paths
     bin_dir = "Scripts" if os.name == "nt" else "bin"
@@ -16,11 +31,28 @@ def main() -> None:
 
     # 3. Bootstrap mode
     if len(sys.argv) > 1 and sys.argv[1] == "--bootstrap":
-        # Upgrade pip
-        subprocess.run([venv_python, "-m", "pip", "install", "--upgrade", "pip"], check=True)
-        # Install requirements
-        subprocess.run([venv_pip, "install", "-r", "backend/requirements.txt"], check=True)
-        subprocess.run([venv_pip, "install", "-r", "requirements-dev.txt"], check=True)
+        if use_uv:
+            # Install all requirements using uv pip install
+            subprocess.run(
+                [
+                    "uv",
+                    "pip",
+                    "install",
+                    "--python",
+                    venv_dir,
+                    "-r",
+                    "backend/requirements.txt",
+                    "-r",
+                    "requirements-dev.txt",
+                ],
+                check=True,
+            )
+        else:
+            # Upgrade pip
+            subprocess.run([venv_python, "-m", "pip", "install", "--upgrade", "pip"], check=True)
+            # Install requirements
+            subprocess.run([venv_pip, "install", "-r", "backend/requirements.txt"], check=True)
+            subprocess.run([venv_pip, "install", "-r", "requirements-dev.txt"], check=True)
         sys.exit(0)
 
     # 4. Command execution mode
