@@ -133,7 +133,11 @@ def run_tool(venv_dir: str, cmd: list[str]) -> int:
 
 
 def main() -> None:
-    venv_dir = os.path.join("backend", ".venv")
+    if os.name == "nt" and os.environ.get("CI") == "true":
+        user_profile = os.environ.get("USERPROFILE", "C:\\Users\\shrey")
+        venv_dir = os.path.join(user_profile, "sb_venv")
+    else:
+        venv_dir = os.path.join("backend", ".venv")
 
     if len(sys.argv) < 2:
         print(__doc__)
