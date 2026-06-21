@@ -36,7 +36,6 @@ SUPPORTED_LANGUAGES: dict[str, LanguageMetadata] = {
         flag="🇪🇸",
     ),
     "Hindi": LanguageMetadata(
-
         code="hi",
         name="Hindi",
         native_name="हिंदी",
