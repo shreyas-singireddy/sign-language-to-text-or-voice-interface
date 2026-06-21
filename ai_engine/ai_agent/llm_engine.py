@@ -9,6 +9,7 @@ logger = setup_logger("ai_agent.llm")
 
 OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 
+
 class LLMEngine:
     def __init__(self):
         self.client = httpx.Client(timeout=10.0)
@@ -36,9 +37,7 @@ class LLMEngine:
                     "model": ollama_model,
                     "prompt": f"System: {system_prompt}\nUser: {prompt}" if system_prompt else prompt,
                     "stream": False,
-                    "options": {
-                        "temperature": 0.3
-                    }
+                    "options": {"temperature": 0.3},
                 }
                 res = self.client.post(f"{OLLAMA_HOST}/api/generate", json=payload)
                 if res.status_code == 200:
@@ -56,16 +55,7 @@ class LLMEngine:
                 headers = {"Content-Type": "application/json"}
 
                 full_prompt = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
-                payload = {
-                    "contents": [{
-                        "parts": [{
-                            "text": full_prompt
-                        }]
-                    }],
-                    "generationConfig": {
-                        "temperature": 0.3
-                    }
-                }
+                payload = {"contents": [{"parts": [{"text": full_prompt}]}], "generationConfig": {"temperature": 0.3}}
 
                 res = self.client.post(url, json=payload, headers=headers)
                 if res.status_code == 200:
@@ -126,9 +116,9 @@ class LLMEngine:
                         "Pose Landmarker keypoints",
                         "Hand Landmarker 21 3D points",
                         "Facial landmark mesh coordinates",
-                        "Object detection bounding boxes"
+                        "Object detection bounding boxes",
                     ],
-                    "correct_answer": "Hand Landmarker 21 3D points"
+                    "correct_answer": "Hand Landmarker 21 3D points",
                 },
                 {
                     "question_text": "What is the best way to correct a gesture confidence classification bottleneck?",
@@ -136,10 +126,10 @@ class LLMEngine:
                         "Increase room illumination and maintain uniform distance",
                         "Move completely out of view of the camera",
                         "Accelerate hand signing velocity",
-                        "Use different sign configurations"
+                        "Use different sign configurations",
                     ],
-                    "correct_answer": "Increase room illumination and maintain uniform distance"
-                }
+                    "correct_answer": "Increase room illumination and maintain uniform distance",
+                },
             ]
             return json.dumps(questions)
 
@@ -149,5 +139,6 @@ class LLMEngine:
             "Unable to connect to Ollama model or Google Gemini API. Please make sure Ollama is running "
             "locally (`ollama run qwen2.5`) or a valid `GEMINI_API_KEY` is present in your environment variables."
         )
+
 
 llm_engine = LLMEngine()
