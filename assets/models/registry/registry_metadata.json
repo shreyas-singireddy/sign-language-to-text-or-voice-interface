@@ -1,7 +1,7 @@
 {
     "active_versions": {
         "alphabet": null,
-        "word": "v_word_1781949247",
+        "word": "v_word_1781951135",
         "sentence": null
     },
     "models": [
@@ -702,6 +702,36 @@
             "filename": "dummy.pt",
             "filepath": "v_word_1781949247\\dummy.pt",
             "timestamp": 1781949247,
+            "metrics": {
+                "acc": 0.9
+            },
+            "classes": [
+                "A",
+                "B"
+            ]
+        },
+        {
+            "version": "v_word_1781950257",
+            "model_type": "word",
+            "model_name": "LSTM",
+            "filename": "dummy.pt",
+            "filepath": "v_word_1781950257\\dummy.pt",
+            "timestamp": 1781950257,
+            "metrics": {
+                "acc": 0.9
+            },
+            "classes": [
+                "A",
+                "B"
+            ]
+        },
+        {
+            "version": "v_word_1781951135",
+            "model_type": "word",
+            "model_name": "LSTM",
+            "filename": "dummy.pt",
+            "filepath": "v_word_1781951135\\dummy.pt",
+            "timestamp": 1781951135,
             "metrics": {
                 "acc": 0.9
             },
