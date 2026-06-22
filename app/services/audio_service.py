@@ -1,8 +1,8 @@
 import os
 
 from config.logger import setup_logger
-from speech.schemas import TTSRequest
-from speech.tts_engine import TTSEngine
+from speech.schemas import TTSProvider, TTSRequest
+from speech.tts_engine import tts_engine
 from speech.whisper_engine import WhisperEngine
 
 logger = setup_logger("services.audio")
@@ -62,7 +62,6 @@ class AudioService:
         Returns list of available TTS voices.
         """
         return self.tts.get_all_voices()
-
 
 
 audio_service = AudioService()

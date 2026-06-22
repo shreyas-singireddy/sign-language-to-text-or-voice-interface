@@ -1,21 +1,23 @@
 import json
 from pathlib import Path
-from typing import Dict, Any
+
 from config.logger import setup_logger
 
 logger = setup_logger("app.utils.i18n")
+
 
 class I18nEngine:
     """
     Internationalization (i18n) Engine
     Loads locale JSON files and provides translation lookups based on current language.
     """
+
     def __init__(self, locales_dir: str = "locales", default_lang: str = "en"):
         self.locales_dir = Path(__file__).resolve().parent.parent.parent / locales_dir
         self.default_lang = default_lang
         self.current_lang = default_lang
-        self.translations: Dict[str, Dict[str, str]] = {}
-        
+        self.translations: dict[str, dict[str, str]] = {}
+
         self._load_all_locales()
 
     def _load_all_locales(self):
@@ -23,11 +25,11 @@ class I18nEngine:
         if not self.locales_dir.exists():
             logger.error(f"Locales directory not found: {self.locales_dir}")
             return
-            
+
         for filepath in self.locales_dir.glob("*.json"):
             lang_code = filepath.stem
             try:
-                with open(filepath, "r", encoding="utf-8") as f:
+                with open(filepath, encoding="utf-8") as f:
                     self.translations[lang_code] = json.load(f)
                 logger.debug(f"Loaded locale: {lang_code}")
             except Exception as e:
@@ -36,13 +38,9 @@ class I18nEngine:
     def set_language(self, lang_code: str):
         """Sets the active language for the engine."""
         # Map full language names from frontend to lang codes
-        lang_map = {
-            "English": "en",
-            "Hindi": "hi",
-            "Telugu": "te"
-        }
+        lang_map = {"English": "en", "Hindi": "hi", "Telugu": "te"}
         mapped_code = lang_map.get(lang_code, lang_code)
-        
+
         if mapped_code in self.translations:
             self.current_lang = mapped_code
             logger.info(f"Language set to: {mapped_code}")
@@ -71,8 +69,9 @@ class I18nEngine:
                 text = text.format(**kwargs)
             except KeyError:
                 pass
-                
+
         return text
+
 
 # Singleton instance
 i18n = I18nEngine()
