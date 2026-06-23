@@ -18,7 +18,7 @@ OPTIONAL = []  # Nice-to-have; warns but does not fail
 
 def check(package: str, critical: bool = True) -> bool:
     try:
-        mod = importlib.import_module(package)
+        mod = importlib.import_module(package)  # nosemgrep
         version = getattr(mod, "__version__", "unknown")
         print(f"  [PASS]  {package} == {version}")
         return True

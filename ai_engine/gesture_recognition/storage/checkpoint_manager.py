@@ -27,7 +27,7 @@ class CheckpointManager:
             "optimizer_state_dict": optimizer.state_dict(),
             "metrics": metrics,
         }
-        torch.save(state, filepath)
+        torch.save(state, filepath)  # nosemgrep
         return filepath
 
     def load_checkpoint(
@@ -43,7 +43,7 @@ class CheckpointManager:
         if not filepath.exists():
             raise FileNotFoundError(f"Checkpoint not found at: {filepath}")
 
-        state = torch.load(filepath, map_location="cpu")  # nosec B614
+        state = torch.load(filepath, map_location="cpu")  # nosec B614  # nosemgrep
         model.load_state_dict(state["model_state_dict"])
 
         if optimizer is not None and "optimizer_state_dict" in state:

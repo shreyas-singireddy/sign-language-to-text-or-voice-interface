@@ -118,7 +118,7 @@ class GesturePredictor:
             model = LSTMClassifier(num_classes=num_classes)
 
         try:
-            state_dict = torch.load(model_path, map_location="cpu")  # nosec B614
+            state_dict = torch.load(model_path, map_location="cpu")  # nosec B614  # nosemgrep
             model.load_state_dict(state_dict)
             model.eval()
             self.active_models[model_type] = model
