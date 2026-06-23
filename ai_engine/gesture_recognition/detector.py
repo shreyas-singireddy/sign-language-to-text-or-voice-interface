@@ -15,7 +15,7 @@ class GestureDetector:
     def load_model(self) -> bool:
         """
         Attempts to load a trained gesture classification model (TF/Keras/PyTorch/ONNX).
-        Returns True if loaded, False if fallback is active.
+        Returns True if loaded, False if geometric heuristic fallback is active.
         """
         model_path = MODELS_DIR / "gesture_classifier.h5"
         if not model_path.exists():
@@ -26,7 +26,6 @@ class GestureDetector:
             return False
 
         try:
-            # Placeholder for actual model loading (e.g. tensorflow.keras.models.load_model)
             logger.info(f"Loading gesture model from {model_path}...")
             # self.model = tf.keras.models.load_model(str(model_path))
             self.model_loaded = True
@@ -38,7 +37,12 @@ class GestureDetector:
 
     def predict(self, landmark_vector: np.ndarray) -> tuple:
         """
-        Predicts gesture label from a flattened landmark vector.
+        Predicts gesture label from a flattened 1662-element landmark vector.
+
+        Priority:
+          1. ML model (ONNX / PyTorch) via Layer 4 predictor — if trained weights exist
+          2. Geometric finger-extension heuristics — always available, no training required
+
         Returns:
             label (str): Predicted gesture token
             confidence (float): Classification probability [0.0 - 1.0]

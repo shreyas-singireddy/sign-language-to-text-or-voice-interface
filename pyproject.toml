@@ -27,7 +27,8 @@ warn_return_any = false
 warn_unused_configs = true
 ignore_missing_imports = true
 check_untyped_defs = false
-exclude = ["backend/app", "^validate_compliance\\.py$", "backend/\\.venv", "\\.venv", "backend/\\.venv312", "\\.venv312"]
+explicit_package_bases = true
+exclude = ["backend/app", "^validate_compliance\\.py$", "backend/\\.venv", "\\.venv", "backend/\\.venv312", "\\.venv312", "builds"]
 disable_error_code = [
     "var-annotated",
     "assignment",
