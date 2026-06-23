@@ -20,3 +20,7 @@ backend/.venv
 *.log
 
 .coverage
+builds/
+cache/
+config.toml
+.runner_system_id

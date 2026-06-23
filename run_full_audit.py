@@ -24,7 +24,7 @@ if BACKEND_DIR not in sys.path:
 
 # Configure fake/mock environment variables for setup stability
 os.environ["MONGO_URI"] = ""
-os.environ["JWT_SECRET"] = "d3b07384d113edec49eaa6238ad5ff00"
+os.environ["JWT_SECRET"] = "d3b07384d113edec49eaa6238ad5ff00"  # pragma: allowlist secret
 
 print("Starting SignBridge AI Comprehensive Audit & Repair Verification...")
 
