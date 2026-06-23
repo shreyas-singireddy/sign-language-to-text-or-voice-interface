@@ -367,7 +367,16 @@ def test_landmark_processor():
     normalized = lp.normalize_landmarks(raw)
     assert normalized.shape == (1662,)
 
+    # Assert that wrist coordinates are shifted to zero, and other hand coordinates are shifted relative to wrist
+    norm_coords = np.zeros(1662)
+    norm_coords[1599:1602] = [1.0, 2.0, 3.0]  # wrist
+    norm_coords[1602:1605] = [4.0, 5.0, 6.0]  # first joint
+    normalized2 = lp.normalize_landmarks(norm_coords)
+    assert np.allclose(normalized2[1599:1602], [0.0, 0.0, 0.0])
+    assert np.allclose(normalized2[1602:1605], [3.0, 3.0, 3.0])
+
     lp_new = LandmarkProcessor()
+
     processed = lp_new.process(raw, None)
     assert processed.shape == (1662,)
 
